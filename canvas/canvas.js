@@ -93,7 +93,7 @@ class Body{
         }
 
         //let Gc = 6.67*10^(-11);
-        let Gc = 1;
+        let Gc = 0.001;
         let fx = 0;
         let fy = 0;
         let dist = 0;
@@ -103,7 +103,7 @@ class Body{
                 dist = distance(this.position, body.position);
             
                 if(dist <= this.radius + body.radius){
-                    this.makeCollision(body,dist);
+                    //this.makeCollision(body,dist);
                     // this.velocity.vx = ((this.mass - body.mass*col_e) * this.velocity.vx + (body.mass * (1+col_e) * body.velocity.vx))/(this.mass + body.mass)
                     // this.velocity.vy = ((this.mass - body.mass*col_e) * this.velocity.vy + (body.mass * (1+col_e) * body.velocity.vy))/(this.mass + body.mass)
                     // body.velocity.vx = ((body.mass - this.mass*col_e) * body.velocity.vx + (this.mass * (1+col_e) * this.velocity.vx))/(this.mass + body.mass)
@@ -155,11 +155,16 @@ function init() {
 
     //here goes user code.
  
+    let centery = window.innerHeight/2;
+    let centerx = window.innerWidth/2;
     bodies = [];
 
-    bodies.push(new Body(300, 300, 10, 30, 0, 0, "#FF6347")); 
-    bodies.push(new Body(600, 600, 10, 30, 0, 0, "#DA70D6")); 
-    bodies.push(new Body(610, 300, 10, 30, 0, 0, "#87CEFA")); 
+    console.log(centerx);
+    console.log(centery);
+     
+    bodies.push(new Body(centerx, centery,       100000, 30, 0  , 0, "#FF6347")); 
+    bodies.push(new Body(centerx + 200, centery, 100 , 10, 0, -10, "#DA70D6")); 
+    bodies.push(new Body(centerx + 300, centery, 100  , 5 , 0, -10, "#87CEFA")); 
 }
 
 function animate() {
