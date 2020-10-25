@@ -39,7 +39,7 @@ window.addEventListener('keyup', (event) => {
 
 //Classes
 let time = 1;
-
+let body_counter = 0;
 function distance(pos1, pos2) {
     if (pos1 != undefined && pos1.x != undefined && pos1.y != undefined && pos2 != undefined && pos2.x != undefined && pos2.y != undefined) {
         let xDist = pos1.x - pos2.x;
@@ -67,6 +67,7 @@ class Body{
         this.mass = mass;
         this.radius = radius;
         this.color = color;
+        this.id = body_counter++;
     }
     
     draw(){
@@ -97,13 +98,21 @@ class Body{
         let fx = 0;
         let fy = 0;
         let dist = 0;
-        
+        let collision_matrix = [];
+        for ( var y = 0; y < body_counter; y++ ) {
+            collision_matrix[ y ] = [];
+            for ( var x = 0; x < body_counter; x++ ) {
+                collision_matrix[ y ][ x ] = 0;
+            }
+        }
         bodies.forEach(body => {
-            if(this.position != body.position){
+            if(this.id != body.id){
                 dist = distance(this.position, body.position);
             
                 if(dist <= this.radius + body.radius){
-                    //this.makeCollision(body,dist);
+                    this.makeCollision(body,dist);
+                    collision_matrix[this.id][body.id] = 1;
+                    collision_matrix[body.id][this.id] = 1;
                     // this.velocity.vx = ((this.mass - body.mass*col_e) * this.velocity.vx + (body.mass * (1+col_e) * body.velocity.vx))/(this.mass + body.mass)
                     // this.velocity.vy = ((this.mass - body.mass*col_e) * this.velocity.vy + (body.mass * (1+col_e) * body.velocity.vy))/(this.mass + body.mass)
                     // body.velocity.vx = ((body.mass - this.mass*col_e) * body.velocity.vx + (this.mass * (1+col_e) * this.velocity.vx))/(this.mass + body.mass)
