@@ -39,14 +39,14 @@ extern FILE *yyin, *yyout;
 %type <string> statement
 %type <string> statement_list
 %type <string> print_func
-%%
 
+
+%%
 
 start: /*empty */
         |     statement_list {
             fprintf(yyout,"%s",$1);
-
-        }
+        };
 
 statement_list: statement { $$ = $1;}
         |     statement_list statement {
@@ -78,7 +78,7 @@ statement: NAME '=' expression  ';' {
             $$ = s;
         }
         | IF '(' expression ')' '{' statement_list '}' ELSE '{' statement_list '}'  {
-           char * s  = malloc(7+strlen($3)+strlen($6)+strlen($10));
+           char * s  = malloc(13+strlen($3)+strlen($6)+strlen($10));
            sprintf(s,"if( %s ) {\n%s}else{\n%s}",$3,$6,$10);
         //    free($3);
         //    free($6);
@@ -86,7 +86,7 @@ statement: NAME '=' expression  ';' {
             $$ = s;
         }
         | WHILE '(' expression ')' '{' statement_list '}'  {
-           char * s  = malloc(7+strlen($3)+strlen($6));
+           char * s  = malloc(13+strlen($3)+strlen($6));
            sprintf(s,"while( %s ) {\n%s}",$3,$6);
         //    free($3);
         //    free($6);
@@ -97,15 +97,9 @@ statement: NAME '=' expression  ';' {
             sprintf(s,"%s;\n",$1);
             //free($1);
             $$ = s;
-        }
-  
-        
+        };
 
-        ;
-
-
-       
-
+    
 expression: expression '+' expression { $$ = expOp($1,"+",$3);}
         | expression '-' expression { $$ = expOp($1,"-",$3);}
         | expression '/' expression { $$ = expOp($1,"/",$3);}
@@ -175,7 +169,7 @@ print_func:  PRINT '(' expression ')' {
 //         }
 //         /* otherwise continue to next */
 //     }
-//     yyerror("Too much symbols");
+//     yyerror("Too many symbols");
 //     exit(1);
 // }
 
@@ -195,11 +189,10 @@ struct symtab * symLook(char* s){
         }
         /* otherwise continue to next */
     }
-     yyerror("Too much symbols");
+     yyerror("Too many symbols");
      exit(1);
     
 }
-
 
 
 char * expOp(char * exp1,char * op,char * exp2){
@@ -268,4 +261,5 @@ void yyerror(const char *s)
 {
     fprintf (stderr, "%s\n", s);
 }
+
 

@@ -40,6 +40,9 @@ window.addEventListener('keyup', (event) => {
 //Classes
 let time = 1;
 let body_counter = 0;
+//let Gc = 6.67*(10^(-11));
+let Gc = 0.001;
+
 function distance(pos1, pos2) {
     if (pos1 != undefined && pos1.x != undefined && pos1.y != undefined && pos2 != undefined && pos2.x != undefined && pos2.y != undefined) {
         let xDist = pos1.x - pos2.x;
@@ -51,7 +54,27 @@ function distance(pos1, pos2) {
     }
 }
 
+function createMoon(body, altitude, mass, radius, color) {
+    console.log(" g: " + Gc);
+    let base_speed = Math.sqrt( (Gc * body.mass ) / (body.radius + altitude) );
 
+    let px = body.position.x + body.radius + altitude;
+    let py = body.position.y
+
+    let delta_x = px - body.position.x
+    let delta_y = body.position.y - py
+    let angle = Math.atan2(delta_y, delta_x)
+
+    console.log("base speed: " + base_speed);
+    console.log("angle: " + angle);
+
+    let vx = body.velocity.vx + (base_speed) * Math.sin(angle);
+    let vy = body.velocity.vy + (base_speed) * Math.cos(angle);
+
+    let orviter = new Body(px, py, mass, radius, vx, vy, color);
+    
+    return orviter;
+}
 
 class Body{
 
@@ -93,8 +116,6 @@ class Body{
             this.velocity.vy = -this.velocity.vy;
         }
 
-        //let Gc = 6.67*10^(-11);
-        let Gc = 0.001;
         let fx = 0;
         let fy = 0;
         let dist = 0;
@@ -168,12 +189,23 @@ function init() {
     let centerx = window.innerWidth/2;
     bodies = [];
 
-    console.log(centerx);
-    console.log(centery);
-     
-    bodies.push(new Body(centerx, centery,       100000, 30, 0  , 0, "#FF6347")); 
-    bodies.push(new Body(centerx + 200, centery, 100 , 10, 0, -10, "#DA70D6")); 
-    bodies.push(new Body(centerx + 300, centery, 100  , 5 , 0, -10, "#87CEFA")); 
+    //intento con Gc real (hay que refactorear distancias)
+    // bodies.push(new Body(centerx, centery,       1.989*(10^(30))  , 30, 0  , 0, "#FF6347")); 
+    // bodies.push(new Body(centerx + 200, centery, 5.972*(10^(24))  , 10, 0, -30000, "#DA70D6"));
+
+    //ejemplo lindo
+    // bodies.push(new Body(centerx, centery,       100000        , 30, 0  , 0     , "#FF6347")); 
+    // bodies.push(new Body(centerx + 250, centery, 100           , 5 , 0  , -10   , "#87CEFA")); 
+    // bodies.push(new Body(centerx + 450, centery, 100           , 5 , 0  , -10   , "#ababab")); 
+    // bodies.push(new Body(centerx + 350, centery, 100           , 5 , 0  , -10   , "#ababab"));
+
+    //ejemplo de luna
+    let planet = new Body(centerx, centery, 10000, 30, 0, 0, "#87CEFA")
+    let moon = createMoon(planet, 100, 100, 10, "FFccFF")
+    //let moon2 = createMoon(moon, 15, 5, 3, "ffffff");
+    bodies.push(planet);
+    bodies.push(moon);
+    //bodies.push(moon2)
 }
 
 function animate() {
