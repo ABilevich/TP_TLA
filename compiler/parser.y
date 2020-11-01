@@ -24,9 +24,12 @@ extern FILE *yyin, *yyout;
 %token <string>QSTRING
 
 %token <string> COMPARATION
-%token NEW_LINE TAB PRINT IF ELSE WHILE OR AND GT LT GE LE EQ NEQ
+%token NEW_LINE TAB PRINT IF ELSE WHILE OR AND NOT GT LT GE LE EQ NEQ
 
 //Set precedences
+%left OR
+%left AND
+%left NOT
 %left COMPARATION
 %left '-' '+'
 %left '*' '/'
@@ -43,42 +46,42 @@ extern FILE *yyin, *yyout;
 
 
 start: /*empty */
-        |     statement_list {
-            fprintf(yyout,"%s",$1);
-
-        }
+        |     statement_list {fprintf(yyout,"%s",$1);}
+        ;
 
 statement_list: statement { $$ = $1;}
         |     statement_list statement {
                 char *s = $$;
-              
                 strcat(s,$2);
                 // free($2);
                 $$ =s;
             }
         ;
 
-
-
 statement: NAME '=' expression  ';' {   
                 char *s = malloc(strlen($1->name) + strlen($3) +5);
                 if(s == NULL){
                     yyerror("no memory left");
                 }
-                
-              
                 sprintf(s,"%s = %s;\n",$1->name,$3);
                 // free($3);
-                $$ = s;}
+                $$ = s;
+        }
         | IF '(' expression ')' '{' statement_list '}' %prec LOWER_THAN_ELSE {
-           char * s  = malloc(7+strlen($3)+strlen($6));
-           sprintf(s,"if( %s ) {\n%s}",$3,$6);
-        //    free($3);
-        //    free($6);
+            char * s  = malloc(7+strlen($3)+strlen($6));
+             if(s == NULL){
+                    yyerror("no memory left");
+                }
+            sprintf(s,"if( %s ) {\n%s}",$3,$6);
+            //    free($3);
+            //    free($6);
             $$ = s;
         }
         | IF '(' expression ')' '{' statement_list '}' ELSE '{' statement_list '}'  {
            char * s  = malloc(7+strlen($3)+strlen($6)+strlen($10));
+            if(s == NULL){
+                    yyerror("no memory left");
+                }
            sprintf(s,"if( %s ) {\n%s}else{\n%s}",$3,$6,$10);
         //    free($3);
         //    free($6);
@@ -87,6 +90,9 @@ statement: NAME '=' expression  ';' {
         }
         | WHILE '(' expression ')' '{' statement_list '}'  {
            char * s  = malloc(7+strlen($3)+strlen($6));
+            if(s == NULL){
+                    yyerror("no memory left");
+                }
            sprintf(s,"while( %s ) {\n%s}",$3,$6);
         //    free($3);
         //    free($6);
@@ -94,31 +100,38 @@ statement: NAME '=' expression  ';' {
         }
         | print_func ';' {
             char *s = malloc(strlen($1) +3);
+             if(s == NULL){
+                    yyerror("no memory left");
+                }
             sprintf(s,"%s;\n",$1);
             //free($1);
             $$ = s;
         }
-  
-        
-
         ;
-
-
-       
 
 expression: expression '+' expression { $$ = expOp($1,"+",$3);}
         | expression '-' expression { $$ = expOp($1,"-",$3);}
         | expression '/' expression { $$ = expOp($1,"/",$3);}
         | expression '*' expression { $$ = expOp($1,"*",$3);}
-        |expression COMPARATION expression { $$ = expOp($1,$2,$3);}
-        |   '-' expression %prec UMINUS     { 
+        | expression COMPARATION expression { $$ = expOp($1,$2,$3);}
+        | expression AND expression {$$ = expOp($1,"&&",$3);}
+        | expression OR expression {$$ = expOp($1,"||",$3);}
+        | NOT expression { 
+                char *s = malloc(strlen($2) +2);
+                if(s == NULL){
+                    yyerror("no memory left");
+                }
+                sprintf(s,"!%s",$2);
+                $$ = s;
+        }
+        | '-' expression %prec UMINUS { 
                 char *s = malloc(strlen($2) +2);
                 if(s == NULL){
                     yyerror("no memory left");
                 }
                 sprintf(s,"-%s",$2);
                 $$ = s;
-            }
+        }
         |   '(' expression ')'      { 
                 char *s = malloc(strlen($2) +3);
                 if(s == NULL){
@@ -127,37 +140,41 @@ expression: expression '+' expression { $$ = expOp($1,"+",$3);}
                 sprintf(s,"(%s)",$2);
                
                 $$ = s;
-            }
-     
-        |   NUMBER 
-        |   NAME {
-        
-            $$ = strdup($1->name);}
-        |   NAME '(' expression ')' {
-            if($1->funcptr){
-                char *s = malloc(strlen($1->name) + strlen($3) +3);
-                if(s == NULL){
-                    yyerror("no memory left");
-                }
-                sprintf(s,"%s(%s)",$1->name,$3);
-              
-                $$ = s;
-            
-            }else{
-                 printf("%s is not a function\n",$1->name);
-                $$ = 0;
-            }
         }
+        |   NAME '(' expression ')' {
+                if($1->funcptr){
+                    char *s = malloc(strlen($1->name) + strlen($3) +3);
+                    if(s == NULL){
+                        yyerror("no memory left");
+                    }
+                    sprintf(s,"%s(%s)",$1->name,$3);
+                
+                    $$ = s;
+                
+                }else{
+                    printf("%s is not a function\n",$1->name);
+                    $$ = 0;
+                }
+        }
+        |   NUMBER 
+        |   NAME { $$ = strdup($1->name);}
+   
         ;
 
 
 print_func:  PRINT '(' expression ')' {
             char *s = malloc(15 + strlen($3));
+            if(s == NULL){
+                yyerror("no memory left");
+            }
             sprintf(s,"console.log(%s)",$3);
             $$ = s;
         }
         |    PRINT '(' QSTRING ')' {
-             char *s = malloc(15 + strlen($3));
+            char *s = malloc(15 + strlen($3));
+            if(s == NULL){
+                yyerror("no memory left");
+            }
             sprintf(s,"console.log(\"%s\")",$3);
             $$ = s;
         }
@@ -200,8 +217,6 @@ struct symtab * symLook(char* s){
     
 }
 
-
-
 char * expOp(char * exp1,char * op,char * exp2){
     if(!strcmp("/",op) && atof(exp2) == 0.0){
         yyerror("divide by zero");
@@ -210,8 +225,11 @@ char * expOp(char * exp1,char * op,char * exp2){
         if(s == NULL){
             yyerror("no memory left");
         }
-        sprintf(s,"%s %s %s",exp1,op,exp2);
-        return s;                                
+        if(exp1 != NULL && op != NULL && exp2 != NULL){
+            sprintf(s,"%s %s %s",exp1,op,exp2);
+             return s;            
+        }
+                       
     }
     return NULL;
 }
@@ -223,7 +241,7 @@ void addFunc(char *name,double(*func)()){
 int main(int argc, char* argv[]){
     
     extern double sqrt(),exp(),log();
-  
+   
     addFunc("sqrt",sqrt);
     addFunc("exp",exp);
     addFunc("log",log);

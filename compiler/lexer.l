@@ -60,6 +60,7 @@ qstring \"[^\"\n]*[\"\n"]
 
 "&&" {return AND;}
 "||"  {return OR;}
+"!" {return NOT;}
 
 [:(){},.;] {return yytext[0];}
 
