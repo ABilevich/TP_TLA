@@ -22,9 +22,9 @@ Grammar
    10          | read
    11          | if_statement
    12          | while_statement
-   13          | NUM_ARR_NAME '[' num_exp ']' '=' num_exp
-   14          | STR_ARR_NAME '[' num_exp ']' '=' str_exp
-   15          | BOOL_ARR_NAME '[' num_exp ']' '=' bool_exp
+   13          | NUM_ARR_NAME '[' INTEGER ']' '=' num_exp
+   14          | STR_ARR_NAME '[' INTEGER ']' '=' str_exp
+   15          | BOOL_ARR_NAME '[' INTEGER ']' '=' bool_exp
    16          | NUM_NAME '=' num_exp
    17          | STR_NAME '=' str_exp
    18          | BOOL_NAME '=' bool_exp
@@ -113,7 +113,7 @@ Terminals, with rules where they appear
     NUM_ARR_NAME <symp> (262) 13 34
     STR_ARR_NAME <symp> (263) 14 42
     BOOL_ARR_NAME <symp> (264) 15 49
-    INTEGER <string> (265) 36
+    INTEGER <string> (265) 13 14 15 36
     FLOAT <string> (266) 37
     QSTRING <string> (267) 38
     COMPARATION <string> (268) 47
@@ -169,7 +169,7 @@ Nonterminals, with rules where they appear
         on right: 5 54 55 61
     num_exp <string> (58)
         on left: 28 29 30 31 32 33 34 35 36 37
-        on right: 13 14 15 16 25 28 29 30 31 32 33 34 40 41 42 47 49 57 59
+        on right: 13 16 25 28 29 30 31 32 33 34 40 41 42 47 49 57 59
     str_exp <string> (59)
         on left: 38 39 40 41 42 43
         on right: 14 17 26 39 40 41 57 62
@@ -302,21 +302,21 @@ State 9
 
 State 10
 
-   13 statement: NUM_ARR_NAME . '[' num_exp ']' '=' num_exp
+   13 statement: NUM_ARR_NAME . '[' INTEGER ']' '=' num_exp
 
     '['  shift, and go to state 34
 
 
 State 11
 
-   14 statement: STR_ARR_NAME . '[' num_exp ']' '=' str_exp
+   14 statement: STR_ARR_NAME . '[' INTEGER ']' '=' str_exp
 
     '['  shift, and go to state 35
 
 
 State 12
 
-   15 statement: BOOL_ARR_NAME . '[' num_exp ']' '=' bool_exp
+   15 statement: BOOL_ARR_NAME . '[' INTEGER ']' '=' bool_exp
 
     '['  shift, and go to state 36
 
@@ -528,44 +528,23 @@ State 33
 
 State 34
 
-   13 statement: NUM_ARR_NAME '[' . num_exp ']' '=' num_exp
+   13 statement: NUM_ARR_NAME '[' . INTEGER ']' '=' num_exp
 
-    NUM_NAME      shift, and go to state 46
-    NUM_ARR_NAME  shift, and go to state 47
-    INTEGER       shift, and go to state 48
-    FLOAT         shift, and go to state 49
-    '-'           shift, and go to state 50
-    '('           shift, and go to state 51
-
-    num_exp  go to state 66
+    INTEGER  shift, and go to state 66
 
 
 State 35
 
-   14 statement: STR_ARR_NAME '[' . num_exp ']' '=' str_exp
+   14 statement: STR_ARR_NAME '[' . INTEGER ']' '=' str_exp
 
-    NUM_NAME      shift, and go to state 46
-    NUM_ARR_NAME  shift, and go to state 47
-    INTEGER       shift, and go to state 48
-    FLOAT         shift, and go to state 49
-    '-'           shift, and go to state 50
-    '('           shift, and go to state 51
-
-    num_exp  go to state 67
+    INTEGER  shift, and go to state 67
 
 
 State 36
 
-   15 statement: BOOL_ARR_NAME '[' . num_exp ']' '=' bool_exp
+   15 statement: BOOL_ARR_NAME '[' . INTEGER ']' '=' bool_exp
 
-    NUM_NAME      shift, and go to state 46
-    NUM_ARR_NAME  shift, and go to state 47
-    INTEGER       shift, and go to state 48
-    FLOAT         shift, and go to state 49
-    '-'           shift, and go to state 50
-    '('           shift, and go to state 51
-
-    num_exp  go to state 68
+    INTEGER  shift, and go to state 68
 
 
 State 37
@@ -910,46 +889,22 @@ State 65
 
 State 66
 
-   13 statement: NUM_ARR_NAME '[' num_exp . ']' '=' num_exp
-   28 num_exp: num_exp . '+' num_exp
-   29        | num_exp . '-' num_exp
-   30        | num_exp . '/' num_exp
-   31        | num_exp . '*' num_exp
+   13 statement: NUM_ARR_NAME '[' INTEGER . ']' '=' num_exp
 
-    '-'  shift, and go to state 86
-    '+'  shift, and go to state 87
-    '*'  shift, and go to state 88
-    '/'  shift, and go to state 89
     ']'  shift, and go to state 100
 
 
 State 67
 
-   14 statement: STR_ARR_NAME '[' num_exp . ']' '=' str_exp
-   28 num_exp: num_exp . '+' num_exp
-   29        | num_exp . '-' num_exp
-   30        | num_exp . '/' num_exp
-   31        | num_exp . '*' num_exp
+   14 statement: STR_ARR_NAME '[' INTEGER . ']' '=' str_exp
 
-    '-'  shift, and go to state 86
-    '+'  shift, and go to state 87
-    '*'  shift, and go to state 88
-    '/'  shift, and go to state 89
     ']'  shift, and go to state 101
 
 
 State 68
 
-   15 statement: BOOL_ARR_NAME '[' num_exp . ']' '=' bool_exp
-   28 num_exp: num_exp . '+' num_exp
-   29        | num_exp . '-' num_exp
-   30        | num_exp . '/' num_exp
-   31        | num_exp . '*' num_exp
+   15 statement: BOOL_ARR_NAME '[' INTEGER . ']' '=' bool_exp
 
-    '-'  shift, and go to state 86
-    '+'  shift, and go to state 87
-    '*'  shift, and go to state 88
-    '/'  shift, and go to state 89
     ']'  shift, and go to state 102
 
 
@@ -1357,21 +1312,21 @@ State 99
 
 State 100
 
-   13 statement: NUM_ARR_NAME '[' num_exp ']' . '=' num_exp
+   13 statement: NUM_ARR_NAME '[' INTEGER ']' . '=' num_exp
 
     '='  shift, and go to state 128
 
 
 State 101
 
-   14 statement: STR_ARR_NAME '[' num_exp ']' . '=' str_exp
+   14 statement: STR_ARR_NAME '[' INTEGER ']' . '=' str_exp
 
     '='  shift, and go to state 129
 
 
 State 102
 
-   15 statement: BOOL_ARR_NAME '[' num_exp ']' . '=' bool_exp
+   15 statement: BOOL_ARR_NAME '[' INTEGER ']' . '=' bool_exp
 
     '='  shift, and go to state 130
 
@@ -1663,7 +1618,7 @@ State 127
 
 State 128
 
-   13 statement: NUM_ARR_NAME '[' num_exp ']' '=' . num_exp
+   13 statement: NUM_ARR_NAME '[' INTEGER ']' '=' . num_exp
 
     NUM_NAME      shift, and go to state 46
     NUM_ARR_NAME  shift, and go to state 47
@@ -1677,7 +1632,7 @@ State 128
 
 State 129
 
-   14 statement: STR_ARR_NAME '[' num_exp ']' '=' . str_exp
+   14 statement: STR_ARR_NAME '[' INTEGER ']' '=' . str_exp
 
     NUM_NAME      shift, and go to state 46
     STR_NAME      shift, and go to state 53
@@ -1695,7 +1650,7 @@ State 129
 
 State 130
 
-   15 statement: BOOL_ARR_NAME '[' num_exp ']' '=' . bool_exp
+   15 statement: BOOL_ARR_NAME '[' INTEGER ']' '=' . bool_exp
 
     NUM_NAME       shift, and go to state 46
     BOOL_NAME      shift, and go to state 58
@@ -1849,7 +1804,7 @@ State 139
 
 State 140
 
-   13 statement: NUM_ARR_NAME '[' num_exp ']' '=' num_exp .
+   13 statement: NUM_ARR_NAME '[' INTEGER ']' '=' num_exp .
    28 num_exp: num_exp . '+' num_exp
    29        | num_exp . '-' num_exp
    30        | num_exp . '/' num_exp
@@ -1865,7 +1820,7 @@ State 140
 
 State 141
 
-   14 statement: STR_ARR_NAME '[' num_exp ']' '=' str_exp .
+   14 statement: STR_ARR_NAME '[' INTEGER ']' '=' str_exp .
    39 str_exp: str_exp . '+' str_exp
    41        | str_exp . '+' num_exp
 
@@ -1876,7 +1831,7 @@ State 141
 
 State 142
 
-   15 statement: BOOL_ARR_NAME '[' num_exp ']' '=' bool_exp .
+   15 statement: BOOL_ARR_NAME '[' INTEGER ']' '=' bool_exp .
    44 bool_exp: bool_exp . AND bool_exp
    45         | bool_exp . OR bool_exp
 

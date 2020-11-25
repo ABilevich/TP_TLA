@@ -12,5 +12,6 @@ main(){
         x = x-1
     }
 
-    str arr[] = ["pe","ne",2]
+    str arr[] = ["pe","ne"]
+    arr[2] = "caca"
 }

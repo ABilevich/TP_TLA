@@ -125,7 +125,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 28 "parser2.y"
+#line 35 "parser2.y"
 
     char* string;
     struct symtab* symp;

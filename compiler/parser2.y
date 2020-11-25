@@ -4,13 +4,20 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <stdarg.h>
 
 #define YYDEBUGGING 1
 
 #define HEADER_FILE "header.aux"
 #define DEFAULT_OUTFILE "index.html"
 #define FOOTER_FILE "footer.aux"
-
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_GREEN   "\x1b[32m"
+#define ANSI_COLOR_YELLOW  "\x1b[33m"
+#define ANSI_COLOR_BLUE    "\x1b[34m"
+#define ANSI_COLOR_MAGENTA "\x1b[35m"
+#define ANSI_COLOR_CYAN    "\x1b[36m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
 #ifdef DEBUG_TRUE
   #define DEBUGGING 1
 #else
@@ -19,7 +26,7 @@
 void appendFiles(char source[], FILE * fd2);
 int yylex();
 void yyerror(const char *s);
-
+void yydebug(const char * format,...);
 extern FILE *yyin, *yyout;
 
 
@@ -79,7 +86,7 @@ extern FILE *yyin, *yyout;
 
 start:  /* lambda */
     |  MAIN '(' ')' '{' statement_list '}'  {
-        if(DEBUGGING) printf("main\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "main\n" ANSI_COLOR_RESET);
         char * s = malloc(strlen($5)+1);
           if(s == NULL){
             yyerror("no memory left");
@@ -90,13 +97,13 @@ start:  /* lambda */
     ;
 
 statement_list: statement {
-    if(DEBUGGING) printf("statement: %s\n",$1);
+    if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "%s\n",$1);
         char * s = malloc(strlen($1)+2);
         sprintf(s,"%s\n",$1);
         $$ = s;
     }
     |   statement_list statement {
-        if(DEBUGGING) printf("statement: %s\n",$2);
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "%s\n",$2);
         // printf("statement list: %s\n",$1);
         // printf("statement: %s\n",$2);
         // char *s = malloc(strlen($$) +strlen($2) +3);
@@ -157,35 +164,35 @@ statement:
         $$ = s;
     }
     | system {
-        if(DEBUGGING) printf("statement system %s\n",$1);
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET"system %s\n",$1);
         $$ = $1;
     }
     | config {
-        if(DEBUGGING) printf("statement config %s\n",$1);
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "config %s\n",$1);
         $$ = $1;
     }
     | print {
-        if(DEBUGGING) printf("statement print\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "print\n");
         $$ = $1;
 
     }
     | read {
-        if(DEBUGGING) printf("statement read\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "read\n");
         $$ = $1;
 
     }
     | if_statement {
-        if(DEBUGGING) printf("statement If\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "if\n");
         $$ = $1;
 
     }
     | while_statement {
-        if(DEBUGGING) printf("statement while\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "while\n");
         $$ = $1;
 
     }
-    | NUM_ARR_NAME '[' num_exp ']'  '=' num_exp {
-        if(DEBUGGING) printf("statement num array\n");
+    | NUM_ARR_NAME '[' INTEGER ']'  '=' num_exp {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "num array\n");
         char *s = malloc(strlen($1->name) + strlen($3) + strlen($6) +6);
         if(s == NULL){
             yyerror("no memory left");
@@ -193,8 +200,8 @@ statement:
         sprintf(s,"%s[%s] = %s",$1->name,$3,$6);
         $$ = s;
     }
-    | STR_ARR_NAME '[' num_exp ']'  '=' str_exp {
-        if(DEBUGGING) printf("statement str array\n");
+    | STR_ARR_NAME '[' INTEGER ']'  '=' str_exp {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "str array\n");
         char *s = malloc(strlen($1->name) + strlen($3) + strlen($6) +8);
         if(s == NULL){
             yyerror("no memory left");
@@ -202,8 +209,8 @@ statement:
         sprintf(s,"%s[%s] = %s",$1->name,$3,$6);
         $$ = s;
     }
-    | BOOL_ARR_NAME '[' num_exp ']' '=' bool_exp {
-        if(DEBUGGING) printf("statement bool array\n");
+    | BOOL_ARR_NAME '[' INTEGER ']' '=' bool_exp {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "bool array\n");
         char *s = malloc(strlen($1->name) + strlen($3) + strlen($6) +6);
         if(s == NULL){
             yyerror("no memory left");
@@ -212,7 +219,7 @@ statement:
         $$ = s;
     }
     | NUM_NAME '=' num_exp {
-        if(DEBUGGING) printf("statement num eq\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "num eq\n");
         char *s = malloc(strlen($1->name) + strlen($3) +4);
         if(s == NULL){
             yyerror("no memory left");
@@ -221,7 +228,7 @@ statement:
         $$ = s;
     }
     | STR_NAME '=' str_exp {
-        if(DEBUGGING) printf("statement str eq\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "str eq\n");
         char *s = malloc(strlen($1->name) + strlen($3) +6);
         if(s == NULL){
             yyerror("no memory left");
@@ -230,7 +237,7 @@ statement:
         $$ = s;
     }
     | BOOL_NAME '=' bool_exp {
-        if(DEBUGGING) printf("statement bool eq\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "bool eq\n");
         char *s = malloc(strlen($1->name) + strlen($3) +4);
         if(s == NULL){
             yyerror("no memory left");
@@ -467,7 +474,7 @@ bool_exp: bool_exp AND bool_exp {
     }
     |   TRUE_TK { 
     
-        if(DEBUGGING) printf("TRUE\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"TRUE\n"ANSI_COLOR_RESET);
             $$ = strdup("true");
     }
     |   FALSE_TK{
@@ -519,7 +526,7 @@ arr_item: exp {
 
 system:
         SYSTEM_TOKEN '.' system_action {
-           if(DEBUGGING) printf("system\n");
+           if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"system\n"ANSI_COLOR_RESET);
            $$ = $3;
         }
     ;
@@ -535,7 +542,7 @@ system_action: ADDBODY '(' num_exp ',' num_exp ',' num_exp ',' num_exp ',' num_e
     ;
     
 config: CONFIG_TOKEN '.' config_action { 
-        if(DEBUGGING) printf("config\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"config\n"ANSI_COLOR_RESET );
          $$ = $3;
     }
     ;
@@ -707,8 +714,15 @@ void appendFiles(char source[], FILE * fp2)
 
 void yyerror(const char *s)
 {
-    fprintf (stderr,"\x1b[31m" "Error: %s\n" "\x1b[0m", s);
+    fprintf (stderr,ANSI_COLOR_RED "Error: %s\n" ANSI_COLOR_RESET, s);
     exit(1);
 }
 
+void yydebug(const char * format,...){
+    va_list argptr;
+    va_start(argptr, format);
+    vfprintf (stderr,format, argptr);
+    va_end(argptr);
+   
+}
 
