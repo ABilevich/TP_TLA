@@ -5,14 +5,17 @@
 #include <stdio.h>
 #include <math.h>
 
-#define YYDEBUG 1
-
-#define DEBUG 1
+#define YYDEBUGGING 1
 
 #define HEADER_FILE "header.aux"
 #define DEFAULT_OUTFILE "index.html"
 #define FOOTER_FILE "footer.aux"
 
+#ifdef DEBUG_TRUE
+  #define DEBUGGING 1
+#else
+  #define DEBUGGING 0
+#endif
 void appendFiles(char source[], FILE * fd2);
 int yylex();
 void yyerror(const char *s);
@@ -76,29 +79,31 @@ extern FILE *yyin, *yyout;
 
 start:  /* lambda */
     |  MAIN '(' ')' '{' statement_list '}'  {
-        if(DEBUG) printf("main\n");
+        if(DEBUGGING) printf("main\n");
         char * s = malloc(strlen($5)+1);
           if(s == NULL){
             yyerror("no memory left");
         }
-        sprintf(s,"%s\n",$5);
+        sprintf(s,"\n%s\n",$5);
         fprintf(yyout,"%s",s);
     }
     ;
 
 statement_list: statement {
-    if(DEBUG) printf("statement: %s\n",$1);
+    if(DEBUGGING) printf("statement: %s\n",$1);
         char * s = malloc(strlen($1)+2);
         sprintf(s,"%s\n",$1);
         $$ = s;
     }
     |   statement_list statement {
+        if(DEBUGGING) printf("statement: %s\n",$2);
         // printf("statement list: %s\n",$1);
-        // printf("statement: %s\n",$2);    
+        // printf("statement: %s\n",$2);
+        // char *s = malloc(strlen($$) +strlen($2) +3);
+        // sprintf(s,"%s\t%s\n",$$,$2);    
         char *s = $$;
         strcat(s,$2);
         strcat(s,"\n");
-        // free($2);
         $$ =s;
     }
     ;
@@ -125,6 +130,7 @@ statement:
               exit(1);
         }
         enum var_type type;
+
         switch($1->type){
             case NUM_TYPE:
                 type = NUM_ARR_TYPE;
@@ -138,45 +144,48 @@ statement:
             default:
             break;
         }
+        
         $2->type = type;
+         
         char *s = malloc(strlen($2->name) + strlen($6->sval) +8);
+     
         if(s == NULL){
             yyerror("no memory left");
         }
- 
-        sprintf(s,"let %s = %s",$2->name,$6->sval);
+  
+        sprintf(s,"let %s = [%s]",$2->name,$6->sval);
         $$ = s;
     }
     | system {
-        if(DEBUG) printf("statement system %s\n",$1);
+        if(DEBUGGING) printf("statement system %s\n",$1);
         $$ = $1;
     }
     | config {
-        if(DEBUG) printf("statement config %s\n",$1);
+        if(DEBUGGING) printf("statement config %s\n",$1);
         $$ = $1;
     }
     | print {
-        if(DEBUG) printf("statement print\n");
+        if(DEBUGGING) printf("statement print\n");
         $$ = $1;
 
     }
     | read {
-        if(DEBUG) printf("statement read\n");
+        if(DEBUGGING) printf("statement read\n");
         $$ = $1;
 
     }
     | if_statement {
-        if(DEBUG) printf("statement If\n");
+        if(DEBUGGING) printf("statement If\n");
         $$ = $1;
 
     }
     | while_statement {
-        if(DEBUG) printf("statement while\n");
+        if(DEBUGGING) printf("statement while\n");
         $$ = $1;
 
     }
     | NUM_ARR_NAME '[' num_exp ']'  '=' num_exp {
-        if(DEBUG) printf("statement num array\n");
+        if(DEBUGGING) printf("statement num array\n");
         char *s = malloc(strlen($1->name) + strlen($3) + strlen($6) +6);
         if(s == NULL){
             yyerror("no memory left");
@@ -185,7 +194,7 @@ statement:
         $$ = s;
     }
     | STR_ARR_NAME '[' num_exp ']'  '=' str_exp {
-        if(DEBUG) printf("statement str array\n");
+        if(DEBUGGING) printf("statement str array\n");
         char *s = malloc(strlen($1->name) + strlen($3) + strlen($6) +8);
         if(s == NULL){
             yyerror("no memory left");
@@ -194,7 +203,7 @@ statement:
         $$ = s;
     }
     | BOOL_ARR_NAME '[' num_exp ']' '=' bool_exp {
-        if(DEBUG) printf("statement bool array\n");
+        if(DEBUGGING) printf("statement bool array\n");
         char *s = malloc(strlen($1->name) + strlen($3) + strlen($6) +6);
         if(s == NULL){
             yyerror("no memory left");
@@ -203,7 +212,7 @@ statement:
         $$ = s;
     }
     | NUM_NAME '=' num_exp {
-        if(DEBUG) printf("statement num eq\n");
+        if(DEBUGGING) printf("statement num eq\n");
         char *s = malloc(strlen($1->name) + strlen($3) +4);
         if(s == NULL){
             yyerror("no memory left");
@@ -212,7 +221,7 @@ statement:
         $$ = s;
     }
     | STR_NAME '=' str_exp {
-        if(DEBUG) printf("statement str eq\n");
+        if(DEBUGGING) printf("statement str eq\n");
         char *s = malloc(strlen($1->name) + strlen($3) +6);
         if(s == NULL){
             yyerror("no memory left");
@@ -221,7 +230,7 @@ statement:
         $$ = s;
     }
     | BOOL_NAME '=' bool_exp {
-        if(DEBUG) printf("statement bool eq\n");
+        if(DEBUGGING) printf("statement bool eq\n");
         char *s = malloc(strlen($1->name) + strlen($3) +4);
         if(s == NULL){
             yyerror("no memory left");
@@ -276,7 +285,7 @@ if_statement: IF '(' bool_exp ')' '{' statement_list '}' %prec LOWER_THAN_ELSE {
     ;
 
 while_statement: WHILE '(' bool_exp ')' '{' statement_list '}' {
-    char * s  = malloc(14+strlen($3)+strlen($6));
+    char * s  = malloc(17+strlen($3)+strlen($6));
     if(s == NULL){
         yyerror("no memory left");
     }
@@ -458,7 +467,7 @@ bool_exp: bool_exp AND bool_exp {
     }
     |   TRUE_TK { 
     
-        if(DEBUG) printf("TRUE\n");
+        if(DEBUGGING) printf("TRUE\n");
             $$ = strdup("true");
     }
     |   FALSE_TK{
@@ -469,23 +478,40 @@ bool_exp: bool_exp AND bool_exp {
 
 arr_init: '[' arr_item ']' {
         struct exp_t* aux = malloc(sizeof(struct exp_t));
+        if(aux == NULL){
+            yyerror("no memory left");
+        }
+        printf("array_init type %d\n",$$->type);
         aux->type = $2->type;
+        aux->sval = $2->sval;
         $$ = aux;
     }
     ; 
 
 arr_item: exp {
         struct exp_t* aux = malloc(sizeof(struct exp_t));
+         if(aux == NULL){
+            yyerror("no memory left");
+        }
         aux->type = $1->type;
+        aux->sval = $1->sval;
         $$ = aux;
     } 
     |  exp ',' arr_item {
             if($1->type != $3->type){
                 yyerror("invalid type for array item");
-                exit(1);
             }
             struct exp_t* aux = malloc(sizeof(struct exp_t));
+            if(aux == NULL){
+                yyerror("no memory left");
+            }
             aux->type = $1->type;
+            char * s = malloc(strlen($1->sval) + strlen($3->sval) + 2);
+            if(s == NULL){
+                yyerror("no memory left");
+            }
+            sprintf(s,"%s, %s",$1->sval,$3->sval);
+            aux->sval = s;
             $$ = aux;
         }
     ;
@@ -493,7 +519,7 @@ arr_item: exp {
 
 system:
         SYSTEM_TOKEN '.' system_action {
-           if(DEBUG) printf("system\n");
+           if(DEBUGGING) printf("system\n");
            $$ = $3;
         }
     ;
@@ -509,7 +535,7 @@ system_action: ADDBODY '(' num_exp ',' num_exp ',' num_exp ',' num_exp ',' num_e
     ;
     
 config: CONFIG_TOKEN '.' config_action { 
-        if(DEBUG) printf("config\n");
+        if(DEBUGGING) printf("config\n");
          $$ = $3;
     }
     ;
@@ -533,7 +559,7 @@ config_action: GRAVITY_CONF '(' num_exp ')' {
     ;
 
 print: PRINT '(' exp ')' {
-            printf("system print action\n");
+          
             char *s = malloc(strlen($3->sval) + strlen("console.log()") + 1);
             if(s == NULL){
                 yyerror("no memory left");
@@ -544,7 +570,7 @@ print: PRINT '(' exp ')' {
     ;
 
 read:  READ '(' str_exp ')' { 
-            printf("system read action");
+           
             char *s = malloc(strlen($3) + strlen("window.prompt()") + 1);
             if(s == NULL){
                 yyerror("no memory left");
@@ -609,7 +635,7 @@ int main(int argc, char* argv[]){
     addFunc("exp",exp);
     addFunc("log",log);
     char * infile;
-    char * outfile;
+
     char * progname = argv[0];
     if(argc == 1){
         yyparse();
@@ -681,7 +707,7 @@ void appendFiles(char source[], FILE * fp2)
 
 void yyerror(const char *s)
 {
-    fprintf (stderr, "%s\n", s);
+    fprintf (stderr,"\x1b[31m" "Error: %s\n" "\x1b[0m", s);
     exit(1);
 }
 

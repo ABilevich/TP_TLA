@@ -74,14 +74,17 @@
 #include <stdio.h>
 #include <math.h>
 
-#define YYDEBUG 1
-
-#define DEBUG 1
+#define YYDEBUGGING 1
 
 #define HEADER_FILE "header.aux"
 #define DEFAULT_OUTFILE "index.html"
 #define FOOTER_FILE "footer.aux"
 
+#ifdef DEBUG_TRUE
+  #define DEBUGGING 1
+#else
+  #define DEBUGGING 0
+#endif
 void appendFiles(char source[], FILE * fd2);
 int yylex();
 void yyerror(const char *s);
@@ -90,7 +93,7 @@ extern FILE *yyin, *yyout;
 
 
 
-#line 94 "y.tab.c"
+#line 97 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -214,13 +217,13 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 25 "parser2.y"
+#line 28 "parser2.y"
 
     char* string;
     struct symtab* symp;
     struct exp_t* exp_type;
 
-#line 224 "y.tab.c"
+#line 227 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -599,13 +602,13 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    77,    77,    78,    89,    95,   108,   122,   150,   154,
-     158,   163,   168,   173,   178,   187,   196,   205,   214,   223,
-     234,   241,   247,   255,   265,   278,   288,   295,   301,   310,
-     313,   316,   322,   325,   334,   343,   352,   355,   357,   361,
-     365,   374,   383,   392,   401,   406,   414,   422,   430,   438,
-     447,   456,   459,   464,   470,   477,   482,   495,   501,   511,
-     517,   525,   535,   546
+       0,    80,    80,    81,    92,    98,   113,   127,   159,   163,
+     167,   172,   177,   182,   187,   196,   205,   214,   223,   232,
+     243,   250,   256,   264,   274,   287,   297,   304,   310,   319,
+     322,   325,   331,   334,   343,   352,   361,   364,   366,   370,
+     374,   383,   392,   401,   410,   415,   423,   431,   439,   447,
+     456,   465,   468,   473,   479,   491,   500,   521,   527,   537,
+     543,   551,   561,   572
 };
 #endif
 
@@ -1536,46 +1539,48 @@ yyreduce:
   switch (yyn)
     {
   case 3:
-#line 78 "parser2.y"
+#line 81 "parser2.y"
                                             {
-        if(DEBUG) printf("main\n");
+        if(DEBUGGING) printf("main\n");
         char * s = malloc(strlen((yyvsp[-1].string))+1);
           if(s == NULL){
             yyerror("no memory left");
         }
-        sprintf(s,"%s\n",(yyvsp[-1].string));
+        sprintf(s,"\n%s\n",(yyvsp[-1].string));
         fprintf(yyout,"%s",s);
     }
-#line 1550 "y.tab.c"
+#line 1553 "y.tab.c"
     break;
 
   case 4:
-#line 89 "parser2.y"
+#line 92 "parser2.y"
                           {
-    if(DEBUG) printf("statement: %s\n",(yyvsp[0].string));
+    if(DEBUGGING) printf("statement: %s\n",(yyvsp[0].string));
         char * s = malloc(strlen((yyvsp[0].string))+2);
         sprintf(s,"%s\n",(yyvsp[0].string));
         (yyval.string) = s;
     }
-#line 1561 "y.tab.c"
+#line 1564 "y.tab.c"
     break;
 
   case 5:
-#line 95 "parser2.y"
+#line 98 "parser2.y"
                                  {
+        if(DEBUGGING) printf("statement: %s\n",(yyvsp[0].string));
         // printf("statement list: %s\n",$1);
-        // printf("statement: %s\n",$2);    
+        // printf("statement: %s\n",$2);
+        // char *s = malloc(strlen($$) +strlen($2) +3);
+        // sprintf(s,"%s\t%s\n",$$,$2);    
         char *s = (yyval.string);
         strcat(s,(yyvsp[0].string));
         strcat(s,"\n");
-        // free($2);
         (yyval.string) =s;
     }
-#line 1575 "y.tab.c"
+#line 1580 "y.tab.c"
     break;
 
   case 6:
-#line 108 "parser2.y"
+#line 113 "parser2.y"
                            {
     
         if((yyvsp[-3].exp_type)->type != (yyvsp[0].exp_type)->type){
@@ -1590,17 +1595,18 @@ yyreduce:
         sprintf(s,"let %s = %s",(yyvsp[-2].symp)->name,(yyvsp[0].exp_type)->sval);
         (yyval.string) = s;
     }
-#line 1594 "y.tab.c"
+#line 1599 "y.tab.c"
     break;
 
   case 7:
-#line 122 "parser2.y"
+#line 127 "parser2.y"
                                           {
          if((yyvsp[-5].exp_type)->type != (yyvsp[0].exp_type)->type){
               yyerror("invalid type assignment.");
               exit(1);
         }
         enum var_type type;
+
         switch((yyvsp[-5].exp_type)->type){
             case NUM_TYPE:
                 type = NUM_ARR_TYPE;
@@ -1614,80 +1620,83 @@ yyreduce:
             default:
             break;
         }
+        
         (yyvsp[-4].symp)->type = type;
+         
         char *s = malloc(strlen((yyvsp[-4].symp)->name) + strlen((yyvsp[0].exp_type)->sval) +8);
+     
         if(s == NULL){
             yyerror("no memory left");
         }
- 
-        sprintf(s,"let %s = %s",(yyvsp[-4].symp)->name,(yyvsp[0].exp_type)->sval);
+  
+        sprintf(s,"let %s = [%s]",(yyvsp[-4].symp)->name,(yyvsp[0].exp_type)->sval);
         (yyval.string) = s;
-    }
-#line 1627 "y.tab.c"
-    break;
-
-  case 8:
-#line 150 "parser2.y"
-             {
-        if(DEBUG) printf("statement system %s\n",(yyvsp[0].string));
-        (yyval.string) = (yyvsp[0].string);
     }
 #line 1636 "y.tab.c"
     break;
 
-  case 9:
-#line 154 "parser2.y"
+  case 8:
+#line 159 "parser2.y"
              {
-        if(DEBUG) printf("statement config %s\n",(yyvsp[0].string));
+        if(DEBUGGING) printf("statement system %s\n",(yyvsp[0].string));
         (yyval.string) = (yyvsp[0].string);
     }
 #line 1645 "y.tab.c"
     break;
 
+  case 9:
+#line 163 "parser2.y"
+             {
+        if(DEBUGGING) printf("statement config %s\n",(yyvsp[0].string));
+        (yyval.string) = (yyvsp[0].string);
+    }
+#line 1654 "y.tab.c"
+    break;
+
   case 10:
-#line 158 "parser2.y"
+#line 167 "parser2.y"
             {
-        if(DEBUG) printf("statement print\n");
+        if(DEBUGGING) printf("statement print\n");
         (yyval.string) = (yyvsp[0].string);
 
     }
-#line 1655 "y.tab.c"
+#line 1664 "y.tab.c"
     break;
 
   case 11:
-#line 163 "parser2.y"
+#line 172 "parser2.y"
            {
-        if(DEBUG) printf("statement read\n");
+        if(DEBUGGING) printf("statement read\n");
         (yyval.string) = (yyvsp[0].string);
 
     }
-#line 1665 "y.tab.c"
+#line 1674 "y.tab.c"
     break;
 
   case 12:
-#line 168 "parser2.y"
+#line 177 "parser2.y"
                    {
-        if(DEBUG) printf("statement If\n");
+        if(DEBUGGING) printf("statement If\n");
         (yyval.string) = (yyvsp[0].string);
 
     }
-#line 1675 "y.tab.c"
+#line 1684 "y.tab.c"
     break;
 
   case 13:
-#line 173 "parser2.y"
+#line 182 "parser2.y"
                       {
-        if(DEBUG) printf("statement while\n");
+        if(DEBUGGING) printf("statement while\n");
         (yyval.string) = (yyvsp[0].string);
 
     }
-#line 1685 "y.tab.c"
+#line 1694 "y.tab.c"
     break;
 
   case 14:
-#line 178 "parser2.y"
+#line 187 "parser2.y"
                                                 {
-        if(DEBUG) printf("statement num array\n");
+        if(DEBUGGING) printf("statement num array\n");
         char *s = malloc(strlen((yyvsp[-5].symp)->name) + strlen((yyvsp[-3].string)) + strlen((yyvsp[0].string)) +6);
         if(s == NULL){
             yyerror("no memory left");
@@ -1695,13 +1704,13 @@ yyreduce:
         sprintf(s,"%s[%s] = %s",(yyvsp[-5].symp)->name,(yyvsp[-3].string),(yyvsp[0].string));
         (yyval.string) = s;
     }
-#line 1699 "y.tab.c"
+#line 1708 "y.tab.c"
     break;
 
   case 15:
-#line 187 "parser2.y"
+#line 196 "parser2.y"
                                                 {
-        if(DEBUG) printf("statement str array\n");
+        if(DEBUGGING) printf("statement str array\n");
         char *s = malloc(strlen((yyvsp[-5].symp)->name) + strlen((yyvsp[-3].string)) + strlen((yyvsp[0].string)) +8);
         if(s == NULL){
             yyerror("no memory left");
@@ -1709,13 +1718,13 @@ yyreduce:
         sprintf(s,"%s[%s] = %s",(yyvsp[-5].symp)->name,(yyvsp[-3].string),(yyvsp[0].string));
         (yyval.string) = s;
     }
-#line 1713 "y.tab.c"
+#line 1722 "y.tab.c"
     break;
 
   case 16:
-#line 196 "parser2.y"
+#line 205 "parser2.y"
                                                  {
-        if(DEBUG) printf("statement bool array\n");
+        if(DEBUGGING) printf("statement bool array\n");
         char *s = malloc(strlen((yyvsp[-5].symp)->name) + strlen((yyvsp[-3].string)) + strlen((yyvsp[0].string)) +6);
         if(s == NULL){
             yyerror("no memory left");
@@ -1723,13 +1732,13 @@ yyreduce:
         sprintf(s,"%s[%s] = %s",(yyvsp[-5].symp)->name,(yyvsp[-3].string),(yyvsp[0].string));
         (yyval.string) = s;
     }
-#line 1727 "y.tab.c"
+#line 1736 "y.tab.c"
     break;
 
   case 17:
-#line 205 "parser2.y"
+#line 214 "parser2.y"
                            {
-        if(DEBUG) printf("statement num eq\n");
+        if(DEBUGGING) printf("statement num eq\n");
         char *s = malloc(strlen((yyvsp[-2].symp)->name) + strlen((yyvsp[0].string)) +4);
         if(s == NULL){
             yyerror("no memory left");
@@ -1737,13 +1746,13 @@ yyreduce:
         sprintf(s,"%s = %s",(yyvsp[-2].symp)->name,(yyvsp[0].string));
         (yyval.string) = s;
     }
-#line 1741 "y.tab.c"
+#line 1750 "y.tab.c"
     break;
 
   case 18:
-#line 214 "parser2.y"
+#line 223 "parser2.y"
                            {
-        if(DEBUG) printf("statement str eq\n");
+        if(DEBUGGING) printf("statement str eq\n");
         char *s = malloc(strlen((yyvsp[-2].symp)->name) + strlen((yyvsp[0].string)) +6);
         if(s == NULL){
             yyerror("no memory left");
@@ -1751,13 +1760,13 @@ yyreduce:
         sprintf(s,"%s = %s",(yyvsp[-2].symp)->name,(yyvsp[0].string));
         (yyval.string) = s;
     }
-#line 1755 "y.tab.c"
+#line 1764 "y.tab.c"
     break;
 
   case 19:
-#line 223 "parser2.y"
+#line 232 "parser2.y"
                              {
-        if(DEBUG) printf("statement bool eq\n");
+        if(DEBUGGING) printf("statement bool eq\n");
         char *s = malloc(strlen((yyvsp[-2].symp)->name) + strlen((yyvsp[0].string)) +4);
         if(s == NULL){
             yyerror("no memory left");
@@ -1765,11 +1774,11 @@ yyreduce:
         sprintf(s,"%s = %s",(yyvsp[-2].symp)->name,(yyvsp[0].string));
         (yyval.string) = s;
     }
-#line 1769 "y.tab.c"
+#line 1778 "y.tab.c"
     break;
 
   case 20:
-#line 234 "parser2.y"
+#line 243 "parser2.y"
                     {
         struct exp_t* aux = malloc(sizeof(struct exp_t));
         aux->type = STR_TYPE;
@@ -1777,33 +1786,33 @@ yyreduce:
         (yyval.exp_type) = aux; 
  
     }
-#line 1781 "y.tab.c"
+#line 1790 "y.tab.c"
     break;
 
   case 21:
-#line 241 "parser2.y"
+#line 250 "parser2.y"
                { 
         struct exp_t* aux = malloc(sizeof(struct exp_t));
         aux->type = NUM_TYPE;
          aux->sval = "num";
         (yyval.exp_type) = aux; 
     }
-#line 1792 "y.tab.c"
+#line 1801 "y.tab.c"
     break;
 
   case 22:
-#line 247 "parser2.y"
+#line 256 "parser2.y"
                 { 
         struct exp_t* aux = malloc(sizeof(struct exp_t));
         aux->type = BOOL_TYPE;
         aux->sval = "bool";
         (yyval.exp_type) = aux; 
     }
-#line 1803 "y.tab.c"
+#line 1812 "y.tab.c"
     break;
 
   case 23:
-#line 255 "parser2.y"
+#line 264 "parser2.y"
                                                                                {
     char * s  = malloc( strlen("if(  ) {\n}") + strlen((yyvsp[-4].string)) + strlen((yyvsp[-1].string)) +1);
         if(s == NULL){
@@ -1814,11 +1823,11 @@ yyreduce:
         //    free($6);
         (yyval.string) = s;
     }
-#line 1818 "y.tab.c"
+#line 1827 "y.tab.c"
     break;
 
   case 24:
-#line 265 "parser2.y"
+#line 274 "parser2.y"
                                                                              {
         char * s  = malloc(strlen("if(  ) {\n}else{\n}") + strlen((yyvsp[-8].string)) + strlen((yyvsp[-5].string)) + strlen((yyvsp[-1].string)) + 1);
         if(s == NULL){
@@ -1830,24 +1839,24 @@ yyreduce:
         //    free($10);
         (yyval.string) = s;
     }
-#line 1834 "y.tab.c"
+#line 1843 "y.tab.c"
     break;
 
   case 25:
-#line 278 "parser2.y"
+#line 287 "parser2.y"
                                                                {
-    char * s  = malloc(14+strlen((yyvsp[-4].string))+strlen((yyvsp[-1].string)));
+    char * s  = malloc(17+strlen((yyvsp[-4].string))+strlen((yyvsp[-1].string)));
     if(s == NULL){
         yyerror("no memory left");
     }
         sprintf(s,"while( %s ) {\n%s}",(yyvsp[-4].string),(yyvsp[-1].string));
         (yyval.string) = s;
     }
-#line 1847 "y.tab.c"
+#line 1856 "y.tab.c"
     break;
 
   case 26:
-#line 288 "parser2.y"
+#line 297 "parser2.y"
              { 
        
         struct exp_t* aux = malloc(sizeof(struct exp_t));
@@ -1855,68 +1864,68 @@ yyreduce:
         aux->sval = (yyvsp[0].string);
         (yyval.exp_type) = aux;
     }
-#line 1859 "y.tab.c"
+#line 1868 "y.tab.c"
     break;
 
   case 27:
-#line 295 "parser2.y"
+#line 304 "parser2.y"
               { 
         struct exp_t* aux = malloc(sizeof(struct exp_t));
         aux->type = STR_TYPE;
         aux->sval = (yyvsp[0].string);
         (yyval.exp_type) = aux;
     }
-#line 1870 "y.tab.c"
+#line 1879 "y.tab.c"
     break;
 
   case 28:
-#line 301 "parser2.y"
+#line 310 "parser2.y"
                { 
         struct exp_t* aux = malloc(sizeof(struct exp_t));
         aux->type = BOOL_TYPE;
         aux->sval = (yyvsp[0].string);
         (yyval.exp_type) = aux;
     }
-#line 1881 "y.tab.c"
+#line 1890 "y.tab.c"
     break;
 
   case 29:
-#line 310 "parser2.y"
+#line 319 "parser2.y"
                              {
         (yyval.string) = expOp((yyvsp[-2].string),"+",(yyvsp[0].string));
     }
-#line 1889 "y.tab.c"
+#line 1898 "y.tab.c"
     break;
 
   case 30:
-#line 313 "parser2.y"
+#line 322 "parser2.y"
                           {
         (yyval.string) = expOp((yyvsp[-2].string),"-",(yyvsp[0].string));
     }
-#line 1897 "y.tab.c"
+#line 1906 "y.tab.c"
     break;
 
   case 31:
-#line 316 "parser2.y"
+#line 325 "parser2.y"
                           {
         if(!strcmp((yyvsp[0].string),"0")){
             yyerror("division by zero.");
         }
         (yyval.string) = expOp((yyvsp[-2].string),"/",(yyvsp[0].string));
     }
-#line 1908 "y.tab.c"
+#line 1917 "y.tab.c"
     break;
 
   case 32:
-#line 322 "parser2.y"
+#line 331 "parser2.y"
                           {
         (yyval.string) = expOp((yyvsp[-2].string),"*",(yyvsp[0].string));
     }
-#line 1916 "y.tab.c"
+#line 1925 "y.tab.c"
     break;
 
   case 33:
-#line 325 "parser2.y"
+#line 334 "parser2.y"
                                {
         char *s = malloc(strlen((yyvsp[0].string)) +2);
         if(s == NULL){
@@ -1926,11 +1935,11 @@ yyreduce:
                 
         (yyval.string) = s;
     }
-#line 1930 "y.tab.c"
+#line 1939 "y.tab.c"
     break;
 
   case 34:
-#line 334 "parser2.y"
+#line 343 "parser2.y"
                       {
         char *s = malloc(strlen((yyvsp[-1].string)) +3);
         if(s == NULL){
@@ -1940,11 +1949,11 @@ yyreduce:
                 
         (yyval.string) = s;
     }
-#line 1944 "y.tab.c"
+#line 1953 "y.tab.c"
     break;
 
   case 35:
-#line 343 "parser2.y"
+#line 352 "parser2.y"
                                    {
         char *s = malloc(strlen((yyvsp[-3].symp)->name) + strlen((yyvsp[-1].string)) +3);
         if(s == NULL){
@@ -1954,53 +1963,40 @@ yyreduce:
                 
         (yyval.string) = s;
     }
-#line 1958 "y.tab.c"
+#line 1967 "y.tab.c"
     break;
 
   case 36:
-#line 352 "parser2.y"
+#line 361 "parser2.y"
                {
         (yyval.string) = strdup((yyvsp[0].symp)->name);
     }
-#line 1966 "y.tab.c"
+#line 1975 "y.tab.c"
     break;
 
   case 37:
-#line 355 "parser2.y"
+#line 364 "parser2.y"
               {
     }
-#line 1973 "y.tab.c"
+#line 1982 "y.tab.c"
     break;
 
   case 38:
-#line 357 "parser2.y"
+#line 366 "parser2.y"
             {
     }
-#line 1980 "y.tab.c"
+#line 1989 "y.tab.c"
     break;
 
   case 39:
-#line 361 "parser2.y"
+#line 370 "parser2.y"
                  {
 
     }
-#line 1988 "y.tab.c"
+#line 1997 "y.tab.c"
     break;
 
   case 40:
-#line 365 "parser2.y"
-                          {
-        char * str = malloc(strlen((yyvsp[-2].string)) + strlen((yyvsp[0].string)) + 4);
-        if(str == NULL){
-            yyerror("No memory left");
-        }
-        sprintf(str,"%s + %s",(yyvsp[-2].string),(yyvsp[0].string));
-        (yyval.string) = str;
-    }
-#line 2001 "y.tab.c"
-    break;
-
-  case 41:
 #line 374 "parser2.y"
                           {
         char * str = malloc(strlen((yyvsp[-2].string)) + strlen((yyvsp[0].string)) + 4);
@@ -2010,10 +2006,10 @@ yyreduce:
         sprintf(str,"%s + %s",(yyvsp[-2].string),(yyvsp[0].string));
         (yyval.string) = str;
     }
-#line 2014 "y.tab.c"
+#line 2010 "y.tab.c"
     break;
 
-  case 42:
+  case 41:
 #line 383 "parser2.y"
                           {
         char * str = malloc(strlen((yyvsp[-2].string)) + strlen((yyvsp[0].string)) + 4);
@@ -2023,11 +2019,24 @@ yyreduce:
         sprintf(str,"%s + %s",(yyvsp[-2].string),(yyvsp[0].string));
         (yyval.string) = str;
     }
-#line 2027 "y.tab.c"
+#line 2023 "y.tab.c"
+    break;
+
+  case 42:
+#line 392 "parser2.y"
+                          {
+        char * str = malloc(strlen((yyvsp[-2].string)) + strlen((yyvsp[0].string)) + 4);
+        if(str == NULL){
+            yyerror("No memory left");
+        }
+        sprintf(str,"%s + %s",(yyvsp[-2].string),(yyvsp[0].string));
+        (yyval.string) = str;
+    }
+#line 2036 "y.tab.c"
     break;
 
   case 43:
-#line 392 "parser2.y"
+#line 401 "parser2.y"
                                    {
         char *s = malloc(strlen((yyvsp[-3].symp)->name) + strlen((yyvsp[-1].string)) +3);
         if(s == NULL){
@@ -2037,19 +2046,19 @@ yyreduce:
                 
         (yyval.string) = s;
     }
-#line 2041 "y.tab.c"
+#line 2050 "y.tab.c"
     break;
 
   case 44:
-#line 401 "parser2.y"
+#line 410 "parser2.y"
                {
         (yyval.string) = strdup((yyvsp[0].symp)->name);
     }
-#line 2049 "y.tab.c"
+#line 2058 "y.tab.c"
     break;
 
   case 45:
-#line 406 "parser2.y"
+#line 415 "parser2.y"
                                 {
         char * str = malloc(strlen((yyvsp[-2].string)) + strlen((yyvsp[0].string)) + strlen("&&") + 3);
         if(str == NULL){
@@ -2058,11 +2067,11 @@ yyreduce:
         sprintf(str,"%s && %s",(yyvsp[-2].string),(yyvsp[0].string));
         (yyval.string) = str;
     }
-#line 2062 "y.tab.c"
+#line 2071 "y.tab.c"
     break;
 
   case 46:
-#line 414 "parser2.y"
+#line 423 "parser2.y"
                              {
         char * str = malloc(strlen((yyvsp[-2].string)) + strlen((yyvsp[0].string)) + strlen("||") + 3);
         if(str == NULL){
@@ -2071,11 +2080,11 @@ yyreduce:
         sprintf(str,"%s || %s",(yyvsp[-2].string),(yyvsp[0].string));
         (yyval.string) = str;
     }
-#line 2075 "y.tab.c"
+#line 2084 "y.tab.c"
     break;
 
   case 47:
-#line 422 "parser2.y"
+#line 431 "parser2.y"
                      {
         char * str = malloc(strlen((yyvsp[0].string)) + strlen("!") + 1);
         if(str == NULL){
@@ -2084,11 +2093,11 @@ yyreduce:
         sprintf(str,"!%s",(yyvsp[0].string));
         (yyval.string) = str;
     }
-#line 2088 "y.tab.c"
+#line 2097 "y.tab.c"
     break;
 
   case 48:
-#line 430 "parser2.y"
+#line 439 "parser2.y"
                                     {
         char *str = malloc(strlen((yyvsp[-2].string)) + strlen((yyvsp[0].string)) + strlen((yyvsp[-1].string)) + 3);
         if(str == NULL){
@@ -2097,11 +2106,11 @@ yyreduce:
         sprintf(str,"%s %s %s",(yyvsp[-2].string), (yyvsp[-1].string), (yyvsp[0].string));
         (yyval.string) = str;
     }
-#line 2101 "y.tab.c"
+#line 2110 "y.tab.c"
     break;
 
   case 49:
-#line 438 "parser2.y"
+#line 447 "parser2.y"
                          {
         char *str = malloc(strlen((yyvsp[-1].string)) + 3);
         if(str == NULL){
@@ -2111,11 +2120,11 @@ yyreduce:
         (yyval.string) = str;
         
     }
-#line 2115 "y.tab.c"
+#line 2124 "y.tab.c"
     break;
 
   case 50:
-#line 447 "parser2.y"
+#line 456 "parser2.y"
                                       {
         char *s = malloc(strlen((yyvsp[-3].symp)->name) + strlen((yyvsp[-1].string)) +3);
         if(s == NULL){
@@ -2125,80 +2134,97 @@ yyreduce:
                 
         (yyval.string) = s;
     }
-#line 2129 "y.tab.c"
+#line 2138 "y.tab.c"
     break;
 
   case 51:
-#line 456 "parser2.y"
+#line 465 "parser2.y"
                   {
             (yyval.string) = strdup((yyvsp[0].symp)->name);
     }
-#line 2137 "y.tab.c"
+#line 2146 "y.tab.c"
     break;
 
   case 52:
-#line 459 "parser2.y"
+#line 468 "parser2.y"
                 { 
     
-        if(DEBUG) printf("TRUE\n");
+        if(DEBUGGING) printf("TRUE\n");
             (yyval.string) = strdup("true");
     }
-#line 2147 "y.tab.c"
+#line 2156 "y.tab.c"
     break;
 
   case 53:
-#line 464 "parser2.y"
+#line 473 "parser2.y"
                 {
          (yyval.string) = strdup("false");
     }
-#line 2155 "y.tab.c"
+#line 2164 "y.tab.c"
     break;
 
   case 54:
-#line 470 "parser2.y"
+#line 479 "parser2.y"
                            {
         struct exp_t* aux = malloc(sizeof(struct exp_t));
+        if(aux == NULL){
+            yyerror("no memory left");
+        }
+        printf("array_init type %d\n",(yyval.exp_type)->type);
         aux->type = (yyvsp[-1].exp_type)->type;
+        aux->sval = (yyvsp[-1].exp_type)->sval;
         (yyval.exp_type) = aux;
     }
-#line 2165 "y.tab.c"
+#line 2179 "y.tab.c"
     break;
 
   case 55:
-#line 477 "parser2.y"
+#line 491 "parser2.y"
               {
         struct exp_t* aux = malloc(sizeof(struct exp_t));
+         if(aux == NULL){
+            yyerror("no memory left");
+        }
         aux->type = (yyvsp[0].exp_type)->type;
+        aux->sval = (yyvsp[0].exp_type)->sval;
         (yyval.exp_type) = aux;
     }
-#line 2175 "y.tab.c"
+#line 2193 "y.tab.c"
     break;
 
   case 56:
-#line 482 "parser2.y"
+#line 500 "parser2.y"
                         {
             if((yyvsp[-2].exp_type)->type != (yyvsp[0].exp_type)->type){
                 yyerror("invalid type for array item");
-                exit(1);
             }
             struct exp_t* aux = malloc(sizeof(struct exp_t));
+            if(aux == NULL){
+                yyerror("no memory left");
+            }
             aux->type = (yyvsp[-2].exp_type)->type;
+            char * s = malloc(strlen((yyvsp[-2].exp_type)->sval) + strlen((yyvsp[0].exp_type)->sval) + 2);
+            if(s == NULL){
+                yyerror("no memory left");
+            }
+            sprintf(s,"%s, %s",(yyvsp[-2].exp_type)->sval,(yyvsp[0].exp_type)->sval);
+            aux->sval = s;
             (yyval.exp_type) = aux;
         }
-#line 2189 "y.tab.c"
+#line 2215 "y.tab.c"
     break;
 
   case 57:
-#line 495 "parser2.y"
+#line 521 "parser2.y"
                                        {
-           if(DEBUG) printf("system\n");
+           if(DEBUGGING) printf("system\n");
            (yyval.string) = (yyvsp[0].string);
         }
-#line 2198 "y.tab.c"
+#line 2224 "y.tab.c"
     break;
 
   case 58:
-#line 501 "parser2.y"
+#line 527 "parser2.y"
                                                                                                                { 
             char *s = malloc(strlen((yyvsp[-13].string)) + strlen((yyvsp[-11].string)) + strlen((yyvsp[-9].string)) + strlen((yyvsp[-7].string)) + strlen((yyvsp[-5].string)) + strlen((yyvsp[-3].string)) + strlen((yyvsp[-1].string)) + strlen("bodies.push(new Body(,,,,,,))")+1);
             if(s == NULL){
@@ -2207,20 +2233,20 @@ yyreduce:
             sprintf(s,"bodies.push(new Body(%s,%s,%s,%s,%s,%s,%s))",(yyvsp[-13].string),(yyvsp[-11].string),(yyvsp[-9].string),(yyvsp[-7].string),(yyvsp[-5].string),(yyvsp[-3].string),(yyvsp[-1].string)); 
             (yyval.string) = s; 
         }
-#line 2211 "y.tab.c"
+#line 2237 "y.tab.c"
     break;
 
   case 59:
-#line 511 "parser2.y"
+#line 537 "parser2.y"
                                        { 
-        if(DEBUG) printf("config\n");
+        if(DEBUGGING) printf("config\n");
          (yyval.string) = (yyvsp[0].string);
     }
-#line 2220 "y.tab.c"
+#line 2246 "y.tab.c"
     break;
 
   case 60:
-#line 517 "parser2.y"
+#line 543 "parser2.y"
                                             { 
             char *s = malloc(strlen((yyvsp[-1].string)) + strlen("Gc = ")+1);
             if(s == NULL){
@@ -2229,11 +2255,11 @@ yyreduce:
             sprintf(s,"Gc = %s",(yyvsp[-1].string));
             (yyval.string) = s;
         }
-#line 2233 "y.tab.c"
+#line 2259 "y.tab.c"
     break;
 
   case 61:
-#line 525 "parser2.y"
+#line 551 "parser2.y"
                                        {
             char *s = malloc(strlen((yyvsp[-1].string)) + strlen("worldBorderBounce = ") + 1);
             if(s == NULL){
@@ -2242,13 +2268,13 @@ yyreduce:
             sprintf(s,"worldBorderBounce = %s",(yyvsp[-1].string));
             (yyval.string) = s;
         }
-#line 2246 "y.tab.c"
+#line 2272 "y.tab.c"
     break;
 
   case 62:
-#line 535 "parser2.y"
+#line 561 "parser2.y"
                          {
-            printf("system print action\n");
+          
             char *s = malloc(strlen((yyvsp[-1].exp_type)->sval) + strlen("console.log()") + 1);
             if(s == NULL){
                 yyerror("no memory left");
@@ -2256,13 +2282,13 @@ yyreduce:
             sprintf(s,"console.log(%s)",(yyvsp[-1].exp_type)->sval); 
             (yyval.string) = s; 
         }
-#line 2260 "y.tab.c"
+#line 2286 "y.tab.c"
     break;
 
   case 63:
-#line 546 "parser2.y"
+#line 572 "parser2.y"
                             { 
-            printf("system read action");
+           
             char *s = malloc(strlen((yyvsp[-1].string)) + strlen("window.prompt()") + 1);
             if(s == NULL){
                 yyerror("no memory left");
@@ -2270,11 +2296,11 @@ yyreduce:
             sprintf(s,"window.prompt(%s)",(yyvsp[-1].string)); 
             (yyval.string) = s; 
         }
-#line 2274 "y.tab.c"
+#line 2300 "y.tab.c"
     break;
 
 
-#line 2278 "y.tab.c"
+#line 2304 "y.tab.c"
 
       default: break;
     }
@@ -2506,7 +2532,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 557 "parser2.y"
+#line 583 "parser2.y"
 
 
 
@@ -2562,7 +2588,7 @@ int main(int argc, char* argv[]){
     addFunc("exp",exp);
     addFunc("log",log);
     char * infile;
-    char * outfile;
+
     char * progname = argv[0];
     if(argc == 1){
         yyparse();
@@ -2634,7 +2660,7 @@ void appendFiles(char source[], FILE * fp2)
 
 void yyerror(const char *s)
 {
-    fprintf (stderr, "%s\n", s);
+    fprintf (stderr,"\x1b[31m" "Error: %s\n" "\x1b[0m", s);
     exit(1);
 }
 

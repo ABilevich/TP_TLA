@@ -774,17 +774,17 @@ YY_RULE_SETUP
     }else if(!strcmp(yytext,"System")){
         return SYSTEM_TOKEN;
     }else if(!strcmp(yytext,"Config")){
-        printf("LEXER Config.\n");
+     
         return CONFIG_TOKEN;
     }else if(!strcmp(yytext,"num")){
-        printf("LEXER num\n");
+      
         return TYPE_NUM;
     }else if(!strcmp(yytext,"str")){
         return TYPE_STR;
     }else if(!strcmp(yytext,"bool")){
         return TYPE_BOOL;
     }else if(!strcmp(yytext,"true")){
-        printf("LEXXER true\n");
+       
         return TRUE_TK;
     }else if(!strcmp(yytext,"false")){
         return FALSE_TK;
@@ -795,10 +795,10 @@ YY_RULE_SETUP
     }else if(!strcmp(yytext,"read")){
         return READ;
     }else if(!strcmp(yytext,"gravityConstant")){
-        printf("LEXER gravityConstant\n");
+     
         return GRAVITY_CONF;
     }else if(!strcmp(yytext,"worldBorderBounce")){
-        printf("LEXER worldBorderBounce\n");
+     
         return BOUNCE_CONF;
     }else if(!strcmp(yytext,"main")){
         return MAIN;
