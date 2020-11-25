@@ -1,13 +1,6 @@
 main(){
     Config.worldBorderBounce(true)
-    num caca1 = readNum("ingre") 
-
-    print(caca1)
-    
-        str caca2 = "noches"
-
-    str pepe = "soy pepe"
-
+    num caca1 = readNum("ingredasdasdasdsadad") 
     print(caca1)
 
 }
