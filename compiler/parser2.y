@@ -175,22 +175,27 @@ statement:
     | print {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "print\n");
         $$ = $1;
+
     }
-    | read_str {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "read\n");
-        $$ = $1;
-    }
-    | read_num {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "read\n");
-        $$ = $1;
-    }
+    // | read_str {
+    //     if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "read\n");
+    //     $$ = $1;
+
+    // }
+    // | read_num {
+    //     if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "read\n");
+    //     $$ = $1;
+
+    // }
     | if_statement {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "if\n");
         $$ = $1;
+
     }
     | while_statement {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "while\n");
         $$ = $1;
+
     }
     | NUM_ARR_NAME '[' INTEGER ']'  '=' num_exp {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "num array\n");
@@ -251,7 +256,6 @@ statement:
     ;
 
 data_type: TYPE_STR {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"data_type: "ANSI_COLOR_RESET "TYPE_STR\n");
         struct exp_t* aux = malloc(sizeof(struct exp_t));
         aux->type = STR_TYPE;
         aux->sval = "str";
@@ -259,14 +263,12 @@ data_type: TYPE_STR {
  
     }
     | TYPE_NUM { 
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"data_type: "ANSI_COLOR_RESET "TYPE_NUM\n");
         struct exp_t* aux = malloc(sizeof(struct exp_t));
         aux->type = NUM_TYPE;
          aux->sval = "num";
         $$ = aux; 
     }
     | TYPE_BOOL { 
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"data_type: "ANSI_COLOR_RESET "TYPE_BOOL\n");
         struct exp_t* aux = malloc(sizeof(struct exp_t));
         aux->type = BOOL_TYPE;
         aux->sval = "bool";
@@ -275,8 +277,7 @@ data_type: TYPE_STR {
     ;
 
 if_statement: IF '(' bool_exp ')' '{' statement_list '}' %prec LOWER_THAN_ELSE {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"if_statement: "ANSI_COLOR_RESET "if\n");
-        char * s  = malloc( strlen("if(  ) {\n}") + strlen($3) + strlen($6) +1);
+    char * s  = malloc( strlen("if(  ) {\n}") + strlen($3) + strlen($6) +1);
         if(s == NULL){
             yyerror("no memory left");
         }    
@@ -286,7 +287,7 @@ if_statement: IF '(' bool_exp ')' '{' statement_list '}' %prec LOWER_THAN_ELSE {
         $$ = s;
     }
     | IF '(' bool_exp ')' '{' statement_list '}' ELSE '{' statement_list '}' {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"if_statement: "ANSI_COLOR_RESET "if else\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"while_statement: "ANSI_COLOR_RESET "while\n");
         char * s  = malloc(strlen("if(  ) {\n}else{\n}") + strlen($3) + strlen($6) + strlen($10) + 1);
         if(s == NULL){
             yyerror("no memory left");
@@ -344,26 +345,21 @@ exp: num_exp {
 
     
 num_exp: num_exp '+' num_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "sum\n");
         $$ = expOp($1,"+",$3);
     }
     | num_exp '-' num_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "subs\n");
         $$ = expOp($1,"-",$3);
     }
     | num_exp '/' num_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "div\n");
         if(!strcmp($3,"0")){
             yyerror("division by zero.");
         }
         $$ = expOp($1,"/",$3);
     }
     | num_exp '*' num_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "mult\n");
         $$ = expOp($1,"*",$3);
     }
     | '-' num_exp %prec UMINUS {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "negation\n");
         char *s = malloc(strlen($2) +2);
         if(s == NULL){
             yyerror("no memory left");
@@ -373,7 +369,6 @@ num_exp: num_exp '+' num_exp {
         $$ = s;
     }
     | '(' num_exp ')' {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "parenthesis\n");
         char *s = malloc(strlen($2) +3);
         if(s == NULL){
             yyerror("no memory left");
@@ -383,7 +378,6 @@ num_exp: num_exp '+' num_exp {
         $$ = s;
     }
     | NUM_ARR_NAME '[' num_exp ']' {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "arr access\n");
         char *s = malloc(strlen($1->name) + strlen($3) +3);
         if(s == NULL){
             yyerror("no memory left");
@@ -393,27 +387,23 @@ num_exp: num_exp '+' num_exp {
         $$ = s;
     }
     | NUM_NAME {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "variable\n");
         $$ = strdup($1->name);
     }
     | INTEGER {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "integer\n");
     }
     | FLOAT {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "float\n");
     }
     | read_num {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "read_num\n");
-        $$ = strdup($1);
+        printf("num exp: read_num\n");
+        $$ = $1;
     }
     ;
     
 str_exp: QSTRING {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"str_exp: "ANSI_COLOR_RESET "qstring\n");
+
     }
 
     | str_exp '+' str_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"str_exp: "ANSI_COLOR_RESET "addition str str\n");
         char * str = malloc(strlen($1) + strlen($3) + 4);
         if(str == NULL){
             yyerror("No memory left");
@@ -423,7 +413,6 @@ str_exp: QSTRING {
     }
 
     | num_exp '+' str_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"str_exp: "ANSI_COLOR_RESET "addition num str\n");
         char * str = malloc(strlen($1) + strlen($3) + 4);
         if(str == NULL){
             yyerror("No memory left");
@@ -433,7 +422,6 @@ str_exp: QSTRING {
     }
                     
     | str_exp '+' num_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"str_exp: "ANSI_COLOR_RESET "addition str num\n");
         char * str = malloc(strlen($1) + strlen($3) + 4);
         if(str == NULL){
             yyerror("No memory left");
@@ -443,7 +431,6 @@ str_exp: QSTRING {
     }
 
     | STR_ARR_NAME '[' num_exp ']' {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"str_exp: "ANSI_COLOR_RESET "arr access\n");
         char *s = malloc(strlen($1->name) + strlen($3) +3);
         if(s == NULL){
             yyerror("no memory left");
@@ -453,18 +440,16 @@ str_exp: QSTRING {
         $$ = s;
     }
     | STR_NAME {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"str_exp: "ANSI_COLOR_RESET "variable\n");
-        printf("string name = %s\n",$1->name);
+        printf("string name = %s\n",$1);
         $$ = strdup($1->name);
     }
     | read_str {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"str_exp: "ANSI_COLOR_RESET "read_str\n");
-        $$ = strdup($1);
+        printf("str exp: read_str\n");
+        $$ = $1;
     }
     ;
 
 bool_exp: bool_exp AND bool_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"bool_exp: "ANSI_COLOR_RESET "and\n");
         char * str = malloc(strlen($1) + strlen($3) + strlen("&&") + 3);
         if(str == NULL){
             yyerror("No memory left");
@@ -473,7 +458,6 @@ bool_exp: bool_exp AND bool_exp {
         $$ = str;
     }
     |   bool_exp OR bool_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"bool_exp: "ANSI_COLOR_RESET "or\n");
         char * str = malloc(strlen($1) + strlen($3) + strlen("||") + 3);
         if(str == NULL){
             yyerror("No memory left");
@@ -482,7 +466,6 @@ bool_exp: bool_exp AND bool_exp {
         $$ = str;
     }
     |   NOT bool_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"bool_exp: "ANSI_COLOR_RESET "not\n");
         char * str = malloc(strlen($2) + strlen("!") + 1);
         if(str == NULL){
             yyerror("No memory left");
@@ -491,7 +474,6 @@ bool_exp: bool_exp AND bool_exp {
         $$ = str;
     }
     |   num_exp COMPARATION num_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"bool_exp: "ANSI_COLOR_RESET "comparation\n");
         char *str = malloc(strlen($1) + strlen($3) + strlen($2) + 3);
         if(str == NULL){
             yyerror("No memory left");
@@ -500,16 +482,15 @@ bool_exp: bool_exp AND bool_exp {
         $$ = str;
     }
     |   '(' bool_exp ')' {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"bool_exp: "ANSI_COLOR_RESET "parenthesis\n");
         char *str = malloc(strlen($2) + 3);
         if(str == NULL){
             yyerror("No memory left");
         }
         sprintf(str,"(%s)",$2);
         $$ = str;
+        
     }
     |   BOOL_ARR_NAME '[' num_exp ']' {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"bool_exp: "ANSI_COLOR_RESET "arr access\n");
         char *s = malloc(strlen($1->name) + strlen($3) +3);
         if(s == NULL){
             yyerror("no memory left");
@@ -519,22 +500,20 @@ bool_exp: bool_exp AND bool_exp {
         $$ = s;
     }
     |   BOOL_NAME {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"bool_exp: "ANSI_COLOR_RESET "variable\n");
             $$ = strdup($1->name);
     }
     |   TRUE_TK { 
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"bool_exp: "ANSI_COLOR_RESET "true\n");
-        $$ = strdup("true");
+    
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"TRUE\n"ANSI_COLOR_RESET);
+            $$ = strdup("true");
     }
     |   FALSE_TK{
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"bool_exp: "ANSI_COLOR_RESET "false\n");
          $$ = strdup("false");
     }
     ;
 
 
 arr_init: '[' arr_item ']' {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"arr_init: "ANSI_COLOR_RESET "new arr\n");
         struct exp_t* aux = malloc(sizeof(struct exp_t));
         if(aux == NULL){
             yyerror("no memory left");
@@ -547,7 +526,6 @@ arr_init: '[' arr_item ']' {
     ; 
 
 arr_item: exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"arr_item: "ANSI_COLOR_RESET "last arr item\n");
         struct exp_t* aux = malloc(sizeof(struct exp_t));
          if(aux == NULL){
             yyerror("no memory left");
@@ -557,7 +535,6 @@ arr_item: exp {
         $$ = aux;
     } 
     |  exp ',' arr_item {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"arr_item: "ANSI_COLOR_RESET "new arr item\n");
             if($1->type != $3->type){
                 yyerror("invalid type for array item");
             }
@@ -579,13 +556,12 @@ arr_item: exp {
 
 system:
         SYSTEM_TOKEN '.' system_action {
-            if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"system: "ANSI_COLOR_RESET "token.action\n");
-            $$ = $3;
+           if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"system\n"ANSI_COLOR_RESET);
+           $$ = $3;
         }
     ;
 
 system_action: ADDBODY '(' num_exp ',' num_exp ',' num_exp ',' num_exp ',' num_exp ',' num_exp ',' str_exp ')' { 
-            if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"system_action: "ANSI_COLOR_RESET "addbody\n");
             char *s = malloc(strlen($3) + strlen($5) + strlen($7) + strlen($9) + strlen($11) + strlen($13) + strlen($15) + strlen("bodies.push(new Body(,,,,,,))")+1);
             if(s == NULL){
                 yyerror("no memory left");
@@ -596,13 +572,12 @@ system_action: ADDBODY '(' num_exp ',' num_exp ',' num_exp ',' num_exp ',' num_e
     ;
     
 config: CONFIG_TOKEN '.' config_action { 
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"config: "ANSI_COLOR_RESET "token.action\n");
-        $$ = $3;
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"config\n"ANSI_COLOR_RESET );
+         $$ = $3;
     }
     ;
 
 config_action: GRAVITY_CONF '(' num_exp ')' { 
-            if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"config_action: "ANSI_COLOR_RESET "gravity\n");
             char *s = malloc(strlen($3) + strlen("Gc = ")+1);
             if(s == NULL){
                 yyerror("no memory left");
@@ -611,7 +586,6 @@ config_action: GRAVITY_CONF '(' num_exp ')' {
             $$ = s;
         }
         | BOUNCE_CONF '(' bool_exp ')' {
-            if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"config_action: "ANSI_COLOR_RESET "bounce\n");
             char *s = malloc(strlen($3) + strlen("worldBorderBounce = ") + 1);
             if(s == NULL){
                 yyerror("no memory left");
@@ -622,7 +596,7 @@ config_action: GRAVITY_CONF '(' num_exp ')' {
     ;
 
 print: PRINT '(' exp ')' {
-            if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"print: "ANSI_COLOR_RESET "print exp\n");
+          
             char *s = malloc(strlen($3->sval) + strlen("console.log()") + 1);
             if(s == NULL){
                 yyerror("no memory left");
@@ -633,8 +607,7 @@ print: PRINT '(' exp ')' {
         }
     ;
 
-read_str:  READ_STR '(' str_exp ')' {  
-            if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"read_str: "ANSI_COLOR_RESET "read exp\n");   
+read_str:  READ_STR '(' str_exp ')' {     
             char *s = malloc(strlen($3) + strlen("window.prompt()") + 1);
             if(s == NULL){
                 yyerror("no memory left");
@@ -646,7 +619,6 @@ read_str:  READ_STR '(' str_exp ')' {
     ;
 
 read_num:  READ_NUM '(' str_exp ')' { 
-            if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"read_num: "ANSI_COLOR_RESET "read exp\n");   
             char *s = malloc(strlen($3) + strlen("window.prompt()") + 1);
             if(s == NULL){
                 yyerror("no memory left");
@@ -667,16 +639,16 @@ struct symtab * symLook(char* s){
     for(sp= symtab; sp <&symtab[MAX_SYMBOLS];sp++){
         /* is it alredy here? */
         printf("comparing: %s\n", sp->name);
-        if (sp->name && !strcmp((sp->name)+2, s) ){
+        if (sp->name && !strcmp(sp->name, s) ){
             return sp;
         }
       
         /* is it free */
         if(!sp->name) {
-            char * snew = malloc(sizeof(s)+3);
-            sprintf(snew, "u_%s", s);
-            sp->name = snew;
-            // sp->name = strdup(s);
+            // char * snew = malloc(sizeof(s)+3);
+            // sprintf(snew, "u_%s", s);
+            // sp->name = snew;
+            sp->name = strdup(s);
             sp->type = NOT_DEFINED;
             return sp;
         }

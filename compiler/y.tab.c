@@ -551,16 +551,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  4
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   397
+#define YYLAST   343
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  51
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  20
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  67
+#define YYNRULES  65
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  180
+#define YYNSTATES  178
 
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   292
@@ -612,12 +612,12 @@ static const yytype_int8 yytranslate[] =
 static const yytype_int16 yyrline[] =
 {
        0,    88,    88,    89,   100,   106,   121,   135,   167,   171,
-     175,   179,   183,   187,   191,   195,   204,   213,   222,   232,
-     242,   253,   261,   268,   277,   288,   302,   313,   323,   333,
-     346,   350,   354,   361,   365,   375,   385,   395,   399,   402,
-     405,   411,   415,   425,   435,   445,   455,   460,   466,   475,
-     484,   493,   502,   511,   521,   525,   529,   536,   549,   559,
-     581,   587,   598,   604,   613,   624,   636,   648
+     175,   190,   195,   200,   209,   218,   227,   237,   247,   258,
+     265,   271,   279,   289,   302,   312,   322,   332,   345,   348,
+     351,   357,   360,   369,   378,   387,   390,   392,   394,   400,
+     404,   413,   422,   431,   440,   443,   449,   457,   465,   473,
+     481,   490,   499,   502,   507,   513,   525,   534,   555,   561,
+     571,   577,   585,   595,   607,   618
 };
 #endif
 
@@ -655,7 +655,7 @@ static const yytype_int16 yytoknum[] =
 };
 # endif
 
-#define YYPACT_NINF (-108)
+#define YYPACT_NINF (-114)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -669,24 +669,24 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-      -8,   -21,    13,    12,  -108,    30,   365,    26,    40,    48,
-      44,    58,    61,    36,    78,    71,    72,  -108,  -108,  -108,
-     108,   109,   110,   177,  -108,   126,  -108,  -108,  -108,  -108,
-    -108,  -108,  -108,    31,   326,   293,   149,   151,   154,   293,
-     293,   143,     6,    18,   326,   326,  -108,  -108,     5,  -108,
-     127,  -108,  -108,    31,    31,   224,  -108,  -108,   130,  -108,
-     238,   142,  -108,  -108,   140,  -108,  -108,   293,   293,    74,
-      28,   145,   147,   169,   -25,    32,   146,  -108,   208,   222,
-    -108,   181,    80,   142,    28,   -33,   -23,    18,   230,    31,
-    -108,   132,    31,    31,    31,    31,    31,   326,   326,    31,
-    -108,    45,    46,    31,   293,   293,   233,   236,   247,   254,
-     270,    31,    31,   293,  -108,  -108,  -108,  -108,   275,   253,
-    -108,    65,    65,  -108,  -108,   269,    65,  -108,   118,  -108,
-     274,  -108,   224,   281,  -108,    31,   326,   293,   365,   365,
-      87,   210,    94,   273,  -108,  -108,  -108,   224,   142,    28,
-     206,   235,    31,  -108,  -108,    18,  -108,   298,  -108,   104,
-     277,   276,   279,    31,    18,  -108,   365,   153,  -108,   264,
-      31,  -108,   167,    31,   182,    31,   196,   326,    27,  -108
+      -7,   -15,    44,    -5,  -114,     4,   311,    11,    34,    55,
+       3,     6,    61,    99,   101,    72,    81,  -114,  -114,  -114,
+     103,    90,  -114,   137,  -114,  -114,  -114,  -114,  -114,     7,
+     272,   239,   146,   147,   149,   239,   239,   126,    14,   226,
+    -114,  -114,    22,  -114,   113,  -114,  -114,   119,     7,     7,
+      47,  -114,  -114,   116,  -114,   132,   203,   151,  -114,  -114,
+     135,  -114,  -114,   239,   239,    -8,    58,   161,   178,   179,
+     -18,   -10,   141,  -114,   168,   182,  -114,   185,   134,   151,
+      58,   226,   211,     7,   272,  -114,   286,     7,     7,     7,
+       7,     7,   272,   272,   272,     7,  -114,    80,    13,     7,
+     239,   239,   201,   214,   221,   219,   225,     7,     7,   239,
+    -114,  -114,   224,   249,   -31,  -114,    66,    66,  -114,  -114,
+     253,   -11,    66,  -114,    98,  -114,   257,  -114,    47,   238,
+    -114,     7,   272,   239,   311,   311,    51,   300,    38,   231,
+    -114,  -114,  -114,  -114,  -114,    47,   151,    58,   145,   172,
+       7,  -114,  -114,   226,  -114,   255,  -114,    89,   250,   252,
+     254,     7,   226,  -114,   311,   148,  -114,   199,     7,  -114,
+     162,     7,   176,     7,   217,   272,    -3,  -114
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -695,37 +695,37 @@ static const yytype_int16 yypact[] =
 static const yytype_int8 yydefact[] =
 {
        2,     0,     0,     0,     1,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,    21,    22,    23,
-       0,     0,     0,     0,     4,     0,    13,    14,     8,     9,
-      10,    11,    12,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     3,     5,     0,    37,
-       0,    38,    39,     0,     0,    18,    40,    46,     0,    41,
-       0,    19,    47,    54,     0,    55,    56,     0,     0,     0,
-      20,     0,     0,     0,     0,     0,     0,    60,     0,     0,
-      62,     0,    27,    28,    29,     0,     0,     0,     0,     0,
-      34,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-      50,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,    65,    66,    67,     6,     0,     0,
-      35,    31,    30,    33,    32,     0,    30,    43,    44,    42,
-       0,    52,    51,    49,    48,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,    36,    45,    53,    15,    16,    17,
-       0,     0,     0,    63,    64,     0,     7,    24,    26,     0,
-      58,     0,     0,     0,     0,    57,     0,     0,    59,     0,
-       0,    25,     0,     0,     0,     0,     0,     0,     0,    61
+       0,     0,     0,     0,     0,     0,     0,    19,    20,    21,
+       0,     0,     4,     0,    11,    12,     8,     9,    10,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       3,     5,     0,    35,     0,    36,    37,     0,     0,     0,
+      16,    38,    44,     0,    39,     0,     0,    17,    45,    52,
+       0,    53,    54,     0,     0,     0,    18,     0,     0,     0,
+       0,     0,     0,    58,     0,     0,    60,     0,    25,    26,
+      27,     0,     0,     0,     0,    32,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,    48,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+      63,     6,     0,     0,     0,    33,    29,    28,    31,    30,
+       0,     0,    28,    41,    42,    40,     0,    50,    49,    47,
+      46,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+      34,    65,    43,    64,    51,    13,    14,    15,     0,     0,
+       0,    61,    62,     0,     7,    22,    24,     0,    56,     0,
+       0,     0,     0,    55,     0,     0,    57,     0,     0,    23,
+       0,     0,     0,     0,     0,     0,     0,    59
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-    -108,  -108,  -107,   -20,  -108,  -108,  -108,   -42,     3,   -29,
-     -28,  -108,   163,  -108,  -108,  -108,  -108,  -108,    -6,    -4
+    -114,  -114,  -113,   -19,  -114,  -114,  -114,   -36,   -29,   -17,
+     -27,  -114,   140,  -114,  -114,  -114,  -114,  -114,  -114,  -114
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int16 yydefgoto[] =
 {
-      -1,     2,    23,    24,    25,    26,    27,   160,    69,    83,
-      84,   156,   161,    28,    77,    29,    80,    30,    62,    56
+      -1,     2,    21,    22,    23,    24,    25,   158,    65,    79,
+      80,   154,   159,    26,    73,    27,    76,    28,    58,    51
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -733,90 +733,80 @@ static const yytype_int16 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-      31,    81,    32,    47,    98,    61,     1,    70,   104,   105,
-     115,    74,    75,     4,    98,    85,    86,    31,   109,    32,
-     116,     3,    49,    57,    63,    50,    58,    64,    51,    52,
-      59,   150,   151,    78,    79,    49,    55,    60,    50,   100,
-     102,    51,    52,    65,    66,   117,    82,    60,    60,    21,
-      22,    87,    88,    67,    53,     5,    90,    91,   103,   169,
-      68,   104,   105,    22,    98,   104,   105,    53,   127,   129,
-     179,   101,    33,    54,     6,   110,   133,   134,    39,   104,
-     105,    92,    93,    94,    95,   142,    34,   103,   120,   131,
-      82,    36,   119,   103,    35,   121,   122,   123,   124,   125,
-     126,   128,   130,    94,    95,    37,   132,   148,    38,   149,
-      92,    93,    94,    95,   140,   141,    92,    97,    94,    95,
-      40,    41,    42,    92,    93,    94,    95,   104,   105,    48,
-      47,    47,    31,    31,    32,    32,   152,   154,   147,    60,
-      92,    93,    94,    95,    31,    31,    32,    32,   178,    47,
-      43,    44,    45,   163,    92,   159,    94,    95,    82,    71,
-      31,    72,    32,    31,    73,    32,   167,    82,    92,    93,
-      94,    95,    76,   172,    89,   120,   174,    96,   176,    98,
-      60,     7,     8,     9,    10,    11,    12,    99,   111,    92,
-      93,    94,    95,   106,    13,   107,    14,    15,    16,    17,
-      18,    19,   170,    92,    93,    94,    95,    20,    21,    22,
-       7,     8,     9,    10,    11,    12,   173,   108,    92,    93,
-      94,    95,    46,    13,   114,    14,    15,    16,    17,    18,
-      19,   175,    92,    93,    94,    95,    20,    21,    22,     7,
-       8,     9,    10,    11,    12,   177,    92,    93,    94,    95,
-     112,   157,    13,   153,    14,    15,    16,    17,    18,    19,
-      92,    93,    94,    95,   113,    20,    21,    22,     7,     8,
-       9,    10,    11,    12,    92,    97,    94,    95,   118,   135,
-     158,    13,   136,    14,    15,    16,    17,    18,    19,    92,
-      93,    94,    95,   137,    20,    21,    22,    49,   138,    63,
-      50,   144,    64,    51,    52,    92,    93,    94,    95,   171,
-      92,    93,    94,    95,   139,   105,   162,   145,    65,    66,
-     155,   143,   146,   166,   165,    22,   164,   168,    67,    53,
-      49,    57,     0,    50,    58,    68,    51,    52,    59,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,    21,    22,     0,
-       0,     0,    53,     0,     0,     0,     0,     0,    54,     7,
-       8,     9,    10,    11,    12,     0,     0,     0,     0,     0,
-       0,     0,    13,     0,    14,    15,    16,    17,    18,    19,
-       0,     0,     0,     0,     0,    20,    21,    22
+      50,    56,    41,    77,    66,    99,    94,     1,    70,    71,
+      78,    43,   141,    57,    44,   100,   101,    45,    46,    85,
+      86,   148,   149,   100,   101,   105,    94,     3,    87,    88,
+      89,    90,   143,   106,    94,    97,    96,    98,     5,    47,
+     177,    74,    75,    48,     4,   111,   100,   101,     6,    49,
+      32,   167,    78,    33,   113,    56,   127,    29,   116,   117,
+     118,   119,   120,    56,   122,   124,   126,   114,    81,    82,
+     128,   100,   101,   129,   130,   121,   123,   125,   136,   137,
+      30,   152,   138,    87,    88,    89,    90,    87,    88,    89,
+      90,   100,   101,    99,     7,     8,     9,    10,    11,    12,
+     150,    31,   145,    56,    89,    90,   147,    13,    34,    14,
+      15,    16,    17,    18,    19,   146,    87,    88,    89,    90,
+      20,   157,    37,   115,    78,    87,    88,    89,    90,    41,
+      41,    38,   165,    78,    87,    40,    89,    90,   161,   170,
+      42,    35,   172,    36,   174,    39,    56,    99,    41,     7,
+       8,     9,    10,    11,    12,    72,    67,    68,   176,    69,
+      83,    84,    13,    91,    14,    15,    16,    17,    18,    19,
+      87,    93,    89,    90,    92,    20,     7,     8,     9,    10,
+      11,    12,    95,   107,    87,    88,    89,    90,    94,    13,
+     155,    14,    15,    16,    17,    18,    19,   168,    87,    88,
+      89,    90,    20,     7,     8,     9,    10,    11,    12,   102,
+     108,   171,    87,    88,    89,    90,    13,   156,    14,    15,
+      16,    17,    18,    19,   109,   173,   103,   104,   110,    20,
+      43,    52,    59,    44,    53,    60,    45,    46,    54,    87,
+      93,    89,    90,    43,   169,    59,    44,   131,    60,    45,
+      46,    61,    62,    87,    88,    89,    90,    55,    47,   112,
+     132,    63,    48,   134,    61,    62,   175,   133,    64,   135,
+     139,    47,   101,   160,    63,    48,    43,    52,   153,    44,
+      53,    64,    45,    46,    54,    87,    88,    89,    90,    87,
+      88,    89,    90,    87,    88,    89,    90,   140,   164,   162,
+     163,   142,   166,    55,    47,   144,     0,     0,    48,     0,
+       0,     0,     0,     0,    49,     7,     8,     9,    10,    11,
+      12,     0,    87,    88,    89,    90,     0,     0,    13,   115,
+      14,    15,    16,    17,    18,    19,    87,    88,    89,    90,
+       0,    20,     0,   151
 };
 
 static const yytype_int16 yycheck[] =
 {
-       6,    43,     6,    23,    37,    34,    14,    35,    33,    34,
-      43,    39,    40,     0,    37,    44,    45,    23,    43,    23,
-      43,    42,     4,     5,     6,     7,     8,     9,    10,    11,
-      12,   138,   139,    27,    28,     4,    33,    34,     7,    67,
-      68,    10,    11,    25,    26,    87,    43,    44,    45,    31,
-      32,    46,    47,    35,    36,    43,    53,    54,    13,   166,
-      42,    33,    34,    32,    37,    33,    34,    36,    97,    98,
-      43,    68,    46,    42,    44,    43,   104,   105,    42,    33,
-      34,    36,    37,    38,    39,   113,    46,    13,    43,    43,
-      87,    47,    89,    13,    46,    92,    93,    94,    95,    96,
-      97,    98,    99,    38,    39,    47,   103,   136,    47,   137,
-      36,    37,    38,    39,   111,   112,    36,    37,    38,    39,
-      42,    50,    50,    36,    37,    38,    39,    33,    34,     3,
-     150,   151,   138,   139,   138,   139,    49,    43,   135,   136,
-      36,    37,    38,    39,   150,   151,   150,   151,   177,   169,
-      42,    42,    42,    49,    36,   152,    38,    39,   155,    10,
-     166,    10,   166,   169,    10,   169,   163,   164,    36,    37,
-      38,    39,    29,   170,    47,    43,   173,    47,   175,    37,
-     177,     4,     5,     6,     7,     8,     9,    47,    42,    36,
-      37,    38,    39,    48,    17,    48,    19,    20,    21,    22,
-      23,    24,    49,    36,    37,    38,    39,    30,    31,    32,
-       4,     5,     6,     7,     8,     9,    49,    48,    36,    37,
-      38,    39,    45,    17,    43,    19,    20,    21,    22,    23,
-      24,    49,    36,    37,    38,    39,    30,    31,    32,     4,
-       5,     6,     7,     8,     9,    49,    36,    37,    38,    39,
-      42,    45,    17,    43,    19,    20,    21,    22,    23,    24,
-      36,    37,    38,    39,    42,    30,    31,    32,     4,     5,
-       6,     7,     8,     9,    36,    37,    38,    39,    48,    46,
-      45,    17,    46,    19,    20,    21,    22,    23,    24,    36,
-      37,    38,    39,    46,    30,    31,    32,     4,    44,     6,
-       7,    48,     9,    10,    11,    36,    37,    38,    39,    45,
-      36,    37,    38,    39,    44,    34,    18,    48,    25,    26,
-      47,    46,    48,    44,    48,    32,    49,   164,    35,    36,
-       4,     5,    -1,     7,     8,    42,    10,    11,    12,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    31,    32,    -1,
-      -1,    -1,    36,    -1,    -1,    -1,    -1,    -1,    42,     4,
-       5,     6,     7,     8,     9,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    17,    -1,    19,    20,    21,    22,    23,    24,
-      -1,    -1,    -1,    -1,    -1,    30,    31,    32
+      29,    30,    21,    39,    31,    13,    37,    14,    35,    36,
+      39,     4,    43,    30,     7,    33,    34,    10,    11,    48,
+      49,   134,   135,    33,    34,    43,    37,    42,    36,    37,
+      38,    39,    43,    43,    37,    64,    63,    64,    43,    32,
+      43,    27,    28,    36,     0,    81,    33,    34,    44,    42,
+      47,   164,    81,    47,    83,    84,    43,    46,    87,    88,
+      89,    90,    91,    92,    93,    94,    95,    84,    46,    47,
+      99,    33,    34,   100,   101,    92,    93,    94,   107,   108,
+      46,    43,   109,    36,    37,    38,    39,    36,    37,    38,
+      39,    33,    34,    13,     4,     5,     6,     7,     8,     9,
+      49,    46,   131,   132,    38,    39,   133,    17,    47,    19,
+      20,    21,    22,    23,    24,   132,    36,    37,    38,    39,
+      30,   150,    50,    43,   153,    36,    37,    38,    39,   148,
+     149,    50,   161,   162,    36,    45,    38,    39,    49,   168,
+       3,    42,   171,    42,   173,    42,   175,    13,   167,     4,
+       5,     6,     7,     8,     9,    29,    10,    10,   175,    10,
+      47,    42,    17,    47,    19,    20,    21,    22,    23,    24,
+      36,    37,    38,    39,    42,    30,     4,     5,     6,     7,
+       8,     9,    47,    42,    36,    37,    38,    39,    37,    17,
+      45,    19,    20,    21,    22,    23,    24,    49,    36,    37,
+      38,    39,    30,     4,     5,     6,     7,     8,     9,    48,
+      42,    49,    36,    37,    38,    39,    17,    45,    19,    20,
+      21,    22,    23,    24,    42,    49,    48,    48,    43,    30,
+       4,     5,     6,     7,     8,     9,    10,    11,    12,    36,
+      37,    38,    39,     4,    45,     6,     7,    46,     9,    10,
+      11,    25,    26,    36,    37,    38,    39,    31,    32,    48,
+      46,    35,    36,    44,    25,    26,    49,    46,    42,    44,
+      46,    32,    34,    18,    35,    36,     4,     5,    47,     7,
+       8,    42,    10,    11,    12,    36,    37,    38,    39,    36,
+      37,    38,    39,    36,    37,    38,    39,    48,    44,    49,
+      48,    48,   162,    31,    32,    48,    -1,    -1,    36,    -1,
+      -1,    -1,    -1,    -1,    42,     4,     5,     6,     7,     8,
+       9,    -1,    36,    37,    38,    39,    -1,    -1,    17,    43,
+      19,    20,    21,    22,    23,    24,    36,    37,    38,    39,
+      -1,    30,    -1,    43
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -825,46 +815,46 @@ static const yytype_int8 yystos[] =
 {
        0,    14,    52,    42,     0,    43,    44,     4,     5,     6,
        7,     8,     9,    17,    19,    20,    21,    22,    23,    24,
-      30,    31,    32,    53,    54,    55,    56,    57,    64,    66,
-      68,    69,    70,    46,    46,    46,    47,    47,    47,    42,
-      42,    50,    50,    42,    42,    42,    45,    54,     3,     4,
-       7,    10,    11,    36,    42,    59,    70,     5,     8,    12,
-      59,    60,    69,     6,     9,    25,    26,    35,    42,    59,
-      61,    10,    10,    10,    61,    61,    29,    65,    27,    28,
-      67,    58,    59,    60,    61,    60,    60,    46,    47,    47,
-      59,    59,    36,    37,    38,    39,    47,    37,    37,    47,
-      61,    59,    61,    13,    33,    34,    48,    48,    48,    43,
-      43,    42,    42,    42,    43,    43,    43,    58,    48,    59,
-      43,    59,    59,    59,    59,    59,    59,    60,    59,    60,
-      59,    43,    59,    61,    61,    46,    46,    46,    44,    44,
-      59,    59,    61,    46,    48,    48,    48,    59,    60,    61,
-      53,    53,    49,    43,    43,    47,    62,    45,    45,    59,
-      58,    63,    18,    49,    49,    48,    44,    59,    63,    53,
-      49,    45,    59,    49,    59,    49,    59,    49,    60,    43
+      30,    53,    54,    55,    56,    57,    64,    66,    68,    46,
+      46,    46,    47,    47,    47,    42,    42,    50,    50,    42,
+      45,    54,     3,     4,     7,    10,    11,    32,    36,    42,
+      59,    70,     5,     8,    12,    31,    59,    60,    69,     6,
+       9,    25,    26,    35,    42,    59,    61,    10,    10,    10,
+      61,    61,    29,    65,    27,    28,    67,    58,    59,    60,
+      61,    46,    47,    47,    42,    59,    59,    36,    37,    38,
+      39,    47,    42,    37,    37,    47,    61,    59,    61,    13,
+      33,    34,    48,    48,    48,    43,    43,    42,    42,    42,
+      43,    58,    48,    59,    60,    43,    59,    59,    59,    59,
+      59,    60,    59,    60,    59,    60,    59,    43,    59,    61,
+      61,    46,    46,    46,    44,    44,    59,    59,    61,    46,
+      48,    43,    48,    43,    48,    59,    60,    61,    53,    53,
+      49,    43,    43,    47,    62,    45,    45,    59,    58,    63,
+      18,    49,    49,    48,    44,    59,    63,    53,    49,    45,
+      59,    49,    59,    49,    59,    49,    60,    43
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_int8 yyr1[] =
 {
        0,    51,    52,    52,    53,    53,    54,    54,    54,    54,
-      54,    54,    54,    54,    54,    54,    54,    54,    54,    54,
-      54,    55,    55,    55,    56,    56,    57,    58,    58,    58,
-      59,    59,    59,    59,    59,    59,    59,    59,    59,    59,
-      59,    60,    60,    60,    60,    60,    60,    60,    61,    61,
-      61,    61,    61,    61,    61,    61,    61,    62,    63,    63,
-      64,    65,    66,    67,    67,    68,    69,    70
+      54,    54,    54,    54,    54,    54,    54,    54,    54,    55,
+      55,    55,    56,    56,    57,    58,    58,    58,    59,    59,
+      59,    59,    59,    59,    59,    59,    59,    59,    59,    60,
+      60,    60,    60,    60,    60,    60,    61,    61,    61,    61,
+      61,    61,    61,    61,    61,    62,    63,    63,    64,    65,
+      66,    67,    67,    68,    69,    70
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_int8 yyr2[] =
 {
        0,     2,     0,     6,     1,     2,     4,     6,     1,     1,
-       1,     1,     1,     1,     1,     6,     6,     6,     3,     3,
-       3,     1,     1,     1,     7,    11,     7,     1,     1,     1,
-       3,     3,     3,     3,     2,     3,     4,     1,     1,     1,
-       1,     1,     3,     3,     3,     4,     1,     1,     3,     3,
-       2,     3,     3,     4,     1,     1,     1,     3,     1,     3,
-       3,    16,     3,     4,     4,     4,     4,     4
+       1,     1,     1,     6,     6,     6,     3,     3,     3,     1,
+       1,     1,     7,    11,     7,     1,     1,     1,     3,     3,
+       3,     3,     2,     3,     4,     1,     1,     1,     1,     1,
+       3,     3,     3,     4,     1,     1,     3,     3,     2,     3,
+       3,     4,     1,     1,     1,     3,     1,     3,     3,    16,
+       3,     4,     4,     4,     4,     4
 };
 
 
@@ -1570,7 +1560,7 @@ yyreduce:
         sprintf(s,"\n%s\n",(yyvsp[-1].string));
         fprintf(yyout,"%s",s);
     }
-#line 1574 "y.tab.c"
+#line 1564 "y.tab.c"
     break;
 
   case 4:
@@ -1581,7 +1571,7 @@ yyreduce:
         sprintf(s,"%s\n",(yyvsp[0].string));
         (yyval.string) = s;
     }
-#line 1585 "y.tab.c"
+#line 1575 "y.tab.c"
     break;
 
   case 5:
@@ -1597,7 +1587,7 @@ yyreduce:
         strcat(s,"\n");
         (yyval.string) =s;
     }
-#line 1601 "y.tab.c"
+#line 1591 "y.tab.c"
     break;
 
   case 6:
@@ -1616,7 +1606,7 @@ yyreduce:
         sprintf(s,"let %s = %s",(yyvsp[-2].symp)->name,(yyvsp[0].exp_type)->sval);
         (yyval.string) = s;
     }
-#line 1620 "y.tab.c"
+#line 1610 "y.tab.c"
     break;
 
   case 7:
@@ -1653,7 +1643,7 @@ yyreduce:
         sprintf(s,"let %s = [%s]",(yyvsp[-4].symp)->name,(yyvsp[0].exp_type)->sval);
         (yyval.string) = s;
     }
-#line 1657 "y.tab.c"
+#line 1647 "y.tab.c"
     break;
 
   case 8:
@@ -1662,7 +1652,7 @@ yyreduce:
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET"system %s\n",(yyvsp[0].string));
         (yyval.string) = (yyvsp[0].string);
     }
-#line 1666 "y.tab.c"
+#line 1656 "y.tab.c"
     break;
 
   case 9:
@@ -1671,7 +1661,7 @@ yyreduce:
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "config %s\n",(yyvsp[0].string));
         (yyval.string) = (yyvsp[0].string);
     }
-#line 1675 "y.tab.c"
+#line 1665 "y.tab.c"
     break;
 
   case 10:
@@ -1679,48 +1669,33 @@ yyreduce:
             {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "print\n");
         (yyval.string) = (yyvsp[0].string);
+
     }
-#line 1684 "y.tab.c"
+#line 1675 "y.tab.c"
     break;
 
   case 11:
-#line 179 "parser2.y"
-               {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "read\n");
-        (yyval.string) = (yyvsp[0].string);
-    }
-#line 1693 "y.tab.c"
-    break;
-
-  case 12:
-#line 183 "parser2.y"
-               {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "read\n");
-        (yyval.string) = (yyvsp[0].string);
-    }
-#line 1702 "y.tab.c"
-    break;
-
-  case 13:
-#line 187 "parser2.y"
+#line 190 "parser2.y"
                    {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "if\n");
         (yyval.string) = (yyvsp[0].string);
+
     }
-#line 1711 "y.tab.c"
+#line 1685 "y.tab.c"
     break;
 
-  case 14:
-#line 191 "parser2.y"
+  case 12:
+#line 195 "parser2.y"
                       {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "while\n");
         (yyval.string) = (yyvsp[0].string);
+
     }
-#line 1720 "y.tab.c"
+#line 1695 "y.tab.c"
     break;
 
-  case 15:
-#line 195 "parser2.y"
+  case 13:
+#line 200 "parser2.y"
                                                 {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "num array\n");
         char *s = malloc(strlen((yyvsp[-5].symp)->name) + strlen((yyvsp[-3].string)) + strlen((yyvsp[0].string)) +6);
@@ -1730,11 +1705,11 @@ yyreduce:
         sprintf(s,"%s[%s] = %s",(yyvsp[-5].symp)->name,(yyvsp[-3].string),(yyvsp[0].string));
         (yyval.string) = s;
     }
-#line 1734 "y.tab.c"
+#line 1709 "y.tab.c"
     break;
 
-  case 16:
-#line 204 "parser2.y"
+  case 14:
+#line 209 "parser2.y"
                                                 {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "str array\n");
         char *s = malloc(strlen((yyvsp[-5].symp)->name) + strlen((yyvsp[-3].string)) + strlen((yyvsp[0].string)) +8);
@@ -1744,11 +1719,11 @@ yyreduce:
         sprintf(s,"%s[%s] = %s",(yyvsp[-5].symp)->name,(yyvsp[-3].string),(yyvsp[0].string));
         (yyval.string) = s;
     }
-#line 1748 "y.tab.c"
+#line 1723 "y.tab.c"
     break;
 
-  case 17:
-#line 213 "parser2.y"
+  case 15:
+#line 218 "parser2.y"
                                                  {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "bool array\n");
         char *s = malloc(strlen((yyvsp[-5].symp)->name) + strlen((yyvsp[-3].string)) + strlen((yyvsp[0].string)) +6);
@@ -1758,11 +1733,11 @@ yyreduce:
         sprintf(s,"%s[%s] = %s",(yyvsp[-5].symp)->name,(yyvsp[-3].string),(yyvsp[0].string));
         (yyval.string) = s;
     }
-#line 1762 "y.tab.c"
+#line 1737 "y.tab.c"
     break;
 
-  case 18:
-#line 222 "parser2.y"
+  case 16:
+#line 227 "parser2.y"
                            {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "num eq\n");
         char *s = malloc(strlen((yyvsp[-2].symp)->name) + strlen((yyvsp[0].string)) +4);
@@ -1773,11 +1748,11 @@ yyreduce:
         sprintf(s,"%s = %s",(yyvsp[-2].symp)->name,(yyvsp[0].string));
         (yyval.string) = s;
     }
-#line 1777 "y.tab.c"
+#line 1752 "y.tab.c"
     break;
 
-  case 19:
-#line 232 "parser2.y"
+  case 17:
+#line 237 "parser2.y"
                            {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "str eq\n");
         char *s = malloc(strlen((yyvsp[-2].symp)->name) + strlen((yyvsp[0].string)) +6);
@@ -1788,11 +1763,11 @@ yyreduce:
         sprintf(s,"%s = %s",(yyvsp[-2].symp)->name,(yyvsp[0].string));
         (yyval.string) = s;
     }
-#line 1792 "y.tab.c"
+#line 1767 "y.tab.c"
     break;
 
-  case 20:
-#line 242 "parser2.y"
+  case 18:
+#line 247 "parser2.y"
                              {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "bool eq\n");
         char *s = malloc(strlen((yyvsp[-2].symp)->name) + strlen((yyvsp[0].string)) +4);
@@ -1802,51 +1777,47 @@ yyreduce:
         sprintf(s,"%s = %s",(yyvsp[-2].symp)->name,(yyvsp[0].string));
         (yyval.string) = s;
     }
-#line 1806 "y.tab.c"
+#line 1781 "y.tab.c"
     break;
 
-  case 21:
-#line 253 "parser2.y"
+  case 19:
+#line 258 "parser2.y"
                     {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"data_type: "ANSI_COLOR_RESET "TYPE_STR\n");
         struct exp_t* aux = malloc(sizeof(struct exp_t));
         aux->type = STR_TYPE;
         aux->sval = "str";
         (yyval.exp_type) = aux; 
  
     }
-#line 1819 "y.tab.c"
+#line 1793 "y.tab.c"
     break;
 
-  case 22:
-#line 261 "parser2.y"
+  case 20:
+#line 265 "parser2.y"
                { 
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"data_type: "ANSI_COLOR_RESET "TYPE_NUM\n");
         struct exp_t* aux = malloc(sizeof(struct exp_t));
         aux->type = NUM_TYPE;
          aux->sval = "num";
         (yyval.exp_type) = aux; 
     }
-#line 1831 "y.tab.c"
+#line 1804 "y.tab.c"
     break;
 
-  case 23:
-#line 268 "parser2.y"
+  case 21:
+#line 271 "parser2.y"
                 { 
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"data_type: "ANSI_COLOR_RESET "TYPE_BOOL\n");
         struct exp_t* aux = malloc(sizeof(struct exp_t));
         aux->type = BOOL_TYPE;
         aux->sval = "bool";
         (yyval.exp_type) = aux; 
     }
-#line 1843 "y.tab.c"
+#line 1815 "y.tab.c"
     break;
 
-  case 24:
-#line 277 "parser2.y"
+  case 22:
+#line 279 "parser2.y"
                                                                                {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"if_statement: "ANSI_COLOR_RESET "if\n");
-        char * s  = malloc( strlen("if(  ) {\n}") + strlen((yyvsp[-4].string)) + strlen((yyvsp[-1].string)) +1);
+    char * s  = malloc( strlen("if(  ) {\n}") + strlen((yyvsp[-4].string)) + strlen((yyvsp[-1].string)) +1);
         if(s == NULL){
             yyerror("no memory left");
         }    
@@ -1855,13 +1826,12 @@ yyreduce:
         //    free($6);
         (yyval.string) = s;
     }
-#line 1859 "y.tab.c"
+#line 1830 "y.tab.c"
     break;
 
-  case 25:
-#line 288 "parser2.y"
+  case 23:
+#line 289 "parser2.y"
                                                                              {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"if_statement: "ANSI_COLOR_RESET "if else\n");
         char * s  = malloc(strlen("if(  ) {\n}else{\n}") + strlen((yyvsp[-8].string)) + strlen((yyvsp[-5].string)) + strlen((yyvsp[-1].string)) + 1);
         if(s == NULL){
             yyerror("no memory left");
@@ -1872,13 +1842,12 @@ yyreduce:
         //    free($10);
         (yyval.string) = s;
     }
-#line 1876 "y.tab.c"
+#line 1846 "y.tab.c"
     break;
 
-  case 26:
+  case 24:
 #line 302 "parser2.y"
                                                                {
-    if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"while_statement: "ANSI_COLOR_RESET "while\n");
     char * s  = malloc(17+strlen((yyvsp[-4].string))+strlen((yyvsp[-1].string)));
     if(s == NULL){
         yyerror("no memory left");
@@ -1886,11 +1855,11 @@ yyreduce:
         sprintf(s,"while( %s ) {\n%s}",(yyvsp[-4].string),(yyvsp[-1].string));
         (yyval.string) = s;
     }
-#line 1890 "y.tab.c"
+#line 1859 "y.tab.c"
     break;
 
-  case 27:
-#line 313 "parser2.y"
+  case 25:
+#line 312 "parser2.y"
              { 
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "num exp\n");
         struct exp_t* aux = malloc(sizeof(struct exp_t));
@@ -1901,11 +1870,11 @@ yyreduce:
         aux->sval = (yyvsp[0].string);
         (yyval.exp_type) = aux;
     }
-#line 1905 "y.tab.c"
+#line 1874 "y.tab.c"
     break;
 
-  case 28:
-#line 323 "parser2.y"
+  case 26:
+#line 322 "parser2.y"
               { 
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "str exp\n");
         struct exp_t* aux = malloc(sizeof(struct exp_t));
@@ -1916,13 +1885,13 @@ yyreduce:
         aux->sval = (yyvsp[0].string);
         (yyval.exp_type) = aux;
     }
-#line 1920 "y.tab.c"
+#line 1889 "y.tab.c"
     break;
 
-  case 29:
-#line 333 "parser2.y"
+  case 27:
+#line 332 "parser2.y"
                {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "bool exp\n"); 
+          if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "bool exp\n"); 
         struct exp_t* aux = malloc(sizeof(struct exp_t));
         if(aux == NULL){
             yyerror("no memory left");
@@ -1931,52 +1900,47 @@ yyreduce:
         aux->sval = (yyvsp[0].string);
         (yyval.exp_type) = aux;
     }
-#line 1935 "y.tab.c"
+#line 1904 "y.tab.c"
+    break;
+
+  case 28:
+#line 345 "parser2.y"
+                             {
+        (yyval.string) = expOp((yyvsp[-2].string),"+",(yyvsp[0].string));
+    }
+#line 1912 "y.tab.c"
+    break;
+
+  case 29:
+#line 348 "parser2.y"
+                          {
+        (yyval.string) = expOp((yyvsp[-2].string),"-",(yyvsp[0].string));
+    }
+#line 1920 "y.tab.c"
     break;
 
   case 30:
-#line 346 "parser2.y"
-                             {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "sum\n");
-        (yyval.string) = expOp((yyvsp[-2].string),"+",(yyvsp[0].string));
-    }
-#line 1944 "y.tab.c"
-    break;
-
-  case 31:
-#line 350 "parser2.y"
+#line 351 "parser2.y"
                           {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "subs\n");
-        (yyval.string) = expOp((yyvsp[-2].string),"-",(yyvsp[0].string));
-    }
-#line 1953 "y.tab.c"
-    break;
-
-  case 32:
-#line 354 "parser2.y"
-                          {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "div\n");
         if(!strcmp((yyvsp[0].string),"0")){
             yyerror("division by zero.");
         }
         (yyval.string) = expOp((yyvsp[-2].string),"/",(yyvsp[0].string));
     }
-#line 1965 "y.tab.c"
+#line 1931 "y.tab.c"
     break;
 
-  case 33:
-#line 361 "parser2.y"
+  case 31:
+#line 357 "parser2.y"
                           {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "mult\n");
         (yyval.string) = expOp((yyvsp[-2].string),"*",(yyvsp[0].string));
     }
-#line 1974 "y.tab.c"
+#line 1939 "y.tab.c"
     break;
 
-  case 34:
-#line 365 "parser2.y"
+  case 32:
+#line 360 "parser2.y"
                                {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "negation\n");
         char *s = malloc(strlen((yyvsp[0].string)) +2);
         if(s == NULL){
             yyerror("no memory left");
@@ -1985,13 +1949,12 @@ yyreduce:
                 
         (yyval.string) = s;
     }
-#line 1989 "y.tab.c"
+#line 1953 "y.tab.c"
     break;
 
-  case 35:
-#line 375 "parser2.y"
+  case 33:
+#line 369 "parser2.y"
                       {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "parenthesis\n");
         char *s = malloc(strlen((yyvsp[-1].string)) +3);
         if(s == NULL){
             yyerror("no memory left");
@@ -2000,70 +1963,91 @@ yyreduce:
                 
         (yyval.string) = s;
     }
-#line 2004 "y.tab.c"
+#line 1967 "y.tab.c"
+    break;
+
+  case 34:
+#line 378 "parser2.y"
+                                   {
+        char *s = malloc(strlen((yyvsp[-3].symp)->name) + strlen((yyvsp[-1].string)) +3);
+        if(s == NULL){
+            yyerror("no memory left");
+        }
+        sprintf(s,"%s[%s]",(yyvsp[-3].symp)->name,(yyvsp[-1].string));
+                
+        (yyval.string) = s;
+    }
+#line 1981 "y.tab.c"
+    break;
+
+  case 35:
+#line 387 "parser2.y"
+               {
+        (yyval.string) = strdup((yyvsp[0].symp)->name);
+    }
+#line 1989 "y.tab.c"
     break;
 
   case 36:
-#line 385 "parser2.y"
-                                   {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "arr access\n");
-        char *s = malloc(strlen((yyvsp[-3].symp)->name) + strlen((yyvsp[-1].string)) +3);
-        if(s == NULL){
-            yyerror("no memory left");
-        }
-        sprintf(s,"%s[%s]",(yyvsp[-3].symp)->name,(yyvsp[-1].string));
-                
-        (yyval.string) = s;
+#line 390 "parser2.y"
+              {
     }
-#line 2019 "y.tab.c"
+#line 1996 "y.tab.c"
     break;
 
   case 37:
-#line 395 "parser2.y"
-               {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "variable\n");
-        (yyval.string) = strdup((yyvsp[0].symp)->name);
+#line 392 "parser2.y"
+            {
     }
-#line 2028 "y.tab.c"
+#line 2003 "y.tab.c"
     break;
 
   case 38:
-#line 399 "parser2.y"
-              {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "integer\n");
+#line 394 "parser2.y"
+               {
+        printf("num exp: read_num\n");
+        (yyval.string) = (yyvsp[0].string);
     }
-#line 2036 "y.tab.c"
+#line 2012 "y.tab.c"
     break;
 
   case 39:
-#line 402 "parser2.y"
-            {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "float\n");
+#line 400 "parser2.y"
+                 {
+
     }
-#line 2044 "y.tab.c"
+#line 2020 "y.tab.c"
     break;
 
   case 40:
-#line 405 "parser2.y"
-               {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "read_num\n");
-        (yyval.string) = (yyvsp[0].string);
+#line 404 "parser2.y"
+                          {
+        char * str = malloc(strlen((yyvsp[-2].string)) + strlen((yyvsp[0].string)) + 4);
+        if(str == NULL){
+            yyerror("No memory left");
+        }
+        sprintf(str,"%s + %s",(yyvsp[-2].string),(yyvsp[0].string));
+        (yyval.string) = str;
     }
-#line 2053 "y.tab.c"
+#line 2033 "y.tab.c"
     break;
 
   case 41:
-#line 411 "parser2.y"
-                 {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"str_exp: "ANSI_COLOR_RESET "qstring\n");
+#line 413 "parser2.y"
+                          {
+        char * str = malloc(strlen((yyvsp[-2].string)) + strlen((yyvsp[0].string)) + 4);
+        if(str == NULL){
+            yyerror("No memory left");
+        }
+        sprintf(str,"%s + %s",(yyvsp[-2].string),(yyvsp[0].string));
+        (yyval.string) = str;
     }
-#line 2061 "y.tab.c"
+#line 2046 "y.tab.c"
     break;
 
   case 42:
-#line 415 "parser2.y"
+#line 422 "parser2.y"
                           {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"str_exp: "ANSI_COLOR_RESET "addition str str\n");
         char * str = malloc(strlen((yyvsp[-2].string)) + strlen((yyvsp[0].string)) + 4);
         if(str == NULL){
             yyerror("No memory left");
@@ -2071,41 +2055,12 @@ yyreduce:
         sprintf(str,"%s + %s",(yyvsp[-2].string),(yyvsp[0].string));
         (yyval.string) = str;
     }
-#line 2075 "y.tab.c"
+#line 2059 "y.tab.c"
     break;
 
   case 43:
-#line 425 "parser2.y"
-                          {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"str_exp: "ANSI_COLOR_RESET "addition num str\n");
-        char * str = malloc(strlen((yyvsp[-2].string)) + strlen((yyvsp[0].string)) + 4);
-        if(str == NULL){
-            yyerror("No memory left");
-        }
-        sprintf(str,"%s + %s",(yyvsp[-2].string),(yyvsp[0].string));
-        (yyval.string) = str;
-    }
-#line 2089 "y.tab.c"
-    break;
-
-  case 44:
-#line 435 "parser2.y"
-                          {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"str_exp: "ANSI_COLOR_RESET "addition str num\n");
-        char * str = malloc(strlen((yyvsp[-2].string)) + strlen((yyvsp[0].string)) + 4);
-        if(str == NULL){
-            yyerror("No memory left");
-        }
-        sprintf(str,"%s + %s",(yyvsp[-2].string),(yyvsp[0].string));
-        (yyval.string) = str;
-    }
-#line 2103 "y.tab.c"
-    break;
-
-  case 45:
-#line 445 "parser2.y"
+#line 431 "parser2.y"
                                    {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"str_exp: "ANSI_COLOR_RESET "arr access\n");
         char *s = malloc(strlen((yyvsp[-3].symp)->name) + strlen((yyvsp[-1].string)) +3);
         if(s == NULL){
             yyerror("no memory left");
@@ -2114,32 +2069,29 @@ yyreduce:
                 
         (yyval.string) = s;
     }
-#line 2118 "y.tab.c"
+#line 2073 "y.tab.c"
+    break;
+
+  case 44:
+#line 440 "parser2.y"
+               {
+        (yyval.string) = strdup((yyvsp[0].symp)->name);
+    }
+#line 2081 "y.tab.c"
+    break;
+
+  case 45:
+#line 443 "parser2.y"
+               {
+        printf("str exp: read_str\n");
+        (yyval.string) = (yyvsp[0].string);
+    }
+#line 2090 "y.tab.c"
     break;
 
   case 46:
-#line 455 "parser2.y"
-               {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"str_exp: "ANSI_COLOR_RESET "variable\n");
-        printf("string name = %s\n",(yyvsp[0].symp)->name);
-        (yyval.string) = strdup((yyvsp[0].symp)->name);
-    }
-#line 2128 "y.tab.c"
-    break;
-
-  case 47:
-#line 460 "parser2.y"
-               {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"str_exp: "ANSI_COLOR_RESET "read_str\n");
-        (yyval.string) = strdup((yyvsp[0].string));
-    }
-#line 2137 "y.tab.c"
-    break;
-
-  case 48:
-#line 466 "parser2.y"
+#line 449 "parser2.y"
                                 {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"bool_exp: "ANSI_COLOR_RESET "and\n");
         char * str = malloc(strlen((yyvsp[-2].string)) + strlen((yyvsp[0].string)) + strlen("&&") + 3);
         if(str == NULL){
             yyerror("No memory left");
@@ -2147,13 +2099,12 @@ yyreduce:
         sprintf(str,"%s && %s",(yyvsp[-2].string),(yyvsp[0].string));
         (yyval.string) = str;
     }
-#line 2151 "y.tab.c"
+#line 2103 "y.tab.c"
     break;
 
-  case 49:
-#line 475 "parser2.y"
+  case 47:
+#line 457 "parser2.y"
                              {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"bool_exp: "ANSI_COLOR_RESET "or\n");
         char * str = malloc(strlen((yyvsp[-2].string)) + strlen((yyvsp[0].string)) + strlen("||") + 3);
         if(str == NULL){
             yyerror("No memory left");
@@ -2161,13 +2112,12 @@ yyreduce:
         sprintf(str,"%s || %s",(yyvsp[-2].string),(yyvsp[0].string));
         (yyval.string) = str;
     }
-#line 2165 "y.tab.c"
+#line 2116 "y.tab.c"
     break;
 
-  case 50:
-#line 484 "parser2.y"
+  case 48:
+#line 465 "parser2.y"
                      {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"bool_exp: "ANSI_COLOR_RESET "not\n");
         char * str = malloc(strlen((yyvsp[0].string)) + strlen("!") + 1);
         if(str == NULL){
             yyerror("No memory left");
@@ -2175,13 +2125,12 @@ yyreduce:
         sprintf(str,"!%s",(yyvsp[0].string));
         (yyval.string) = str;
     }
-#line 2179 "y.tab.c"
+#line 2129 "y.tab.c"
     break;
 
-  case 51:
-#line 493 "parser2.y"
+  case 49:
+#line 473 "parser2.y"
                                     {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"bool_exp: "ANSI_COLOR_RESET "comparation\n");
         char *str = malloc(strlen((yyvsp[-2].string)) + strlen((yyvsp[0].string)) + strlen((yyvsp[-1].string)) + 3);
         if(str == NULL){
             yyerror("No memory left");
@@ -2189,27 +2138,26 @@ yyreduce:
         sprintf(str,"%s %s %s",(yyvsp[-2].string), (yyvsp[-1].string), (yyvsp[0].string));
         (yyval.string) = str;
     }
-#line 2193 "y.tab.c"
+#line 2142 "y.tab.c"
     break;
 
-  case 52:
-#line 502 "parser2.y"
+  case 50:
+#line 481 "parser2.y"
                          {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"bool_exp: "ANSI_COLOR_RESET "parenthesis\n");
         char *str = malloc(strlen((yyvsp[-1].string)) + 3);
         if(str == NULL){
             yyerror("No memory left");
         }
         sprintf(str,"(%s)",(yyvsp[-1].string));
         (yyval.string) = str;
+        
     }
-#line 2207 "y.tab.c"
+#line 2156 "y.tab.c"
     break;
 
-  case 53:
-#line 511 "parser2.y"
+  case 51:
+#line 490 "parser2.y"
                                       {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"bool_exp: "ANSI_COLOR_RESET "arr access\n");
         char *s = malloc(strlen((yyvsp[-3].symp)->name) + strlen((yyvsp[-1].string)) +3);
         if(s == NULL){
             yyerror("no memory left");
@@ -2218,40 +2166,38 @@ yyreduce:
                 
         (yyval.string) = s;
     }
-#line 2222 "y.tab.c"
+#line 2170 "y.tab.c"
+    break;
+
+  case 52:
+#line 499 "parser2.y"
+                  {
+            (yyval.string) = strdup((yyvsp[0].symp)->name);
+    }
+#line 2178 "y.tab.c"
+    break;
+
+  case 53:
+#line 502 "parser2.y"
+                { 
+    
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"TRUE\n"ANSI_COLOR_RESET);
+            (yyval.string) = strdup("true");
+    }
+#line 2188 "y.tab.c"
     break;
 
   case 54:
-#line 521 "parser2.y"
-                  {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"bool_exp: "ANSI_COLOR_RESET "variable\n");
-            (yyval.string) = strdup((yyvsp[0].symp)->name);
+#line 507 "parser2.y"
+                {
+         (yyval.string) = strdup("false");
     }
-#line 2231 "y.tab.c"
+#line 2196 "y.tab.c"
     break;
 
   case 55:
-#line 525 "parser2.y"
-                { 
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"bool_exp: "ANSI_COLOR_RESET "true\n");
-        (yyval.string) = strdup("true");
-    }
-#line 2240 "y.tab.c"
-    break;
-
-  case 56:
-#line 529 "parser2.y"
-                {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"bool_exp: "ANSI_COLOR_RESET "false\n");
-         (yyval.string) = strdup("false");
-    }
-#line 2249 "y.tab.c"
-    break;
-
-  case 57:
-#line 536 "parser2.y"
+#line 513 "parser2.y"
                            {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"arr_init: "ANSI_COLOR_RESET "new arr\n");
         struct exp_t* aux = malloc(sizeof(struct exp_t));
         if(aux == NULL){
             yyerror("no memory left");
@@ -2261,13 +2207,12 @@ yyreduce:
         aux->sval = (yyvsp[-1].exp_type)->sval;
         (yyval.exp_type) = aux;
     }
-#line 2265 "y.tab.c"
+#line 2211 "y.tab.c"
     break;
 
-  case 58:
-#line 549 "parser2.y"
+  case 56:
+#line 525 "parser2.y"
               {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"arr_item: "ANSI_COLOR_RESET "last arr item\n");
         struct exp_t* aux = malloc(sizeof(struct exp_t));
          if(aux == NULL){
             yyerror("no memory left");
@@ -2276,13 +2221,12 @@ yyreduce:
         aux->sval = (yyvsp[0].exp_type)->sval;
         (yyval.exp_type) = aux;
     }
-#line 2280 "y.tab.c"
+#line 2225 "y.tab.c"
     break;
 
-  case 59:
-#line 559 "parser2.y"
+  case 57:
+#line 534 "parser2.y"
                         {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"arr_item: "ANSI_COLOR_RESET "new arr item\n");
             if((yyvsp[-2].exp_type)->type != (yyvsp[0].exp_type)->type){
                 yyerror("invalid type for array item");
             }
@@ -2299,22 +2243,21 @@ yyreduce:
             aux->sval = s;
             (yyval.exp_type) = aux;
         }
-#line 2303 "y.tab.c"
+#line 2247 "y.tab.c"
     break;
 
-  case 60:
-#line 581 "parser2.y"
+  case 58:
+#line 555 "parser2.y"
                                        {
-            if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"system: "ANSI_COLOR_RESET "token.action\n");
-            (yyval.string) = (yyvsp[0].string);
+           if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"system\n"ANSI_COLOR_RESET);
+           (yyval.string) = (yyvsp[0].string);
         }
-#line 2312 "y.tab.c"
+#line 2256 "y.tab.c"
     break;
 
-  case 61:
-#line 587 "parser2.y"
+  case 59:
+#line 561 "parser2.y"
                                                                                                                { 
-            if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"system_action: "ANSI_COLOR_RESET "addbody\n");
             char *s = malloc(strlen((yyvsp[-13].string)) + strlen((yyvsp[-11].string)) + strlen((yyvsp[-9].string)) + strlen((yyvsp[-7].string)) + strlen((yyvsp[-5].string)) + strlen((yyvsp[-3].string)) + strlen((yyvsp[-1].string)) + strlen("bodies.push(new Body(,,,,,,))")+1);
             if(s == NULL){
                 yyerror("no memory left");
@@ -2322,22 +2265,21 @@ yyreduce:
             sprintf(s,"bodies.push(new Body(%s,%s,%s,%s,%s,%s,%s))",(yyvsp[-13].string),(yyvsp[-11].string),(yyvsp[-9].string),(yyvsp[-7].string),(yyvsp[-5].string),(yyvsp[-3].string),(yyvsp[-1].string)); 
             (yyval.string) = s; 
         }
-#line 2326 "y.tab.c"
+#line 2269 "y.tab.c"
     break;
 
-  case 62:
-#line 598 "parser2.y"
+  case 60:
+#line 571 "parser2.y"
                                        { 
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"config: "ANSI_COLOR_RESET "token.action\n");
-        (yyval.string) = (yyvsp[0].string);
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"config\n"ANSI_COLOR_RESET );
+         (yyval.string) = (yyvsp[0].string);
     }
-#line 2335 "y.tab.c"
+#line 2278 "y.tab.c"
     break;
 
-  case 63:
-#line 604 "parser2.y"
+  case 61:
+#line 577 "parser2.y"
                                             { 
-            if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"config_action: "ANSI_COLOR_RESET "gravity\n");
             char *s = malloc(strlen((yyvsp[-1].string)) + strlen("Gc = ")+1);
             if(s == NULL){
                 yyerror("no memory left");
@@ -2345,13 +2287,12 @@ yyreduce:
             sprintf(s,"Gc = %s",(yyvsp[-1].string));
             (yyval.string) = s;
         }
-#line 2349 "y.tab.c"
+#line 2291 "y.tab.c"
     break;
 
-  case 64:
-#line 613 "parser2.y"
+  case 62:
+#line 585 "parser2.y"
                                        {
-            if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"config_action: "ANSI_COLOR_RESET "bounce\n");
             char *s = malloc(strlen((yyvsp[-1].string)) + strlen("worldBorderBounce = ") + 1);
             if(s == NULL){
                 yyerror("no memory left");
@@ -2359,13 +2300,13 @@ yyreduce:
             sprintf(s,"worldBorderBounce = %s",(yyvsp[-1].string));
             (yyval.string) = s;
         }
-#line 2363 "y.tab.c"
+#line 2304 "y.tab.c"
     break;
 
-  case 65:
-#line 624 "parser2.y"
+  case 63:
+#line 595 "parser2.y"
                          {
-            if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"print: "ANSI_COLOR_RESET "print exp\n");
+          
             char *s = malloc(strlen((yyvsp[-1].exp_type)->sval) + strlen("console.log()") + 1);
             if(s == NULL){
                 yyerror("no memory left");
@@ -2374,13 +2315,12 @@ yyreduce:
             printf("print: %s, %s\n", (yyval.string), s);
             (yyval.string) = s; 
         }
-#line 2378 "y.tab.c"
+#line 2319 "y.tab.c"
     break;
 
-  case 66:
-#line 636 "parser2.y"
-                                    {  
-            if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"read_str: "ANSI_COLOR_RESET "read exp\n");   
+  case 64:
+#line 607 "parser2.y"
+                                    {     
             char *s = malloc(strlen((yyvsp[-1].string)) + strlen("window.prompt()") + 1);
             if(s == NULL){
                 yyerror("no memory left");
@@ -2389,13 +2329,12 @@ yyreduce:
             printf("read_str: %s, %s\n", (yyval.string), s);
             (yyval.string) = s; 
         }
-#line 2393 "y.tab.c"
+#line 2333 "y.tab.c"
     break;
 
-  case 67:
-#line 648 "parser2.y"
+  case 65:
+#line 618 "parser2.y"
                                     { 
-            if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"read_num: "ANSI_COLOR_RESET "read exp\n");   
             char *s = malloc(strlen((yyvsp[-1].string)) + strlen("window.prompt()") + 1);
             if(s == NULL){
                 yyerror("no memory left");
@@ -2404,11 +2343,11 @@ yyreduce:
             printf("read_num: %s, %s\n", (yyval.string), s);
             (yyval.string) = s; 
         }
-#line 2408 "y.tab.c"
+#line 2347 "y.tab.c"
     break;
 
 
-#line 2412 "y.tab.c"
+#line 2351 "y.tab.c"
 
       default: break;
     }
@@ -2640,28 +2579,28 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 659 "parser2.y"
+#line 628 "parser2.y"
 
 
 
 struct symtab * symLook(char* s){
     struct symtab * sp;
 
-    printf("searching for: %s\n", s);
+    printf("serching for: %s\n", s);
 
     for(sp= symtab; sp <&symtab[MAX_SYMBOLS];sp++){
-        /* is it alredy here? */
+        /* is it alreaw here? */
         printf("comparing: %s\n", sp->name);
-        if (sp->name && !strcmp((sp->name)+2, s) ){
+        if (sp->name && !strcmp(sp->name, s) ){
             return sp;
         }
       
         /* is it free */
         if(!sp->name) {
-            char * snew = malloc(sizeof(s)+3);
-            sprintf(snew, "u_%s", s);
-            sp->name = snew;
-            // sp->name = strdup(s);
+            // char * snew = malloc(sizeof(s)+3);
+            // sprintf(snew, "u_%s", s);
+            // sp->name = snew;
+            sp->name = strdup(s);
             sp->type = NOT_DEFINED;
             return sp;
         }
