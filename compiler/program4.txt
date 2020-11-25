@@ -1,6 +1,4 @@
 main(){
-    Config.worldBorderBounce(true)
-    num caca1 = readNum("ingredasdasdasdsadad") 
-    print(caca1)
-
+    num x = 3
+    x = 4
 }
