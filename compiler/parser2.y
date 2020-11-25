@@ -49,7 +49,7 @@ extern FILE *yyin, *yyout;
 %token TYPE_STR TYPE_NUM TYPE_BOOL
 %token TRUE_TK FALSE_TK
 %token GRAVITY_CONF BOUNCE_CONF
-%token ADDBODY PRINT READ
+%token ADDBODY PRINT READ_STR READ_NUM
 
 //Set precedences
 %left OR
@@ -72,8 +72,9 @@ extern FILE *yyin, *yyout;
 %type <exp_type> data_type
 %type <string> statement
 %type <string> statement_list
-%type <string> read
 %type <string> print
+%type <string> read_str
+%type <string> read_num
 %type <string> system
 %type <string> config
 %type <string> if_statement
@@ -164,35 +165,40 @@ statement:
         $$ = s;
     }
     | system {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET"system %s\n",$1);
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET"system %s\n",$1);
         $$ = $1;
     }
     | config {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "config %s\n",$1);
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "config %s\n",$1);
         $$ = $1;
     }
     | print {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "print\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "print\n");
         $$ = $1;
 
     }
-    | read {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "read\n");
-        $$ = $1;
+    // | read_str {
+    //     if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "read\n");
+    //     $$ = $1;
 
-    }
+    // }
+    // | read_num {
+    //     if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "read\n");
+    //     $$ = $1;
+
+    // }
     | if_statement {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "if\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "if\n");
         $$ = $1;
 
     }
     | while_statement {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "while\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "while\n");
         $$ = $1;
 
     }
     | NUM_ARR_NAME '[' INTEGER ']'  '=' num_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "num array\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "num array\n");
         char *s = malloc(strlen($1->name) + strlen($3) + strlen($6) +6);
         if(s == NULL){
             yyerror("no memory left");
@@ -201,7 +207,7 @@ statement:
         $$ = s;
     }
     | STR_ARR_NAME '[' INTEGER ']'  '=' str_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "str array\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "str array\n");
         char *s = malloc(strlen($1->name) + strlen($3) + strlen($6) +8);
         if(s == NULL){
             yyerror("no memory left");
@@ -210,7 +216,7 @@ statement:
         $$ = s;
     }
     | BOOL_ARR_NAME '[' INTEGER ']' '=' bool_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "bool array\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "bool array\n");
         char *s = malloc(strlen($1->name) + strlen($3) + strlen($6) +6);
         if(s == NULL){
             yyerror("no memory left");
@@ -219,25 +225,27 @@ statement:
         $$ = s;
     }
     | NUM_NAME '=' num_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "num eq\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "num eq\n");
         char *s = malloc(strlen($1->name) + strlen($3) +4);
         if(s == NULL){
             yyerror("no memory left");
         }
+          printf("%s = %s\n",$1->name,$3);
         sprintf(s,"%s = %s",$1->name,$3);
         $$ = s;
     }
     | STR_NAME '=' str_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "str eq\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "str eq\n");
         char *s = malloc(strlen($1->name) + strlen($3) +6);
         if(s == NULL){
             yyerror("no memory left");
         }
+        printf("%s = %s\n",$1->name,$3);
         sprintf(s,"%s = %s",$1->name,$3);
         $$ = s;
     }
     | BOOL_NAME '=' bool_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "bool eq\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "bool eq\n");
         char *s = malloc(strlen($1->name) + strlen($3) +4);
         if(s == NULL){
             yyerror("no memory left");
@@ -279,6 +287,7 @@ if_statement: IF '(' bool_exp ')' '{' statement_list '}' %prec LOWER_THAN_ELSE {
         $$ = s;
     }
     | IF '(' bool_exp ')' '{' statement_list '}' ELSE '{' statement_list '}' {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"while_statement: "ANSI_COLOR_RESET "while\n");
         char * s  = malloc(strlen("if(  ) {\n}else{\n}") + strlen($3) + strlen($6) + strlen($10) + 1);
         if(s == NULL){
             yyerror("no memory left");
@@ -292,6 +301,7 @@ if_statement: IF '(' bool_exp ')' '{' statement_list '}' %prec LOWER_THAN_ELSE {
     ;
 
 while_statement: WHILE '(' bool_exp ')' '{' statement_list '}' {
+    if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"while_statement: "ANSI_COLOR_RESET "while\n");
     char * s  = malloc(17+strlen($3)+strlen($6));
     if(s == NULL){
         yyerror("no memory left");
@@ -302,20 +312,31 @@ while_statement: WHILE '(' bool_exp ')' '{' statement_list '}' {
     ;
 
 exp: num_exp { 
-       
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "num exp\n");
         struct exp_t* aux = malloc(sizeof(struct exp_t));
+        if(aux == NULL){
+            yyerror("no memory left");
+        }
         aux->type = NUM_TYPE;
         aux->sval = $1;
         $$ = aux;
     }
     | str_exp { 
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "str exp\n");
         struct exp_t* aux = malloc(sizeof(struct exp_t));
+        if(aux == NULL){
+            yyerror("no memory left");
+        }
         aux->type = STR_TYPE;
         aux->sval = $1;
         $$ = aux;
     }
-    | bool_exp { 
+    | bool_exp {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "bool exp\n"); 
         struct exp_t* aux = malloc(sizeof(struct exp_t));
+        if(aux == NULL){
+            yyerror("no memory left");
+        }
         aux->type = BOOL_TYPE;
         aux->sval = $1;
         $$ = aux;
@@ -372,6 +393,10 @@ num_exp: num_exp '+' num_exp {
     }
     | FLOAT {
     }
+    | read_num {
+        printf("num exp: read_num\n");
+        $$ = $1;
+    }
     ;
     
 str_exp: QSTRING {
@@ -415,7 +440,12 @@ str_exp: QSTRING {
         $$ = s;
     }
     | STR_NAME {
+        printf("string name = %s\n",$1);
         $$ = strdup($1->name);
+    }
+    | read_str {
+        printf("str exp: read_str\n");
+        $$ = $1;
     }
     ;
 
@@ -488,7 +518,7 @@ arr_init: '[' arr_item ']' {
         if(aux == NULL){
             yyerror("no memory left");
         }
-        printf("array_init type %d\n",$$->type);
+       
         aux->type = $2->type;
         aux->sval = $2->sval;
         $$ = aux;
@@ -572,37 +602,53 @@ print: PRINT '(' exp ')' {
                 yyerror("no memory left");
             }
             sprintf(s,"console.log(%s)",$3->sval); 
+            printf("print: %s, %s\n", $$, s);
             $$ = s; 
         }
     ;
 
-read:  READ '(' str_exp ')' { 
-           
+read_str:  READ_STR '(' str_exp ')' {     
             char *s = malloc(strlen($3) + strlen("window.prompt()") + 1);
             if(s == NULL){
                 yyerror("no memory left");
             }
             sprintf(s,"window.prompt(%s)",$3); 
+            printf("read_str: %s, %s\n", $$, s);
             $$ = s; 
         }
     ;
 
+read_num:  READ_NUM '(' str_exp ')' { 
+            char *s = malloc(strlen($3) + strlen("window.prompt()") + 1);
+            if(s == NULL){
+                yyerror("no memory left");
+            }
+            sprintf(s,"window.prompt(%s)",$3); 
+            printf("read_num: %s, %s\n", $$, s);
+            $$ = s; 
+        }
+    ;
 %%
 
 
 struct symtab * symLook(char* s){
     struct symtab * sp;
+
+    printf("searching for: %s\n", s);
+
     for(sp= symtab; sp <&symtab[MAX_SYMBOLS];sp++){
-        /* is it alreaw here? */
-        if (sp->name && !strcmp((sp->name)+2, s) ){
+        /* is it alredy here? */
+        printf("comparing: %s\n", sp->name);
+        if (sp->name && !strcmp(sp->name, s) ){
             return sp;
         }
       
         /* is it free */
         if(!sp->name) {
-            char * snew = malloc(sizeof(s)+3);
-            sprintf(snew, "u_%s", s);
-            sp->name = snew;
+            // char * snew = malloc(sizeof(s)+3);
+            // sprintf(snew, "u_%s", s);
+            // sp->name = snew;
+            sp->name = strdup(s);
             sp->type = NOT_DEFINED;
             return sp;
         }
@@ -658,7 +704,7 @@ int main(int argc, char* argv[]){
 
     
 
-    yyout = fopen(DEFAULT_OUTFILE,"a");
+    yyout = fopen(DEFAULT_OUTFILE,"w");
     if(yyout == NULL){
         fprintf(stderr,"%s: cannot open %s\n",progname,DEFAULT_OUTFILE);
         exit(1);

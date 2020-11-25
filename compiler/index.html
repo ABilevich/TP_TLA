@@ -205,32 +205,5 @@
 
         var bodies = [];
 
-function init() {
-    bodies = [];
-worldBorderBounce = true
-console.log("cacacacacacac")
-let u_x = 3
-while( u_x > 0 ) {
-bodies.push(new Body(100 * u_x,100 * u_x,10000,30,0,-10,"#FFF0FF"))
-u_x = u_x - 1
-}
-let u_arr = ["pe", "ne"]
-u_arr[2] = "caca"
-
-
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            c.clearRect(0, 0, canvas.width, canvas.height);
-
-            bodies.forEach(body => {
-                body.update();
-            })
-        }
-
-        init();
-        animate();
-    </script>
-</body>
-</html>
+        function init() {
+            bodies = [];

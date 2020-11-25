@@ -774,17 +774,14 @@ YY_RULE_SETUP
     }else if(!strcmp(yytext,"System")){
         return SYSTEM_TOKEN;
     }else if(!strcmp(yytext,"Config")){
-     
         return CONFIG_TOKEN;
     }else if(!strcmp(yytext,"num")){
-      
         return TYPE_NUM;
     }else if(!strcmp(yytext,"str")){
         return TYPE_STR;
     }else if(!strcmp(yytext,"bool")){
         return TYPE_BOOL;
     }else if(!strcmp(yytext,"true")){
-       
         return TRUE_TK;
     }else if(!strcmp(yytext,"false")){
         return FALSE_TK;
@@ -792,26 +789,24 @@ YY_RULE_SETUP
         return ADDBODY;
     }else if(!strcmp(yytext,"print")){
         return PRINT;
-    }else if(!strcmp(yytext,"read")){
-        return READ;
     }else if(!strcmp(yytext,"gravityConstant")){
-     
         return GRAVITY_CONF;
     }else if(!strcmp(yytext,"worldBorderBounce")){
-     
         return BOUNCE_CONF;
     }else if(!strcmp(yytext,"main")){
         return MAIN;
+    }else if(!strcmp(yytext,"readNum")){
+        return READ_NUM;
+    }else if(!strcmp(yytext,"readStr")){
+        return READ_STR;
     }
     struct symtab* sym = symLook(yytext);
     yylval.symp = sym;
     switch(sym->type){
         case NUM_TYPE:
-         
             return NUM_NAME;
         break;
         case STR_TYPE:
-        
             return STR_NAME;
         break;
         case BOOL_TYPE:
@@ -839,23 +834,23 @@ YY_RULE_SETUP
 case 4:
 /* rule 4 can match eol */
 YY_RULE_SETUP
-#line 96 "lexer.l"
+#line 91 "lexer.l"
 ;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 97 "lexer.l"
+#line 92 "lexer.l"
 ; /* ignore whitespace */
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 98 "lexer.l"
+#line 93 "lexer.l"
 return 0; /* EOF when running in command line */
 	YY_BREAK
 case 7:
 /* rule 7 can match eol */
 YY_RULE_SETUP
-#line 101 "lexer.l"
+#line 96 "lexer.l"
 {yylval.string = strdup(yytext);
          
             if(yylval.string[yyleng-1] != '"'){
@@ -867,18 +862,18 @@ YY_RULE_SETUP
 }
 	YY_BREAK
 case 8:
-#line 112 "lexer.l"
+#line 107 "lexer.l"
 case 9:
-#line 113 "lexer.l"
+#line 108 "lexer.l"
 case 10:
-#line 114 "lexer.l"
+#line 109 "lexer.l"
 case 11:
-#line 115 "lexer.l"
+#line 110 "lexer.l"
 case 12:
-#line 116 "lexer.l"
+#line 111 "lexer.l"
 case 13:
 YY_RULE_SETUP
-#line 116 "lexer.l"
+#line 111 "lexer.l"
 { 
     yylval.string = strdup(yytext);
   
@@ -887,35 +882,35 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 123 "lexer.l"
+#line 118 "lexer.l"
 {return AND;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 124 "lexer.l"
+#line 119 "lexer.l"
 {return OR;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 125 "lexer.l"
+#line 120 "lexer.l"
 {return NOT;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 127 "lexer.l"
+#line 122 "lexer.l"
 {return yytext[0];}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 129 "lexer.l"
+#line 124 "lexer.l"
 return yytext[0];
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 130 "lexer.l"
+#line 125 "lexer.l"
 ECHO;
 	YY_BREAK
-#line 919 "lex.yy.c"
+#line 914 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1920,7 +1915,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 130 "lexer.l"
+#line 125 "lexer.l"
 
 
 

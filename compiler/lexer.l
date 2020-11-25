@@ -31,17 +31,14 @@ qstring \"[^\"\n]*[\"\n"]
     }else if(!strcmp(yytext,"System")){
         return SYSTEM_TOKEN;
     }else if(!strcmp(yytext,"Config")){
-     
         return CONFIG_TOKEN;
     }else if(!strcmp(yytext,"num")){
-      
         return TYPE_NUM;
     }else if(!strcmp(yytext,"str")){
         return TYPE_STR;
     }else if(!strcmp(yytext,"bool")){
         return TYPE_BOOL;
     }else if(!strcmp(yytext,"true")){
-       
         return TRUE_TK;
     }else if(!strcmp(yytext,"false")){
         return FALSE_TK;
@@ -49,26 +46,24 @@ qstring \"[^\"\n]*[\"\n"]
         return ADDBODY;
     }else if(!strcmp(yytext,"print")){
         return PRINT;
-    }else if(!strcmp(yytext,"read")){
-        return READ;
     }else if(!strcmp(yytext,"gravityConstant")){
-     
         return GRAVITY_CONF;
     }else if(!strcmp(yytext,"worldBorderBounce")){
-     
         return BOUNCE_CONF;
     }else if(!strcmp(yytext,"main")){
         return MAIN;
+    }else if(!strcmp(yytext,"readNum")){
+        return READ_NUM;
+    }else if(!strcmp(yytext,"readStr")){
+        return READ_STR;
     }
     struct symtab* sym = symLook(yytext);
     yylval.symp = sym;
     switch(sym->type){
         case NUM_TYPE:
-         
             return NUM_NAME;
         break;
         case STR_TYPE:
-        
             return STR_NAME;
         break;
         case BOOL_TYPE:

@@ -1,12 +1,27 @@
 main(){
 
     Config.worldBorderBounce(true)
+    num caca1 = readNum("ingrese un num") 
 
+    print(caca1)
+    
+    str caca2 = "noches"
 
-    print("cacacacacacac")
+    str pepe = "soy pepe"
+
+    print(caca1)
+
+    num num1 = readNum("ingrese un num")
+
+    num x2 = 3
+
+    num y = 12357932334215
+    
+    str scottpelele = "esta ves si"
+
+    print(num1)
 
     num x = 3
-
     while( x > 0){
         System.addBody(100 * x, 100 * x,10000,30,0,-10,"#FFF0FF")
         x = x-1

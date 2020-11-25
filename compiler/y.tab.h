@@ -77,12 +77,13 @@ extern int yydebug;
     BOUNCE_CONF = 283,
     ADDBODY = 284,
     PRINT = 285,
-    READ = 286,
-    OR = 287,
-    AND = 288,
-    NOT = 289,
-    UMINUS = 290,
-    LOWER_THAN_ELSE = 291
+    READ_STR = 286,
+    READ_NUM = 287,
+    OR = 288,
+    AND = 289,
+    NOT = 290,
+    UMINUS = 291,
+    LOWER_THAN_ELSE = 292
   };
 #endif
 /* Tokens.  */
@@ -114,12 +115,13 @@ extern int yydebug;
 #define BOUNCE_CONF 283
 #define ADDBODY 284
 #define PRINT 285
-#define READ 286
-#define OR 287
-#define AND 288
-#define NOT 289
-#define UMINUS 290
-#define LOWER_THAN_ELSE 291
+#define READ_STR 286
+#define READ_NUM 287
+#define OR 288
+#define AND 289
+#define NOT 290
+#define UMINUS 291
+#define LOWER_THAN_ELSE 292
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -131,7 +133,7 @@ union YYSTYPE
     struct symtab* symp;
     struct exp_t* exp_type;
 
-#line 135 "y.tab.h"
+#line 137 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
