@@ -2005,8 +2005,8 @@ yyreduce:
   case 38:
 #line 394 "parser2.y"
                {
-        printf("num exp: read_num\n");
-        (yyval.string) = (yyvsp[0].string);
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "read_num\n");
+        (yyval.string) = strdup((yyvsp[0].string));
     }
 #line 2012 "y.tab.c"
     break;
