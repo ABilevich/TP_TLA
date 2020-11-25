@@ -66,15 +66,23 @@
 
 
 /* First part of user prologue.  */
-#line 1 "parser.y"
+#line 1 "parser2.y"
 
 #include "parser.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+
 #define YYDEBUG 1
-#define DEFAULT_OUTFILE "a.out"
+
+#define DEBUG 1
+
+#define HEADER_FILE "header.aux"
+#define DEFAULT_OUTFILE "index.html"
+#define FOOTER_FILE "footer.aux"
+
+void appendFiles(char source[], FILE * fd2);
 int yylex();
 void yyerror(const char *s);
 
@@ -82,7 +90,7 @@ extern FILE *yyin, *yyout;
 
 
 
-#line 86 "y.tab.c"
+#line 94 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -131,61 +139,88 @@ extern int yydebug;
   enum yytokentype
   {
     NAME = 258,
-    NUMBER = 259,
-    QSTRING = 260,
-    COMPARATION = 261,
-    NEW_LINE = 262,
-    TAB = 263,
-    PRINT = 264,
-    IF = 265,
-    ELSE = 266,
-    WHILE = 267,
-    OR = 268,
-    AND = 269,
-    NOT = 270,
-    GT = 271,
-    LT = 272,
-    GE = 273,
-    LE = 274,
-    EQ = 275,
-    NEQ = 276,
-    UMINUS = 277,
-    LOWER_THAN_ELSE = 278
+    NUM_NAME = 259,
+    STR_NAME = 260,
+    BOOL_NAME = 261,
+    NUM_ARR_NAME = 262,
+    STR_ARR_NAME = 263,
+    BOOL_ARR_NAME = 264,
+    INTEGER = 265,
+    FLOAT = 266,
+    QSTRING = 267,
+    COMPARATION = 268,
+    MAIN = 269,
+    NEW_LINE = 270,
+    TAB = 271,
+    IF = 272,
+    ELSE = 273,
+    WHILE = 274,
+    SYSTEM_TOKEN = 275,
+    CONFIG_TOKEN = 276,
+    TYPE_STR = 277,
+    TYPE_NUM = 278,
+    TYPE_BOOL = 279,
+    TRUE_TK = 280,
+    FALSE_TK = 281,
+    GRAVITY_CONF = 282,
+    BOUNCE_CONF = 283,
+    ADDBODY = 284,
+    PRINT = 285,
+    READ = 286,
+    OR = 287,
+    AND = 288,
+    NOT = 289,
+    UMINUS = 290,
+    LOWER_THAN_ELSE = 291
   };
 #endif
 /* Tokens.  */
 #define NAME 258
-#define NUMBER 259
-#define QSTRING 260
-#define COMPARATION 261
-#define NEW_LINE 262
-#define TAB 263
-#define PRINT 264
-#define IF 265
-#define ELSE 266
-#define WHILE 267
-#define OR 268
-#define AND 269
-#define NOT 270
-#define GT 271
-#define LT 272
-#define GE 273
-#define LE 274
-#define EQ 275
-#define NEQ 276
-#define UMINUS 277
-#define LOWER_THAN_ELSE 278
+#define NUM_NAME 259
+#define STR_NAME 260
+#define BOOL_NAME 261
+#define NUM_ARR_NAME 262
+#define STR_ARR_NAME 263
+#define BOOL_ARR_NAME 264
+#define INTEGER 265
+#define FLOAT 266
+#define QSTRING 267
+#define COMPARATION 268
+#define MAIN 269
+#define NEW_LINE 270
+#define TAB 271
+#define IF 272
+#define ELSE 273
+#define WHILE 274
+#define SYSTEM_TOKEN 275
+#define CONFIG_TOKEN 276
+#define TYPE_STR 277
+#define TYPE_NUM 278
+#define TYPE_BOOL 279
+#define TRUE_TK 280
+#define FALSE_TK 281
+#define GRAVITY_CONF 282
+#define BOUNCE_CONF 283
+#define ADDBODY 284
+#define PRINT 285
+#define READ 286
+#define OR 287
+#define AND 288
+#define NOT 289
+#define UMINUS 290
+#define LOWER_THAN_ELSE 291
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 17 "parser.y"
+#line 25 "parser2.y"
 
     char* string;
     struct symtab* symp;
+    struct exp_t* exp_type;
 
-#line 189 "y.tab.c"
+#line 224 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -299,7 +334,7 @@ typedef int yytype_uint16;
 #define YYSIZEOF(X) YY_CAST (YYPTRDIFF_T, sizeof (X))
 
 /* Stored state numbers (used for stacks). */
-typedef yytype_int8 yy_state_t;
+typedef yytype_uint8 yy_state_t;
 
 /* State numbers in computations.  */
 typedef int yy_state_fast_t;
@@ -502,21 +537,21 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  13
+#define YYFINAL  4
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   162
+#define YYLAST   340
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  34
+#define YYNTOKENS  50
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  6
+#define YYNNTS  19
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  25
+#define YYNRULES  63
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  62
+#define YYNSTATES  173
 
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   278
+#define YYMAXUTOK   291
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -532,15 +567,15 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      30,    31,    24,    23,     2,    22,     2,    25,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,    29,
-       2,    28,     2,     2,     2,     2,     2,     2,     2,     2,
+      41,    42,    37,    36,    48,    35,    49,    38,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,    45,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,    46,     2,    47,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,    32,     2,    33,     2,     2,     2,     2,
+       2,     2,     2,    43,     2,    44,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -555,16 +590,22 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16,    17,    18,    19,    20,    21,    26,    27
+      15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
+      25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
+      39,    40
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_uint8 yyrline[] =
+static const yytype_int16 yyrline[] =
 {
-       0,    48,    48,    49,    54,    55,    66,    76,    83,    91,
-      98,   112,   113,   114,   115,   116,   117,   118,   119,   126,
-     134,   144,   145,   148,   166,   171
+       0,    77,    77,    78,    89,    95,   108,   122,   150,   154,
+     158,   163,   168,   173,   178,   187,   196,   205,   214,   223,
+     234,   241,   247,   255,   265,   278,   288,   295,   301,   310,
+     313,   316,   322,   325,   334,   343,   352,   355,   357,   361,
+     365,   374,   383,   392,   401,   406,   414,   422,   430,   438,
+     447,   456,   459,   464,   470,   477,   482,   495,   501,   511,
+     517,   525,   535,   546
 };
 #endif
 
@@ -573,12 +614,17 @@ static const yytype_uint8 yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "NAME", "NUMBER", "QSTRING",
-  "COMPARATION", "NEW_LINE", "TAB", "PRINT", "IF", "ELSE", "WHILE", "OR",
-  "AND", "NOT", "GT", "LT", "GE", "LE", "EQ", "NEQ", "'-'", "'+'", "'*'",
-  "'/'", "UMINUS", "LOWER_THAN_ELSE", "'='", "';'", "'('", "')'", "'{'",
-  "'}'", "$accept", "start", "statement_list", "statement", "expression",
-  "print_func", YY_NULLPTR
+  "$end", "error", "$undefined", "NAME", "NUM_NAME", "STR_NAME",
+  "BOOL_NAME", "NUM_ARR_NAME", "STR_ARR_NAME", "BOOL_ARR_NAME", "INTEGER",
+  "FLOAT", "QSTRING", "COMPARATION", "MAIN", "NEW_LINE", "TAB", "IF",
+  "ELSE", "WHILE", "SYSTEM_TOKEN", "CONFIG_TOKEN", "TYPE_STR", "TYPE_NUM",
+  "TYPE_BOOL", "TRUE_TK", "FALSE_TK", "GRAVITY_CONF", "BOUNCE_CONF",
+  "ADDBODY", "PRINT", "READ", "OR", "AND", "NOT", "'-'", "'+'", "'*'",
+  "'/'", "UMINUS", "LOWER_THAN_ELSE", "'('", "')'", "'{'", "'}'", "'='",
+  "'['", "']'", "','", "'.'", "$accept", "start", "statement_list",
+  "statement", "data_type", "if_statement", "while_statement", "exp",
+  "num_exp", "str_exp", "bool_exp", "arr_init", "arr_item", "system",
+  "system_action", "config", "config_action", "print", "read", YY_NULLPTR
 };
 #endif
 
@@ -589,12 +635,13 @@ static const yytype_int16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
-     275,   276,    45,    43,    42,    47,   277,   278,    61,    59,
-      40,    41,   123,   125
+     275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
+     285,   286,   287,   288,   289,    45,    43,    42,    47,   290,
+     291,    40,    41,   123,   125,    61,    91,    93,    44,    46
 };
 # endif
 
-#define YYPACT_NINF (-27)
+#define YYPACT_NINF (-122)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -608,13 +655,24 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-     135,   -26,   -24,   -17,   -13,     4,   135,   -27,     1,    25,
-      21,    25,    25,   -27,   -27,   -27,    -7,   -27,    25,    25,
-      25,   129,    -4,    61,    81,    85,    25,    -3,   -27,   105,
-      25,    25,    25,    25,    25,    25,    25,   -27,   -27,   -27,
-       0,    10,   109,   -27,   137,    38,    -3,    13,    13,   -27,
-     -27,   135,   135,   -27,    -2,     2,    34,   -27,    14,   135,
-       6,   -27
+      13,   -40,     9,    -3,  -122,    -1,   274,     6,     8,    22,
+      29,    57,    80,    97,   110,    86,   107,  -122,  -122,  -122,
+     112,   126,    74,  -122,    52,  -122,  -122,  -122,  -122,  -122,
+    -122,   113,   265,   233,   113,   113,   113,   233,   233,   148,
+      62,   222,   265,  -122,  -122,   104,  -122,   158,  -122,  -122,
+     113,   113,    34,  -122,   195,  -122,   185,   176,  -122,   200,
+    -122,  -122,   233,   233,    10,   221,   214,   252,   272,   -13,
+      -7,   219,  -122,   225,   230,  -122,   142,    71,   176,   221,
+       7,   222,   208,   113,  -122,    50,   113,   113,   113,   113,
+     113,   265,   265,   113,  -122,    -5,   203,   113,   233,   233,
+     241,   256,   257,   249,   260,   113,   113,   233,  -122,  -122,
+    -122,   275,   276,  -122,   247,   247,  -122,  -122,   280,   247,
+    -122,   227,  -122,   293,  -122,    34,   288,  -122,   113,   265,
+     233,   274,   274,   -20,    94,   292,   286,  -122,  -122,  -122,
+      34,   176,   221,   138,   166,   113,  -122,  -122,   222,  -122,
+     304,  -122,    77,   278,   289,   290,   113,   222,  -122,   274,
+     128,  -122,   194,   113,  -122,   143,   113,   157,   113,   171,
+     265,    14,  -122
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -622,99 +680,167 @@ static const yytype_int16 yypact[] =
      means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       2,     0,     0,     0,     0,     0,     3,     4,     0,     0,
-       0,     0,     0,     1,     5,    10,    22,    21,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,    18,    19,     0,
-       0,     0,     0,     0,     0,     0,     0,     6,    25,    24,
-       0,     0,     0,    20,    15,    17,    16,    12,    11,    14,
-      13,     0,     0,    23,     0,     0,     7,     9,     0,     0,
-       0,     8
+       2,     0,     0,     0,     1,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,    20,    21,    22,
+       0,     0,     0,     4,     0,    12,    13,     8,     9,    10,
+      11,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     3,     5,     0,    36,     0,    37,    38,
+       0,     0,    17,    44,     0,    39,     0,    18,    51,     0,
+      52,    53,     0,     0,     0,    19,     0,     0,     0,     0,
+       0,     0,    57,     0,     0,    59,     0,    26,    27,    28,
+       0,     0,     0,     0,    33,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,    47,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,    62,    63,
+       6,     0,     0,    34,    30,    29,    32,    31,     0,    29,
+      41,    42,    40,     0,    49,    48,    46,    45,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,    35,    43,    50,
+      14,    15,    16,     0,     0,     0,    60,    61,     0,     7,
+      23,    25,     0,    55,     0,     0,     0,     0,    54,     0,
+       0,    56,     0,     0,    24,     0,     0,     0,     0,     0,
+       0,     0,    58
 };
 
   /* YYPGOTO[NTERM-NUM].  */
-static const yytype_int8 yypgoto[] =
+static const yytype_int16 yypgoto[] =
 {
-     -27,   -27,   -18,    -6,    46,   -27
+    -122,  -122,  -121,   -22,  -122,  -122,  -122,   -37,   -29,   -18,
+       3,  -122,   178,  -122,  -122,  -122,  -122,  -122,  -122
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
-static const yytype_int8 yydefgoto[] =
+static const yytype_int16 yydefgoto[] =
 {
-      -1,     5,     6,     7,    21,     8
+      -1,     2,    22,    23,    24,    25,    26,   153,    64,    78,
+      79,   149,   154,    27,    72,    28,    75,    29,    30
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
      positive, shift that token.  If negative, reduce the rule whose
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
-static const yytype_int8 yytable[] =
+static const yytype_uint8 yytable[] =
 {
-      14,     1,     9,    30,    13,     1,    10,     2,     3,     1,
-       4,     2,     3,    11,     4,     2,     3,    12,     4,    33,
-      34,    35,    36,    26,    16,    17,    22,    38,    16,    17,
-      15,    56,    51,    54,    55,    57,    18,    35,    36,    61,
-      18,    60,    52,    19,    30,    58,    59,    19,    14,    14,
-       0,    20,    32,     0,    14,    20,    23,    24,    25,     0,
-      33,    34,    35,    36,    27,    28,    29,    30,     0,     0,
-       0,     0,    42,     0,    31,    32,    44,    45,    46,    47,
-      48,    49,    50,    33,    34,    35,    36,    30,     0,     0,
-       0,    30,    39,     0,    31,    32,     0,     0,    31,    32,
-       0,     0,     0,    33,    34,    35,    36,    33,    34,    35,
-      36,    30,    40,     0,     0,    30,    41,     0,    31,    32,
-       0,     0,    31,    32,     0,     0,     0,    33,    34,    35,
-      36,    33,    34,    35,    36,    30,    43,     0,     1,     0,
-      53,     0,    31,    32,     2,     3,     0,     4,     0,     0,
-       0,    33,    34,    35,    36,     0,     0,     0,    37,    33,
-      34,    35,    36
+      44,     3,    52,    56,    76,    66,    67,    68,    97,     4,
+     143,   144,    77,    56,    57,    86,    87,    88,    89,    98,
+      99,    84,    85,    97,    80,    98,    99,     1,   145,   103,
+      86,    87,    88,    89,    95,   104,    65,   113,   162,     5,
+      69,    70,     6,    92,   110,    86,    87,    88,    89,   109,
+      92,    31,    77,    32,   112,    45,   172,   114,   115,   116,
+     117,   118,   119,   121,   123,    94,    96,    33,   125,    86,
+      87,    88,    89,   120,   122,    34,   133,   134,     7,     8,
+       9,    10,    11,    12,    97,    86,    87,    88,    89,    73,
+      74,    13,   113,    14,    15,    16,    17,    18,    19,   140,
+      56,   126,   127,    35,    20,    21,    86,    91,    88,    89,
+     135,   141,    86,    87,    88,    89,   152,    46,    43,    77,
+      47,    44,    44,    48,    49,   156,    36,   160,    77,    86,
+      87,    88,    89,   142,   165,    39,   146,   167,    37,   169,
+      44,    56,     7,     8,     9,    10,    11,    12,    50,    81,
+      82,    38,   171,    41,    51,    13,    40,    14,    15,    16,
+      17,    18,    19,    86,    87,    88,    89,    42,    20,    21,
+       7,     8,     9,    10,    11,    12,   163,    71,    86,    87,
+      88,    89,   150,    13,   108,    14,    15,    16,    17,    18,
+      19,   166,    86,    87,    88,    89,    20,    21,     7,     8,
+       9,    10,    11,    12,    83,   168,    86,    87,    88,    89,
+     151,    13,    92,    14,    15,    16,    17,    18,    19,   170,
+      86,    91,    88,    89,    20,    21,    46,    53,    58,    47,
+      54,    59,    48,    49,    55,    98,    99,    46,   164,    58,
+      47,    90,    59,    48,    49,   124,    93,    60,    61,    86,
+      87,    88,    89,    98,    99,   111,    62,    50,    60,    61,
+     105,   100,    86,    63,    88,    89,   106,    62,    50,    46,
+      53,   107,    47,    54,    63,    48,    49,    55,     7,     8,
+       9,    10,    11,    12,    88,    89,   128,    86,    87,    88,
+      89,    13,   131,    14,    15,    16,    17,    18,    19,   101,
+      50,   129,   130,   132,    20,    21,    51,    86,    87,    88,
+      89,    86,    87,    88,    89,    86,    87,    88,    89,   102,
+     136,    99,   155,   137,    98,    99,   157,   138,    86,    87,
+      88,    89,   148,   159,   147,   161,   158,     0,     0,     0,
+     139
 };
 
-static const yytype_int8 yycheck[] =
+static const yytype_int16 yycheck[] =
 {
-       6,     3,    28,     6,     0,     3,    30,     9,    10,     3,
-      12,     9,    10,    30,    12,     9,    10,    30,    12,    22,
-      23,    24,    25,    30,     3,     4,     5,    31,     3,     4,
-      29,    33,    32,    51,    52,    33,    15,    24,    25,    33,
-      15,    59,    32,    22,     6,    11,    32,    22,    54,    55,
-      -1,    30,    14,    -1,    60,    30,    10,    11,    12,    -1,
-      22,    23,    24,    25,    18,    19,    20,     6,    -1,    -1,
-      -1,    -1,    26,    -1,    13,    14,    30,    31,    32,    33,
-      34,    35,    36,    22,    23,    24,    25,     6,    -1,    -1,
-      -1,     6,    31,    -1,    13,    14,    -1,    -1,    13,    14,
-      -1,    -1,    -1,    22,    23,    24,    25,    22,    23,    24,
-      25,     6,    31,    -1,    -1,     6,    31,    -1,    13,    14,
-      -1,    -1,    13,    14,    -1,    -1,    -1,    22,    23,    24,
-      25,    22,    23,    24,    25,     6,    31,    -1,     3,    -1,
-      31,    -1,    13,    14,     9,    10,    -1,    12,    -1,    -1,
-      -1,    22,    23,    24,    25,    -1,    -1,    -1,    29,    22,
-      23,    24,    25
+      22,    41,    31,    32,    41,    34,    35,    36,    13,     0,
+     131,   132,    41,    42,    32,    35,    36,    37,    38,    32,
+      33,    50,    51,    13,    42,    32,    33,    14,    48,    42,
+      35,    36,    37,    38,    63,    42,    33,    42,   159,    42,
+      37,    38,    43,    36,    81,    35,    36,    37,    38,    42,
+      36,    45,    81,    45,    83,     3,    42,    86,    87,    88,
+      89,    90,    91,    92,    93,    62,    63,    45,    97,    35,
+      36,    37,    38,    91,    92,    46,   105,   106,     4,     5,
+       6,     7,     8,     9,    13,    35,    36,    37,    38,    27,
+      28,    17,    42,    19,    20,    21,    22,    23,    24,   128,
+     129,    98,    99,    46,    30,    31,    35,    36,    37,    38,
+     107,   129,    35,    36,    37,    38,   145,     4,    44,   148,
+       7,   143,   144,    10,    11,    48,    46,   156,   157,    35,
+      36,    37,    38,   130,   163,    49,    42,   166,    41,   168,
+     162,   170,     4,     5,     6,     7,     8,     9,    35,    45,
+      46,    41,   170,    41,    41,    17,    49,    19,    20,    21,
+      22,    23,    24,    35,    36,    37,    38,    41,    30,    31,
+       4,     5,     6,     7,     8,     9,    48,    29,    35,    36,
+      37,    38,    44,    17,    42,    19,    20,    21,    22,    23,
+      24,    48,    35,    36,    37,    38,    30,    31,     4,     5,
+       6,     7,     8,     9,    46,    48,    35,    36,    37,    38,
+      44,    17,    36,    19,    20,    21,    22,    23,    24,    48,
+      35,    36,    37,    38,    30,    31,     4,     5,     6,     7,
+       8,     9,    10,    11,    12,    32,    33,     4,    44,     6,
+       7,    46,     9,    10,    11,    42,    46,    25,    26,    35,
+      36,    37,    38,    32,    33,    47,    34,    35,    25,    26,
+      41,    47,    35,    41,    37,    38,    41,    34,    35,     4,
+       5,    41,     7,     8,    41,    10,    11,    12,     4,     5,
+       6,     7,     8,     9,    37,    38,    45,    35,    36,    37,
+      38,    17,    43,    19,    20,    21,    22,    23,    24,    47,
+      35,    45,    45,    43,    30,    31,    41,    35,    36,    37,
+      38,    35,    36,    37,    38,    35,    36,    37,    38,    47,
+      45,    33,    18,    47,    32,    33,    48,    47,    35,    36,
+      37,    38,    46,    43,    42,   157,    47,    -1,    -1,    -1,
+      47
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     3,     9,    10,    12,    35,    36,    37,    39,    28,
-      30,    30,    30,     0,    37,    29,     3,     4,    15,    22,
-      30,    38,     5,    38,    38,    38,    30,    38,    38,    38,
-       6,    13,    14,    22,    23,    24,    25,    29,    31,    31,
-      31,    31,    38,    31,    38,    38,    38,    38,    38,    38,
-      38,    32,    32,    31,    36,    36,    33,    33,    11,    32,
-      36,    33
+       0,    14,    51,    41,     0,    42,    43,     4,     5,     6,
+       7,     8,     9,    17,    19,    20,    21,    22,    23,    24,
+      30,    31,    52,    53,    54,    55,    56,    63,    65,    67,
+      68,    45,    45,    45,    46,    46,    46,    41,    41,    49,
+      49,    41,    41,    44,    53,     3,     4,     7,    10,    11,
+      35,    41,    58,     5,     8,    12,    58,    59,     6,     9,
+      25,    26,    34,    41,    58,    60,    58,    58,    58,    60,
+      60,    29,    64,    27,    28,    66,    57,    58,    59,    60,
+      59,    45,    46,    46,    58,    58,    35,    36,    37,    38,
+      46,    36,    36,    46,    60,    58,    60,    13,    32,    33,
+      47,    47,    47,    42,    42,    41,    41,    41,    42,    42,
+      57,    47,    58,    42,    58,    58,    58,    58,    58,    58,
+      59,    58,    59,    58,    42,    58,    60,    60,    45,    45,
+      45,    43,    43,    58,    58,    60,    45,    47,    47,    47,
+      58,    59,    60,    52,    52,    48,    42,    42,    46,    61,
+      44,    44,    58,    57,    62,    18,    48,    48,    47,    43,
+      58,    62,    52,    48,    44,    58,    48,    58,    48,    58,
+      48,    59,    42
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    34,    35,    35,    36,    36,    37,    37,    37,    37,
-      37,    38,    38,    38,    38,    38,    38,    38,    38,    38,
-      38,    38,    38,    38,    39,    39
+       0,    50,    51,    51,    52,    52,    53,    53,    53,    53,
+      53,    53,    53,    53,    53,    53,    53,    53,    53,    53,
+      54,    54,    54,    55,    55,    56,    57,    57,    57,    58,
+      58,    58,    58,    58,    58,    58,    58,    58,    58,    59,
+      59,    59,    59,    59,    59,    60,    60,    60,    60,    60,
+      60,    60,    60,    60,    61,    62,    62,    63,    64,    65,
+      66,    66,    67,    68
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     0,     1,     1,     2,     4,     7,    11,     7,
-       2,     3,     3,     3,     3,     3,     3,     3,     2,     2,
-       3,     1,     1,     4,     4,     4
+       0,     2,     0,     6,     1,     2,     4,     6,     1,     1,
+       1,     1,     1,     1,     6,     6,     6,     3,     3,     3,
+       1,     1,     1,     7,    11,     7,     1,     1,     1,     3,
+       3,     3,     3,     2,     3,     4,     1,     1,     1,     1,
+       3,     3,     3,     4,     1,     3,     3,     2,     3,     3,
+       4,     1,     1,     1,     3,     1,     3,     3,    16,     3,
+       4,     4,     4,     4
 };
 
 
@@ -1410,226 +1536,745 @@ yyreduce:
   switch (yyn)
     {
   case 3:
-#line 49 "parser.y"
-                             {
-            fprintf(yyout,"%s",(yyvsp[0].string));
-
+#line 78 "parser2.y"
+                                            {
+        if(DEBUG) printf("main\n");
+        char * s = malloc(strlen((yyvsp[-1].string))+1);
+          if(s == NULL){
+            yyerror("no memory left");
         }
-#line 1419 "y.tab.c"
+        sprintf(s,"%s\n",(yyvsp[-1].string));
+        fprintf(yyout,"%s",s);
+    }
+#line 1550 "y.tab.c"
     break;
 
   case 4:
-#line 54 "parser.y"
-                          { (yyval.string) = (yyvsp[0].string);}
-#line 1425 "y.tab.c"
+#line 89 "parser2.y"
+                          {
+    if(DEBUG) printf("statement: %s\n",(yyvsp[0].string));
+        char * s = malloc(strlen((yyvsp[0].string))+2);
+        sprintf(s,"%s\n",(yyvsp[0].string));
+        (yyval.string) = s;
+    }
+#line 1561 "y.tab.c"
     break;
 
   case 5:
-#line 55 "parser.y"
-                                       {
-                char *s = (yyval.string);
-              
-                strcat(s,(yyvsp[0].string));
-                // free($2);
-                (yyval.string) =s;
-            }
-#line 1437 "y.tab.c"
+#line 95 "parser2.y"
+                                 {
+        // printf("statement list: %s\n",$1);
+        // printf("statement: %s\n",$2);    
+        char *s = (yyval.string);
+        strcat(s,(yyvsp[0].string));
+        strcat(s,"\n");
+        // free($2);
+        (yyval.string) =s;
+    }
+#line 1575 "y.tab.c"
     break;
 
   case 6:
-#line 66 "parser.y"
-                                    {   
-                char *s = malloc(strlen((yyvsp[-3].symp)->name) + strlen((yyvsp[-1].string)) +5);
-                if(s == NULL){
-                    yyerror("no memory left");
-                }
-                
-              
-                sprintf(s,"%s = %s;\n",(yyvsp[-3].symp)->name,(yyvsp[-1].string));
-                // free($3);
-                (yyval.string) = s;}
-#line 1452 "y.tab.c"
+#line 108 "parser2.y"
+                           {
+    
+        if((yyvsp[-3].exp_type)->type != (yyvsp[0].exp_type)->type){
+              yyerror("invalid type assignment.");
+        }
+
+        (yyvsp[-2].symp)->type = (yyvsp[-3].exp_type)->type;
+        char *s = malloc(strlen((yyvsp[-2].symp)->name) + strlen((yyvsp[0].exp_type)->sval) + 8);
+        if(s == NULL){
+            yyerror("no memory left");
+        }
+        sprintf(s,"let %s = %s",(yyvsp[-2].symp)->name,(yyvsp[0].exp_type)->sval);
+        (yyval.string) = s;
+    }
+#line 1594 "y.tab.c"
     break;
 
   case 7:
-#line 76 "parser.y"
-                                                                             {
-           char * s  = malloc(7+strlen((yyvsp[-4].string))+strlen((yyvsp[-1].string)));
-           sprintf(s,"if( %s ) {\n%s}",(yyvsp[-4].string),(yyvsp[-1].string));
-        //    free($3);
-        //    free($6);
-            (yyval.string) = s;
+#line 122 "parser2.y"
+                                          {
+         if((yyvsp[-5].exp_type)->type != (yyvsp[0].exp_type)->type){
+              yyerror("invalid type assignment.");
+              exit(1);
         }
-#line 1464 "y.tab.c"
+        enum var_type type;
+        switch((yyvsp[-5].exp_type)->type){
+            case NUM_TYPE:
+                type = NUM_ARR_TYPE;
+            break;
+            case STR_TYPE:
+                type = STR_ARR_TYPE;
+            break;
+            case BOOL_TYPE:
+                type = BOOL_ARR_TYPE;
+            break;
+            default:
+            break;
+        }
+        (yyvsp[-4].symp)->type = type;
+        char *s = malloc(strlen((yyvsp[-4].symp)->name) + strlen((yyvsp[0].exp_type)->sval) +8);
+        if(s == NULL){
+            yyerror("no memory left");
+        }
+ 
+        sprintf(s,"let %s = %s",(yyvsp[-4].symp)->name,(yyvsp[0].exp_type)->sval);
+        (yyval.string) = s;
+    }
+#line 1627 "y.tab.c"
     break;
 
   case 8:
-#line 83 "parser.y"
-                                                                                    {
-           char * s  = malloc(7+strlen((yyvsp[-8].string))+strlen((yyvsp[-5].string))+strlen((yyvsp[-1].string)));
-           sprintf(s,"if( %s ) {\n%s}else{\n%s}",(yyvsp[-8].string),(yyvsp[-5].string),(yyvsp[-1].string));
-        //    free($3);
-        //    free($6);
-        //    free($10);
-            (yyval.string) = s;
-        }
-#line 1477 "y.tab.c"
+#line 150 "parser2.y"
+             {
+        if(DEBUG) printf("statement system %s\n",(yyvsp[0].string));
+        (yyval.string) = (yyvsp[0].string);
+    }
+#line 1636 "y.tab.c"
     break;
 
   case 9:
-#line 91 "parser.y"
-                                                           {
-           char * s  = malloc(7+strlen((yyvsp[-4].string))+strlen((yyvsp[-1].string)));
-           sprintf(s,"while( %s ) {\n%s}",(yyvsp[-4].string),(yyvsp[-1].string));
-        //    free($3);
-        //    free($6);
-            (yyval.string) = s;
-        }
-#line 1489 "y.tab.c"
+#line 154 "parser2.y"
+             {
+        if(DEBUG) printf("statement config %s\n",(yyvsp[0].string));
+        (yyval.string) = (yyvsp[0].string);
+    }
+#line 1645 "y.tab.c"
     break;
 
   case 10:
-#line 98 "parser.y"
-                         {
-            char *s = malloc(strlen((yyvsp[-1].string)) +3);
-            sprintf(s,"%s;\n",(yyvsp[-1].string));
-            //free($1);
-            (yyval.string) = s;
-        }
-#line 1500 "y.tab.c"
+#line 158 "parser2.y"
+            {
+        if(DEBUG) printf("statement print\n");
+        (yyval.string) = (yyvsp[0].string);
+
+    }
+#line 1655 "y.tab.c"
     break;
 
   case 11:
-#line 112 "parser.y"
-                                      { (yyval.string) = expOp((yyvsp[-2].string),"+",(yyvsp[0].string));}
-#line 1506 "y.tab.c"
+#line 163 "parser2.y"
+           {
+        if(DEBUG) printf("statement read\n");
+        (yyval.string) = (yyvsp[0].string);
+
+    }
+#line 1665 "y.tab.c"
     break;
 
   case 12:
-#line 113 "parser.y"
-                                    { (yyval.string) = expOp((yyvsp[-2].string),"-",(yyvsp[0].string));}
-#line 1512 "y.tab.c"
+#line 168 "parser2.y"
+                   {
+        if(DEBUG) printf("statement If\n");
+        (yyval.string) = (yyvsp[0].string);
+
+    }
+#line 1675 "y.tab.c"
     break;
 
   case 13:
-#line 114 "parser.y"
-                                    { (yyval.string) = expOp((yyvsp[-2].string),"/",(yyvsp[0].string));}
-#line 1518 "y.tab.c"
+#line 173 "parser2.y"
+                      {
+        if(DEBUG) printf("statement while\n");
+        (yyval.string) = (yyvsp[0].string);
+
+    }
+#line 1685 "y.tab.c"
     break;
 
   case 14:
-#line 115 "parser.y"
-                                    { (yyval.string) = expOp((yyvsp[-2].string),"*",(yyvsp[0].string));}
-#line 1524 "y.tab.c"
+#line 178 "parser2.y"
+                                                {
+        if(DEBUG) printf("statement num array\n");
+        char *s = malloc(strlen((yyvsp[-5].symp)->name) + strlen((yyvsp[-3].string)) + strlen((yyvsp[0].string)) +6);
+        if(s == NULL){
+            yyerror("no memory left");
+        }
+        sprintf(s,"%s[%s] = %s",(yyvsp[-5].symp)->name,(yyvsp[-3].string),(yyvsp[0].string));
+        (yyval.string) = s;
+    }
+#line 1699 "y.tab.c"
     break;
 
   case 15:
-#line 116 "parser.y"
-                                            { (yyval.string) = expOp((yyvsp[-2].string),(yyvsp[-1].string),(yyvsp[0].string));}
-#line 1530 "y.tab.c"
+#line 187 "parser2.y"
+                                                {
+        if(DEBUG) printf("statement str array\n");
+        char *s = malloc(strlen((yyvsp[-5].symp)->name) + strlen((yyvsp[-3].string)) + strlen((yyvsp[0].string)) +8);
+        if(s == NULL){
+            yyerror("no memory left");
+        }
+        sprintf(s,"%s[%s] = %s",(yyvsp[-5].symp)->name,(yyvsp[-3].string),(yyvsp[0].string));
+        (yyval.string) = s;
+    }
+#line 1713 "y.tab.c"
     break;
 
   case 16:
-#line 117 "parser.y"
-                                    {(yyval.string) = expOp((yyvsp[-2].string),"&&",(yyvsp[0].string));}
-#line 1536 "y.tab.c"
+#line 196 "parser2.y"
+                                                 {
+        if(DEBUG) printf("statement bool array\n");
+        char *s = malloc(strlen((yyvsp[-5].symp)->name) + strlen((yyvsp[-3].string)) + strlen((yyvsp[0].string)) +6);
+        if(s == NULL){
+            yyerror("no memory left");
+        }
+        sprintf(s,"%s[%s] = %s",(yyvsp[-5].symp)->name,(yyvsp[-3].string),(yyvsp[0].string));
+        (yyval.string) = s;
+    }
+#line 1727 "y.tab.c"
     break;
 
   case 17:
-#line 118 "parser.y"
-                                   {(yyval.string) = expOp((yyvsp[-2].string),"||",(yyvsp[0].string));}
-#line 1542 "y.tab.c"
+#line 205 "parser2.y"
+                           {
+        if(DEBUG) printf("statement num eq\n");
+        char *s = malloc(strlen((yyvsp[-2].symp)->name) + strlen((yyvsp[0].string)) +4);
+        if(s == NULL){
+            yyerror("no memory left");
+        }
+        sprintf(s,"%s = %s",(yyvsp[-2].symp)->name,(yyvsp[0].string));
+        (yyval.string) = s;
+    }
+#line 1741 "y.tab.c"
     break;
 
   case 18:
-#line 119 "parser.y"
-                         { 
-                char *s = malloc(strlen((yyvsp[0].string)) +2);
-                if(s == NULL){
-                    yyerror("no memory left");
-                }
-                sprintf(s,"!%s",(yyvsp[0].string));
-                (yyval.string) = s;}
-#line 1554 "y.tab.c"
+#line 214 "parser2.y"
+                           {
+        if(DEBUG) printf("statement str eq\n");
+        char *s = malloc(strlen((yyvsp[-2].symp)->name) + strlen((yyvsp[0].string)) +6);
+        if(s == NULL){
+            yyerror("no memory left");
+        }
+        sprintf(s,"%s = %s",(yyvsp[-2].symp)->name,(yyvsp[0].string));
+        (yyval.string) = s;
+    }
+#line 1755 "y.tab.c"
     break;
 
   case 19:
-#line 126 "parser.y"
-                                      { 
-                char *s = malloc(strlen((yyvsp[0].string)) +2);
-                if(s == NULL){
-                    yyerror("no memory left");
-                }
-                sprintf(s,"-%s",(yyvsp[0].string));
-                (yyval.string) = s;
-            }
-#line 1567 "y.tab.c"
+#line 223 "parser2.y"
+                             {
+        if(DEBUG) printf("statement bool eq\n");
+        char *s = malloc(strlen((yyvsp[-2].symp)->name) + strlen((yyvsp[0].string)) +4);
+        if(s == NULL){
+            yyerror("no memory left");
+        }
+        sprintf(s,"%s = %s",(yyvsp[-2].symp)->name,(yyvsp[0].string));
+        (yyval.string) = s;
+    }
+#line 1769 "y.tab.c"
     break;
 
   case 20:
-#line 134 "parser.y"
-                                    { 
-                char *s = malloc(strlen((yyvsp[-1].string)) +3);
-                if(s == NULL){
-                    yyerror("no memory left");
-                }
-                sprintf(s,"(%s)",(yyvsp[-1].string));
-               
-                (yyval.string) = s;
-            }
-#line 1581 "y.tab.c"
+#line 234 "parser2.y"
+                    {
+        struct exp_t* aux = malloc(sizeof(struct exp_t));
+        aux->type = STR_TYPE;
+        aux->sval = "str";
+        (yyval.exp_type) = aux; 
+ 
+    }
+#line 1781 "y.tab.c"
+    break;
+
+  case 21:
+#line 241 "parser2.y"
+               { 
+        struct exp_t* aux = malloc(sizeof(struct exp_t));
+        aux->type = NUM_TYPE;
+         aux->sval = "num";
+        (yyval.exp_type) = aux; 
+    }
+#line 1792 "y.tab.c"
     break;
 
   case 22:
-#line 145 "parser.y"
-                 {
-        
-            (yyval.string) = strdup((yyvsp[0].symp)->name);}
-#line 1589 "y.tab.c"
+#line 247 "parser2.y"
+                { 
+        struct exp_t* aux = malloc(sizeof(struct exp_t));
+        aux->type = BOOL_TYPE;
+        aux->sval = "bool";
+        (yyval.exp_type) = aux; 
+    }
+#line 1803 "y.tab.c"
     break;
 
   case 23:
-#line 148 "parser.y"
-                                    {
-            if((yyvsp[-3].symp)->funcptr){
-                char *s = malloc(strlen((yyvsp[-3].symp)->name) + strlen((yyvsp[-1].string)) +3);
-                if(s == NULL){
-                    yyerror("no memory left");
-                }
-                sprintf(s,"%s(%s)",(yyvsp[-3].symp)->name,(yyvsp[-1].string));
-              
-                (yyval.string) = s;
-            
-            }else{
-                 printf("%s is not a function\n",(yyvsp[-3].symp)->name);
-                (yyval.string) = 0;
-            }
-        }
-#line 1609 "y.tab.c"
+#line 255 "parser2.y"
+                                                                               {
+    char * s  = malloc( strlen("if(  ) {\n}") + strlen((yyvsp[-4].string)) + strlen((yyvsp[-1].string)) +1);
+        if(s == NULL){
+            yyerror("no memory left");
+        }    
+        sprintf(s,"if( %s ) {\n%s}",(yyvsp[-4].string),(yyvsp[-1].string));
+        //    free($3);
+        //    free($6);
+        (yyval.string) = s;
+    }
+#line 1818 "y.tab.c"
     break;
 
   case 24:
-#line 166 "parser.y"
-                                      {
-            char *s = malloc(15 + strlen((yyvsp[-1].string)));
-            sprintf(s,"console.log(%s)",(yyvsp[-1].string));
-            (yyval.string) = s;
+#line 265 "parser2.y"
+                                                                             {
+        char * s  = malloc(strlen("if(  ) {\n}else{\n}") + strlen((yyvsp[-8].string)) + strlen((yyvsp[-5].string)) + strlen((yyvsp[-1].string)) + 1);
+        if(s == NULL){
+            yyerror("no memory left");
         }
-#line 1619 "y.tab.c"
+        sprintf(s,"if( %s ) {\n%s}else{\n%s}",(yyvsp[-8].string),(yyvsp[-5].string),(yyvsp[-1].string));
+        //    free($3);
+        //    free($6);
+        //    free($10);
+        (yyval.string) = s;
+    }
+#line 1834 "y.tab.c"
     break;
 
   case 25:
-#line 171 "parser.y"
+#line 278 "parser2.y"
+                                                               {
+    char * s  = malloc(14+strlen((yyvsp[-4].string))+strlen((yyvsp[-1].string)));
+    if(s == NULL){
+        yyerror("no memory left");
+    }
+        sprintf(s,"while( %s ) {\n%s}",(yyvsp[-4].string),(yyvsp[-1].string));
+        (yyval.string) = s;
+    }
+#line 1847 "y.tab.c"
+    break;
+
+  case 26:
+#line 288 "parser2.y"
+             { 
+       
+        struct exp_t* aux = malloc(sizeof(struct exp_t));
+        aux->type = NUM_TYPE;
+        aux->sval = (yyvsp[0].string);
+        (yyval.exp_type) = aux;
+    }
+#line 1859 "y.tab.c"
+    break;
+
+  case 27:
+#line 295 "parser2.y"
+              { 
+        struct exp_t* aux = malloc(sizeof(struct exp_t));
+        aux->type = STR_TYPE;
+        aux->sval = (yyvsp[0].string);
+        (yyval.exp_type) = aux;
+    }
+#line 1870 "y.tab.c"
+    break;
+
+  case 28:
+#line 301 "parser2.y"
+               { 
+        struct exp_t* aux = malloc(sizeof(struct exp_t));
+        aux->type = BOOL_TYPE;
+        aux->sval = (yyvsp[0].string);
+        (yyval.exp_type) = aux;
+    }
+#line 1881 "y.tab.c"
+    break;
+
+  case 29:
+#line 310 "parser2.y"
+                             {
+        (yyval.string) = expOp((yyvsp[-2].string),"+",(yyvsp[0].string));
+    }
+#line 1889 "y.tab.c"
+    break;
+
+  case 30:
+#line 313 "parser2.y"
+                          {
+        (yyval.string) = expOp((yyvsp[-2].string),"-",(yyvsp[0].string));
+    }
+#line 1897 "y.tab.c"
+    break;
+
+  case 31:
+#line 316 "parser2.y"
+                          {
+        if(!strcmp((yyvsp[0].string),"0")){
+            yyerror("division by zero.");
+        }
+        (yyval.string) = expOp((yyvsp[-2].string),"/",(yyvsp[0].string));
+    }
+#line 1908 "y.tab.c"
+    break;
+
+  case 32:
+#line 322 "parser2.y"
+                          {
+        (yyval.string) = expOp((yyvsp[-2].string),"*",(yyvsp[0].string));
+    }
+#line 1916 "y.tab.c"
+    break;
+
+  case 33:
+#line 325 "parser2.y"
+                               {
+        char *s = malloc(strlen((yyvsp[0].string)) +2);
+        if(s == NULL){
+            yyerror("no memory left");
+        }
+        sprintf(s,"-%s",(yyvsp[0].string));
+                
+        (yyval.string) = s;
+    }
+#line 1930 "y.tab.c"
+    break;
+
+  case 34:
+#line 334 "parser2.y"
+                      {
+        char *s = malloc(strlen((yyvsp[-1].string)) +3);
+        if(s == NULL){
+            yyerror("no memory left");
+        }
+        sprintf(s,"(%s)",(yyvsp[-1].string));
+                
+        (yyval.string) = s;
+    }
+#line 1944 "y.tab.c"
+    break;
+
+  case 35:
+#line 343 "parser2.y"
                                    {
-             char *s = malloc(15 + strlen((yyvsp[-1].string)));
-            sprintf(s,"console.log(\"%s\")",(yyvsp[-1].string));
+        char *s = malloc(strlen((yyvsp[-3].symp)->name) + strlen((yyvsp[-1].string)) +3);
+        if(s == NULL){
+            yyerror("no memory left");
+        }
+        sprintf(s,"%s[%s]",(yyvsp[-3].symp)->name,(yyvsp[-1].string));
+                
+        (yyval.string) = s;
+    }
+#line 1958 "y.tab.c"
+    break;
+
+  case 36:
+#line 352 "parser2.y"
+               {
+        (yyval.string) = strdup((yyvsp[0].symp)->name);
+    }
+#line 1966 "y.tab.c"
+    break;
+
+  case 37:
+#line 355 "parser2.y"
+              {
+    }
+#line 1973 "y.tab.c"
+    break;
+
+  case 38:
+#line 357 "parser2.y"
+            {
+    }
+#line 1980 "y.tab.c"
+    break;
+
+  case 39:
+#line 361 "parser2.y"
+                 {
+
+    }
+#line 1988 "y.tab.c"
+    break;
+
+  case 40:
+#line 365 "parser2.y"
+                          {
+        char * str = malloc(strlen((yyvsp[-2].string)) + strlen((yyvsp[0].string)) + 4);
+        if(str == NULL){
+            yyerror("No memory left");
+        }
+        sprintf(str,"%s + %s",(yyvsp[-2].string),(yyvsp[0].string));
+        (yyval.string) = str;
+    }
+#line 2001 "y.tab.c"
+    break;
+
+  case 41:
+#line 374 "parser2.y"
+                          {
+        char * str = malloc(strlen((yyvsp[-2].string)) + strlen((yyvsp[0].string)) + 4);
+        if(str == NULL){
+            yyerror("No memory left");
+        }
+        sprintf(str,"%s + %s",(yyvsp[-2].string),(yyvsp[0].string));
+        (yyval.string) = str;
+    }
+#line 2014 "y.tab.c"
+    break;
+
+  case 42:
+#line 383 "parser2.y"
+                          {
+        char * str = malloc(strlen((yyvsp[-2].string)) + strlen((yyvsp[0].string)) + 4);
+        if(str == NULL){
+            yyerror("No memory left");
+        }
+        sprintf(str,"%s + %s",(yyvsp[-2].string),(yyvsp[0].string));
+        (yyval.string) = str;
+    }
+#line 2027 "y.tab.c"
+    break;
+
+  case 43:
+#line 392 "parser2.y"
+                                   {
+        char *s = malloc(strlen((yyvsp[-3].symp)->name) + strlen((yyvsp[-1].string)) +3);
+        if(s == NULL){
+            yyerror("no memory left");
+        }
+        sprintf(s,"%s[%s]",(yyvsp[-3].symp)->name,(yyvsp[-1].string));
+                
+        (yyval.string) = s;
+    }
+#line 2041 "y.tab.c"
+    break;
+
+  case 44:
+#line 401 "parser2.y"
+               {
+        (yyval.string) = strdup((yyvsp[0].symp)->name);
+    }
+#line 2049 "y.tab.c"
+    break;
+
+  case 45:
+#line 406 "parser2.y"
+                                {
+        char * str = malloc(strlen((yyvsp[-2].string)) + strlen((yyvsp[0].string)) + strlen("&&") + 3);
+        if(str == NULL){
+            yyerror("No memory left");
+        }
+        sprintf(str,"%s && %s",(yyvsp[-2].string),(yyvsp[0].string));
+        (yyval.string) = str;
+    }
+#line 2062 "y.tab.c"
+    break;
+
+  case 46:
+#line 414 "parser2.y"
+                             {
+        char * str = malloc(strlen((yyvsp[-2].string)) + strlen((yyvsp[0].string)) + strlen("||") + 3);
+        if(str == NULL){
+            yyerror("No memory left");
+        }
+        sprintf(str,"%s || %s",(yyvsp[-2].string),(yyvsp[0].string));
+        (yyval.string) = str;
+    }
+#line 2075 "y.tab.c"
+    break;
+
+  case 47:
+#line 422 "parser2.y"
+                     {
+        char * str = malloc(strlen((yyvsp[0].string)) + strlen("!") + 1);
+        if(str == NULL){
+            yyerror("No memory left");
+        }
+        sprintf(str,"!%s",(yyvsp[0].string));
+        (yyval.string) = str;
+    }
+#line 2088 "y.tab.c"
+    break;
+
+  case 48:
+#line 430 "parser2.y"
+                                    {
+        char *str = malloc(strlen((yyvsp[-2].string)) + strlen((yyvsp[0].string)) + strlen((yyvsp[-1].string)) + 3);
+        if(str == NULL){
+            yyerror("No memory left");
+        }
+        sprintf(str,"%s %s %s",(yyvsp[-2].string), (yyvsp[-1].string), (yyvsp[0].string));
+        (yyval.string) = str;
+    }
+#line 2101 "y.tab.c"
+    break;
+
+  case 49:
+#line 438 "parser2.y"
+                         {
+        char *str = malloc(strlen((yyvsp[-1].string)) + 3);
+        if(str == NULL){
+            yyerror("No memory left");
+        }
+        sprintf(str,"(%s)",(yyvsp[-1].string));
+        (yyval.string) = str;
+        
+    }
+#line 2115 "y.tab.c"
+    break;
+
+  case 50:
+#line 447 "parser2.y"
+                                      {
+        char *s = malloc(strlen((yyvsp[-3].symp)->name) + strlen((yyvsp[-1].string)) +3);
+        if(s == NULL){
+            yyerror("no memory left");
+        }
+        sprintf(s,"%s[%s]",(yyvsp[-3].symp)->name,(yyvsp[-1].string));
+                
+        (yyval.string) = s;
+    }
+#line 2129 "y.tab.c"
+    break;
+
+  case 51:
+#line 456 "parser2.y"
+                  {
+            (yyval.string) = strdup((yyvsp[0].symp)->name);
+    }
+#line 2137 "y.tab.c"
+    break;
+
+  case 52:
+#line 459 "parser2.y"
+                { 
+    
+        if(DEBUG) printf("TRUE\n");
+            (yyval.string) = strdup("true");
+    }
+#line 2147 "y.tab.c"
+    break;
+
+  case 53:
+#line 464 "parser2.y"
+                {
+         (yyval.string) = strdup("false");
+    }
+#line 2155 "y.tab.c"
+    break;
+
+  case 54:
+#line 470 "parser2.y"
+                           {
+        struct exp_t* aux = malloc(sizeof(struct exp_t));
+        aux->type = (yyvsp[-1].exp_type)->type;
+        (yyval.exp_type) = aux;
+    }
+#line 2165 "y.tab.c"
+    break;
+
+  case 55:
+#line 477 "parser2.y"
+              {
+        struct exp_t* aux = malloc(sizeof(struct exp_t));
+        aux->type = (yyvsp[0].exp_type)->type;
+        (yyval.exp_type) = aux;
+    }
+#line 2175 "y.tab.c"
+    break;
+
+  case 56:
+#line 482 "parser2.y"
+                        {
+            if((yyvsp[-2].exp_type)->type != (yyvsp[0].exp_type)->type){
+                yyerror("invalid type for array item");
+                exit(1);
+            }
+            struct exp_t* aux = malloc(sizeof(struct exp_t));
+            aux->type = (yyvsp[-2].exp_type)->type;
+            (yyval.exp_type) = aux;
+        }
+#line 2189 "y.tab.c"
+    break;
+
+  case 57:
+#line 495 "parser2.y"
+                                       {
+           if(DEBUG) printf("system\n");
+           (yyval.string) = (yyvsp[0].string);
+        }
+#line 2198 "y.tab.c"
+    break;
+
+  case 58:
+#line 501 "parser2.y"
+                                                                                                               { 
+            char *s = malloc(strlen((yyvsp[-13].string)) + strlen((yyvsp[-11].string)) + strlen((yyvsp[-9].string)) + strlen((yyvsp[-7].string)) + strlen((yyvsp[-5].string)) + strlen((yyvsp[-3].string)) + strlen((yyvsp[-1].string)) + strlen("bodies.push(new Body(,,,,,,))")+1);
+            if(s == NULL){
+                yyerror("no memory left");
+            }
+            sprintf(s,"bodies.push(new Body(%s,%s,%s,%s,%s,%s,%s))",(yyvsp[-13].string),(yyvsp[-11].string),(yyvsp[-9].string),(yyvsp[-7].string),(yyvsp[-5].string),(yyvsp[-3].string),(yyvsp[-1].string)); 
+            (yyval.string) = s; 
+        }
+#line 2211 "y.tab.c"
+    break;
+
+  case 59:
+#line 511 "parser2.y"
+                                       { 
+        if(DEBUG) printf("config\n");
+         (yyval.string) = (yyvsp[0].string);
+    }
+#line 2220 "y.tab.c"
+    break;
+
+  case 60:
+#line 517 "parser2.y"
+                                            { 
+            char *s = malloc(strlen((yyvsp[-1].string)) + strlen("Gc = ")+1);
+            if(s == NULL){
+                yyerror("no memory left");
+            }
+            sprintf(s,"Gc = %s",(yyvsp[-1].string));
             (yyval.string) = s;
         }
-#line 1629 "y.tab.c"
+#line 2233 "y.tab.c"
+    break;
+
+  case 61:
+#line 525 "parser2.y"
+                                       {
+            char *s = malloc(strlen((yyvsp[-1].string)) + strlen("worldBorderBounce = ") + 1);
+            if(s == NULL){
+                yyerror("no memory left");
+            }
+            sprintf(s,"worldBorderBounce = %s",(yyvsp[-1].string));
+            (yyval.string) = s;
+        }
+#line 2246 "y.tab.c"
+    break;
+
+  case 62:
+#line 535 "parser2.y"
+                         {
+            printf("system print action\n");
+            char *s = malloc(strlen((yyvsp[-1].exp_type)->sval) + strlen("console.log()") + 1);
+            if(s == NULL){
+                yyerror("no memory left");
+            }
+            sprintf(s,"console.log(%s)",(yyvsp[-1].exp_type)->sval); 
+            (yyval.string) = s; 
+        }
+#line 2260 "y.tab.c"
+    break;
+
+  case 63:
+#line 546 "parser2.y"
+                            { 
+            printf("system read action");
+            char *s = malloc(strlen((yyvsp[-1].string)) + strlen("window.prompt()") + 1);
+            if(s == NULL){
+                yyerror("no memory left");
+            }
+            sprintf(s,"window.prompt(%s)",(yyvsp[-1].string)); 
+            (yyval.string) = s; 
+        }
+#line 2274 "y.tab.c"
     break;
 
 
-#line 1633 "y.tab.c"
+#line 2278 "y.tab.c"
 
       default: break;
     }
@@ -1861,40 +2506,29 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 178 "parser.y"
+#line 557 "parser2.y"
 
-// void symAdd(char *name){
-//     struct symtab * sp;
-//     for(sp= symtab; sp <&symtab[MAX_SYMBOLS];sp++){
-  
-//         /* is it free */
-//         if(!sp->name) {
-//             sp->name = strdup(s);
-//             return;
-//         }
-//         /* otherwise continue to next */
-//     }
-//     yyerror("Too much symbols");
-//     exit(1);
-// }
+
 
 struct symtab * symLook(char* s){
     struct symtab * sp;
     for(sp= symtab; sp <&symtab[MAX_SYMBOLS];sp++){
         /* is it alreaw here? */
-        if (sp->name && !strcmp(sp->name, s) ){
+        if (sp->name && !strcmp((sp->name)+2, s) ){
             return sp;
         }
       
         /* is it free */
         if(!sp->name) {
-            sp->name = strdup(s);
-          
+            char * snew = malloc(sizeof(s)+3);
+            sprintf(snew, "u_%s", s);
+            sp->name = snew;
+            sp->type = NOT_DEFINED;
             return sp;
         }
         /* otherwise continue to next */
     }
-     yyerror("Too much symbols");
+     yyerror("Too many symbols");
      exit(1);
     
 }
@@ -1910,8 +2544,7 @@ char * expOp(char * exp1,char * op,char * exp2){
         if(exp1 != NULL && op != NULL && exp2 != NULL){
             sprintf(s,"%s %s %s",exp1,op,exp2);
              return s;            
-        }
-                       
+        } 
     }
     return NULL;
 }
@@ -1920,8 +2553,9 @@ void addFunc(char *name,double(*func)()){
     struct symtab *sp = symLook(name);
     sp->funcptr = func;
 }
+
 int main(int argc, char* argv[]){
-    
+
     extern double sqrt(),exp(),log();
    
     addFunc("sqrt",sqrt);
@@ -1941,17 +2575,20 @@ int main(int argc, char* argv[]){
         }
       
     }
-    if(argc > 2){
-        outfile = argv[2];
-    }else{
-        outfile = DEFAULT_OUTFILE;
-    }
-    yyout = fopen(outfile,"w+");
+
+    
+
+    yyout = fopen(DEFAULT_OUTFILE,"a");
     if(yyout == NULL){
-        fprintf(stderr,"%s: cannot open %s\n",progname,outfile);
+        fprintf(stderr,"%s: cannot open %s\n",progname,DEFAULT_OUTFILE);
         exit(1);
     }
+
+    appendFiles(HEADER_FILE, yyout);
+
     yyparse();
+
+    appendFiles(FOOTER_FILE, yyout);
   
     fclose(yyin);
     fclose(yyout);
@@ -1963,9 +2600,42 @@ int main(int argc, char* argv[]){
     return 0;
 }
 
+void appendFiles(char source[], FILE * fp2)
+{
+    // declaring file pointers
+    FILE *fp1;
+ 
+    // opening files
+    fp1 = fopen(source, "a+");
+ 
+    // If file is not found then return.
+    if (!fp1 && !fp2) {
+        printf("Unable to open/"
+               "detect file(s)\n");
+        return;
+    }
+ 
+    char buf[100];
+ 
+    // explicitly writing "\n"
+    // to the destination file
+    // so to enhance readability.
+    fprintf(fp2, "\n");
+ 
+    // writing the contents of
+    // source file to destination file.
+    while (!feof(fp1)) {
+        fgets(buf, sizeof(buf), fp1);
+        fprintf(fp2, "%s", buf);
+    }
+
+}
+ 
 
 void yyerror(const char *s)
 {
     fprintf (stderr, "%s\n", s);
+    exit(1);
 }
+
 

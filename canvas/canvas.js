@@ -5,6 +5,11 @@ canvas.height = window.innerHeight;
 const c = canvas.getContext('2d');
 const mouse = {};
 
+//Constants
+//let Gc = 6.67*10^(-11);
+let Gc = 0.001;
+let worldBorderBounce = true;
+
 // Event Listeners
 window.addEventListener('mousemove', (event) => {
     mouse.x = event.x;
@@ -52,7 +57,13 @@ function distance(pos1, pos2) {
 }
 
 
+function createMoon(body, altitude, mass, radius, color) {
+    console.log(" g: " + Gc);
+    let base_speed = Math.sqrt( (Gc * body.mass ) / (body.radius + altitude) );
 
+    let px = body.position.x + body.radius + altitude;
+    let py = body.position.y
+    
     let delta_x = px - body.position.x
     let delta_y = body.position.y - py
     let angle = Math.atan2(delta_y, delta_x)
@@ -100,16 +111,16 @@ class Body{
     
     calculateVelocity(){
 
-        if(this.position.x + this.radius > window.innerWidth || this.position.x - this.radius < 0) {
-            this.velocity.vx = -this.velocity.vx;
-        }
-    
-        if(this.position.y + this.radius> window.innerHeight || this.position.y - this.radius < 0) {
-            this.velocity.vy = -this.velocity.vy;
+        if(worldBorderBounce){
+            if(this.position.x + this.radius > window.innerWidth || this.position.x - this.radius < 0) {
+                this.velocity.vx = -this.velocity.vx;
+            }
+        
+            if(this.position.y + this.radius> window.innerHeight || this.position.y - this.radius < 0) {
+                this.velocity.vy = -this.velocity.vy;
+            }
         }
 
-        //let Gc = 6.67*10^(-11);
-        let Gc = 0.001;
         let fx = 0;
         let fy = 0;
         let dist = 0;

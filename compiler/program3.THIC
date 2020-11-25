@@ -1,0 +1,15 @@
+main(){
+
+    Config.worldBorderBounce(true)
+
+    num cant = read("how many planets?")
+
+    print("cacacacacacac")
+
+    num x = 3
+
+    while( x > 0){
+        System.addBody(100 * x, 100 * x,10000,30,0,-10,"#FFF0FF")
+        x = x-1
+    }
+}

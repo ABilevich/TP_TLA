@@ -1,0 +1,16 @@
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            c.clearRect(0, 0, canvas.width, canvas.height);
+
+            bodies.forEach(body => {
+                body.update();
+            })
+        }
+
+        init();
+        animate();
+    </script>
+</body>
+</html>

@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <math.h>
 #define YYDEBUG 1
-#define DEFAULT_OUTFILE "a.out"
+#define DEFAULT_OUTFILE "script.js"
 int yylex();
 void yyerror(const char *s);
 
@@ -24,7 +24,7 @@ extern FILE *yyin, *yyout;
 %token <string>QSTRING
 
 %token <string> COMPARATION
-%token NEW_LINE TAB PRINT IF ELSE WHILE OR AND NOT GT LT GE LE EQ NEQ
+%token MAIN NEW_LINE TAB PRINT IF ELSE WHILE OR AND NOT GT LT GE LE EQ NEQ SYSTEM CONFIG NUM_TYPE STR_T 
 
 //Set precedences
 %left OR
@@ -38,15 +38,15 @@ extern FILE *yyin, *yyout;
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
 
-%type <string> expression
+%type <string> num_exp
 %type <string> statement
 %type <string> statement_list
 %type <string> print_func
 %%
 
 
-start: /*empty */
-        |     statement_list {fprintf(yyout,"%s",$1);}
+start:  /*empty */
+        |  MAIN '(' ')' '{' statement_list '}'  {fprintf(yyout,"%s",$1);}
         ;
 
 statement_list: statement { $$ = $1;}
@@ -58,7 +58,7 @@ statement_list: statement { $$ = $1;}
             }
         ;
 
-statement: NAME '=' expression  ';' {   
+statement: NAME '=' num_exp  ';' {   
                 char *s = malloc(strlen($1->name) + strlen($3) +5);
                 if(s == NULL){
                     yyerror("no memory left");
@@ -67,7 +67,7 @@ statement: NAME '=' expression  ';' {
                 // free($3);
                 $$ = s;
         }
-        | IF '(' expression ')' '{' statement_list '}' %prec LOWER_THAN_ELSE {
+        | IF '(' num_exp ')' '{' statement_list '}' %prec LOWER_THAN_ELSE {
             char * s  = malloc(7+strlen($3)+strlen($6));
              if(s == NULL){
                     yyerror("no memory left");
@@ -77,7 +77,7 @@ statement: NAME '=' expression  ';' {
             //    free($6);
             $$ = s;
         }
-        | IF '(' expression ')' '{' statement_list '}' ELSE '{' statement_list '}'  {
+        | IF '(' num_exp ')' '{' statement_list '}' ELSE '{' statement_list '}'  {
            char * s  = malloc(7+strlen($3)+strlen($6)+strlen($10));
             if(s == NULL){
                     yyerror("no memory left");
@@ -88,7 +88,7 @@ statement: NAME '=' expression  ';' {
         //    free($10);
             $$ = s;
         }
-        | WHILE '(' expression ')' '{' statement_list '}'  {
+        | WHILE '(' num_exp ')' '{' statement_list '}'  {
            char * s  = malloc(7+strlen($3)+strlen($6));
             if(s == NULL){
                     yyerror("no memory left");
@@ -107,16 +107,32 @@ statement: NAME '=' expression  ';' {
             //free($1);
             $$ = s;
         }
+        
         ;
 
-expression: expression '+' expression { $$ = expOp($1,"+",$3);}
-        | expression '-' expression { $$ = expOp($1,"-",$3);}
-        | expression '/' expression { $$ = expOp($1,"/",$3);}
-        | expression '*' expression { $$ = expOp($1,"*",$3);}
-        | expression COMPARATION expression { $$ = expOp($1,$2,$3);}
-        | expression AND expression {$$ = expOp($1,"&&",$3);}
-        | expression OR expression {$$ = expOp($1,"||",$3);}
-        | NOT expression { 
+
+system:
+        SYSTEM ADDBODY '(' num_exp ',' num_exp ',' num_exp ',' num_exp ',' num_exp ',' num_exp ',' str_exp ')' {
+            //hacer algo
+        }
+    ;
+
+config:
+        CONFIG GRAVITY '(' num_exp ')'{
+
+        } | CONFIG WINDOW_BOUNCE '(' num_exp ')'{
+            
+        }
+    ;
+
+num_exp: num_exp '+' num_exp                { $$ = expOp($1,"+",$3); }
+        | num_exp '-' num_exp               { $$ = expOp($1,"-",$3); }
+        | num_exp '/' num_exp               { $$ = expOp($1,"/",$3); }
+        | num_exp '*' num_exp               { $$ = expOp($1,"*",$3); }
+        | num_exp COMPARATION num_exp       { $$ = expOp($1,$2,$3); }
+        | num_exp AND num_exp               { $$ = expOp($1,"&&",$3); }
+        | num_exp OR num_exp                { $$ = expOp($1,"||",$3); }
+        | NOT num_exp { 
                 char *s = malloc(strlen($2) +2);
                 if(s == NULL){
                     yyerror("no memory left");
@@ -124,7 +140,7 @@ expression: expression '+' expression { $$ = expOp($1,"+",$3);}
                 sprintf(s,"!%s",$2);
                 $$ = s;
         }
-        | '-' expression %prec UMINUS { 
+        | '-' num_exp %prec UMINUS { 
                 char *s = malloc(strlen($2) +2);
                 if(s == NULL){
                     yyerror("no memory left");
@@ -132,7 +148,7 @@ expression: expression '+' expression { $$ = expOp($1,"+",$3);}
                 sprintf(s,"-%s",$2);
                 $$ = s;
         }
-        |   '(' expression ')'      { 
+        |   '(' num_exp ')'      { 
                 char *s = malloc(strlen($2) +3);
                 if(s == NULL){
                     yyerror("no memory left");
@@ -141,7 +157,7 @@ expression: expression '+' expression { $$ = expOp($1,"+",$3);}
                
                 $$ = s;
         }
-        |   NAME '(' expression ')' {
+        |   NAME '(' num_exp ')' {
                 if($1->funcptr){
                     char *s = malloc(strlen($1->name) + strlen($3) +3);
                     if(s == NULL){
@@ -162,7 +178,12 @@ expression: expression '+' expression { $$ = expOp($1,"+",$3);}
         ;
 
 
-print_func:  PRINT '(' expression ')' {
+
+bool_exp:
+
+
+
+print_func:  PRINT '(' num_exp ')' {
             char *s = malloc(15 + strlen($3));
             if(s == NULL){
                 yyerror("no memory left");
@@ -259,11 +280,9 @@ int main(int argc, char* argv[]){
         }
       
     }
-    if(argc > 2){
-        outfile = argv[2];
-    }else{
-        outfile = DEFAULT_OUTFILE;
-    }
+ 
+    outfile = DEFAULT_OUTFILE;
+
     yyout = fopen(outfile,"w+");
     if(yyout == NULL){
         fprintf(stderr,"%s: cannot open %s\n",progname,outfile);

@@ -1,8 +1,8 @@
 
 all: parser lexer link
 
-parser: parser.y
-	yacc -d  -v parser.y
+parser: parser2.y
+	yacc -d  -v parser2.y
 
 lexer: lexer.l
 	lex lexer.l
@@ -12,6 +12,6 @@ link: lex.yy.c y.tab.c
 	gcc -Wall -o compile lex.yy.o y.tab.o -ll -lm
 clean:
 	find . -type f | xargs touch
-	rm -rf lex.yy.c y.tab.c y.tab.o lex.yy.o y.tab.h
+	rm -rf lex.yy.c y.tab.c y.tab.o lex.yy.o y.tab.h script.js index.html compile y.output
 
 .PHONY: all clean
