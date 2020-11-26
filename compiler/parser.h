@@ -28,7 +28,7 @@ struct exp_t
 
 struct symtab *symLook(char *s);
 
- void symSave(char *s,enum var_type type);
+struct symtab * symSave(char *s,enum var_type type);
 // void addFunc(char *name, double (*func)());
 char *expOp(char *exp1, char *op, char *exp2);
 #endif // MACRO
