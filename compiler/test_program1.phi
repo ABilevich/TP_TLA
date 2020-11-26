@@ -1,33 +1,36 @@
 main(){
     num x = 32.12
     num y = 12
-    str caca = "pendorcho"
+    str var1 = "pendorcho"
     Config.gravityConstant( 12 )
     Config.worldBorderBounce(false)
-    print("caca")
-    str pepe = readStr("cacacaca")
+    print("asds")
+    str pepe = readStr("asdasdas")
 
     if(true){
         if(x >= 0){
-            str pepetunia = "cacatuatua"
+            str pepetunia = "asdasd"
         }else{
             if(y <= x){
                 while(x <= 0){
                     if(x == 1){
                          Config.gravityConstant( 12 )
                          Config.worldBorderBounce(false)
-                         print("caca" + 213)
-                         pepe = readStr("cacacaca")
+                         print("asd" + 213)
+                         pepe = readStr("asd")
                     }
                 }
             }
         }
     }   
 
-    System.addBody(12, 12, 12, 12, 12, 12, "cacacaca")
+    System.addBody(12, 12, 12, 12, 12, 12, "asd")
 
-    num arr[] = [x, x]
+    num arr[] = [32]
     arr[y] = x
+
+    num f = 13
+    f = 123132 
 }
 
 

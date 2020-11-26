@@ -2,11 +2,11 @@ DEBUG=FALSE
 
 all: parser lexer link
 
-parser: parser.y
-	yacc -d  -v parser.y
+parser: parser2.y
+	yacc -d  -v parser2.y
 
-lexer: lexer.l
-	lex lexer.l
+lexer: lexer2.l
+	lex lexer2.l
 
 link: lex.yy.c y.tab.c
 	gcc -DDEBUG_$(DEBUG) -Wall -c lex.yy.c y.tab.c -lm

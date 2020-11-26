@@ -126,22 +126,25 @@ statement:
 
     data_type NAME '=' exp {
     
-       if($1->type != $4->type){
-              yyerror("invalid type assignment.");
-       }
-       printf("before datatype= %d\nname type= %d\n",$1->type,$2->type);
-     
+        if($1->type != $4->type){
+                yyerror("invalid type assignment.");
+        }
+        printf("before datatype= %d\nname type= %d\n",$1->type,$2->type);
+
         $2->type = $1->type;
+
         printf("after datatype= %d\nname type= %d\n",$1->type,$2->type);
         char *s = malloc(strlen($2->name) + strlen($4->sval) + 8);
+
         if(s == NULL){
             yyerror("no memory left");
         }
+
         sprintf(s,"let %s = %s",$2->name,$4->sval);
         $$ = s;
     }
     | data_type NAME '[' ']' '=' arr_init {
-         if($1->type != $6->type){
+        if($1->type != $6->type){
               yyerror("invalid type assignment.");
               exit(1);
         }
@@ -183,27 +186,22 @@ statement:
     | print {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "print\n");
         $$ = $1;
-
     }
-    // | read_str {
-    //     if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "read\n");
-    //     $$ = $1;
-
-    // }
-    // | read_num {
-    //     if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "read\n");
-    //     $$ = $1;
-
-    // }
+    | read_str {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "read\n");
+        $$ = $1;
+    }
+    | read_num {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "read\n");
+        $$ = $1;
+    }
     | if_statement {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "if\n");
         $$ = $1;
-
     }
     | while_statement {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "while\n");
         $$ = $1;
-
     }
     | NUM_ARR_NAME '[' num_exp ']'  '=' num_exp {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "num array\n");
@@ -261,23 +259,26 @@ statement:
         sprintf(s,"%s = %s",$1->name,$3);
         $$ = s;
     }
-
     ;
 
+
+    
 data_type: TYPE_STR {
+      if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"data_type "ANSI_COLOR_RESET "STR_TYPE\n");
         struct exp_t* aux = malloc(sizeof(struct exp_t));
         aux->type = STR_TYPE;
         aux->sval = "str";
         $$ = aux; 
- 
     }
     | TYPE_NUM { 
+              if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"data_type "ANSI_COLOR_RESET "NUM_TYPE\n");
         struct exp_t* aux = malloc(sizeof(struct exp_t));
         aux->type = NUM_TYPE;
          aux->sval = "num";
         $$ = aux; 
     }
     | TYPE_BOOL { 
+              if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"data_type "ANSI_COLOR_RESET "BOOL_TYPE\n");
         struct exp_t* aux = malloc(sizeof(struct exp_t));
         aux->type = BOOL_TYPE;
         aux->sval = "bool";
@@ -530,7 +531,6 @@ arr_init: '[' arr_item ']' {
         if(aux == NULL){
             yyerror("no memory left");
         }
-       
         aux->type = $2->type;
         aux->sval = $2->sval;
         $$ = aux;
@@ -654,7 +654,7 @@ struct symtab * symLook(char* s){
         if (sp->name && !strcmp((sp->name)+2, s) ){
             
             printf("comparing: %s\n", (sp->name)+2);
-            printTable();
+            //printTable();
             return sp;
         }
       
@@ -667,7 +667,7 @@ struct symtab * symLook(char* s){
             sp->type = NOT_DEFINED;
             return sp;
         }else{
-            printTable();
+            //printTable();
         }
         /* otherwise continue to next */
     }

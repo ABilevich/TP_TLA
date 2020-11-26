@@ -5,7 +5,6 @@
 
 enum var_type
 {
-    NOT_DEFINED,
     NUM_TYPE,
     STR_TYPE,
     BOOL_TYPE,
@@ -17,7 +16,6 @@ enum var_type
 struct symtab
 {
     char *name;
-    double (*funcptr)();
     enum var_type type;
 
 } symtab[MAX_SYMBOLS];
@@ -29,6 +27,8 @@ struct exp_t
 };
 
 struct symtab *symLook(char *s);
-void addFunc(char *name, double (*func)());
+
+ void symSave(char *s,enum var_type type);
+// void addFunc(char *name, double (*func)());
 char *expOp(char *exp1, char *op, char *exp2);
 #endif // MACRO

@@ -1,5 +1,7 @@
+str x
+
 main(){
-    num x = 2
-    str y = "asd"
-    x = 3
+    x = "hola mundo"
+    print(x)
 }
+

@@ -1,7 +1,7 @@
 main(){
 
     num size = 12212
-    System.addBody(12, size, 12, 12, 12, 12, "cacacaca")
+    System.addBody(12, size, 12, 12, 12, 12, "var")
 
     Config.worldBorderBounce(true)
     Config.gravityConstant(0.01)
@@ -9,14 +9,14 @@ main(){
     num x = 2
     
     if(x == 3){
-        str caca = "semen"
+        str var = "pepe"
         if(x == 0){
             while(x <= 3){
                 if(x >= 0){
                     while(x == 3){
                         x = 6
                         x = 3
-    System.addBody(12, 12, 12, 12, 12, 12, "cacacaca")
+    System.addBody(12, 12, 12, 12, 12, 12, "var")
 
     Config.worldBorderBounce(true)
                     }
@@ -26,7 +26,7 @@ main(){
                             x = 3
                         }else{
                             x = 4
-    System.addBody(12, 12, 12, 12, 12, 12, "cacacaca")
+    System.addBody(12, 12, 12, 12, 12, 12, "var")
 
     Config.worldBorderBounce(true)
                         }
@@ -42,7 +42,7 @@ main(){
         x = 3
     }
     
-    System.addBody(12, 12, 12, 12, 12, 12, "cacacaca")
+    System.addBody(12, 12, 12, 12, 12, 12, "var")
 
     Config.worldBorderBounce(true)
 }

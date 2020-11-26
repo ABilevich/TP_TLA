@@ -1,15 +1,15 @@
 main(){
 
     Config.worldBorderBounce(true)
-    num caca1 = readNum("ingrese un num") 
+    num var1 = readNum("ingrese un num") 
 
-    print(caca1)
+    print(var1)
     
-    str caca2 = "noches"
+    str var2 = "noches"
 
     str pepe = "soy pepe"
 
-    print(caca1)
+    print(var1)
 
     num num1 = readNum("ingrese un num")
 
@@ -17,7 +17,7 @@ main(){
 
     num y = 12357932334215
     
-    str scottpelele = "esta ves si"
+    str asdasd = "esta ves si"
 
     print(num1)
 
@@ -27,6 +27,6 @@ main(){
         x = x-1
     }
 
-    str arr[] = ["pe","ne"]
-    arr[2] = "caca"
+    str arr[] = ["var","asd"]
+    arr[2] = "var"
 }
