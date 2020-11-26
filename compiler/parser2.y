@@ -28,6 +28,7 @@ int yylex();
 void yyerror(const char *s);
 void yydebug(const char * format,...);
 void printTable();
+enum var_type arrTypeToNormal(enum var_type type);
 extern FILE *yyin, *yyout;
 
 
@@ -232,11 +233,13 @@ statement:
         $$ = $1;
     }
     | NAME '[' exp ']'  '=' exp {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement: "ANSI_COLOR_RESET "NAME[exp] = exp\n");
+        
+         //type verification 
         struct symtab * sym = symLook($1);
         if(sym == NULL) yyerror("Variable not declared");
-        if(sym->type != $6->type) yyerror("Invalid assignment value type");    
+        if(arrTypeToNormal(sym->type) != $6->type) yyerror("Invalid assignment value type");  
         
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement: "ANSI_COLOR_RESET "NAME[exp] = exp\n");
         char *s = malloc(strlen(sym->name) + strlen($3->sval) + strlen($6->sval) +6);
         if(s == NULL){
             yyerror("no memory left");
@@ -247,6 +250,7 @@ statement:
     | NAME '=' exp {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement: "ANSI_COLOR_RESET "NAME = exp\n");
         
+        //type verification  
         struct symtab * sym = symLook($1);
         if(sym == NULL) yyerror("Variable not declared");
         if(sym->type != $3->type) yyerror("Type conflict: Assigning variable with incorrect value type");
@@ -263,7 +267,7 @@ statement:
         //type verification  
         struct symtab * sym = symLook($1);
         if(sym == NULL) yyerror("Variable not declared");
-        if(sym->type != NUM_ARR_TYPE && sym->type != STR_ARR_TYPE && sym->type != BOOL_ARR_TYPE) yyerror("Initializing non array variable as array");
+        if(arrTypeToNormal(sym->type) != $3->type) yyerror("Type conflict: Invalid array initialization type");  
     
         //line building
         char *s = malloc(strlen(sym->name) + strlen($3->sval) +4);
@@ -682,8 +686,6 @@ struct symtab * symLook(char* s){
 struct symtab * symSave(char* s,enum var_type type){
     struct symtab * sp;
 
-    printf("searching for: %s\n", s);
-
     for(sp= symtab; sp <&symtab[MAX_SYMBOLS];sp++){
         /* is it alredy here? */
 
@@ -699,31 +701,27 @@ struct symtab * symSave(char* s,enum var_type type){
             sprintf(snew, "u_%s", s);
             sp->name = snew;
             sp->type = type;
-            printTable();
+            //printTable();
             return sp;
             // sp->name = strdup(s);
         }
         /* otherwise continue to next */
     }
-    yyerror("Variable creation error: Too many symbols");
-    
 
-    
+    yyerror("Variable creation error: Too many symbols");
+
+    return NULL;
 }
 
 char * expOp(char * exp1,char * op,char * exp2){
-    if(!strcmp("/",op) && atof(exp2) == 0.0){
-        yyerror("divide by zero");
-    }else{
-        char *s = malloc(strlen(exp1) + strlen(op) + strlen(exp2)+4);
-        if(s == NULL){
-            yyerror("no memory left");
-        }
-        if(exp1 != NULL && op != NULL && exp2 != NULL){
-            sprintf(s,"%s %s %s",exp1,op,exp2);
-             return s;            
-        } 
+    char *s = malloc(strlen(exp1) + strlen(op) + strlen(exp2)+4);
+    if(s == NULL){
+        yyerror("no memory left");
     }
+    if(exp1 != NULL && op != NULL && exp2 != NULL){
+        sprintf(s,"%s %s %s",exp1,op,exp2);
+        return s;            
+    } 
     return NULL;
 }
 
@@ -820,6 +818,25 @@ void printTable(){
     }
       printf("########################\n");
 }
+
+enum var_type arrTypeToNormal(enum var_type type){
+    switch(type){
+        case NUM_ARR_TYPE:
+            return NUM_TYPE;
+        break;
+        case BOOL_ARR_TYPE:
+            return BOOL_TYPE;
+        break;
+        case STR_ARR_TYPE:
+            return STR_TYPE;
+        break;
+        default:
+            yyerror("Type doesn't exist");
+        break;
+    }
+    return 0;
+}
+
 void yyerror(const char *s)
 {
     fprintf (stderr,ANSI_COLOR_RED "%s\n" ANSI_COLOR_RESET, s);
