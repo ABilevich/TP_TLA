@@ -45,12 +45,13 @@ extern FILE *yyin, *yyout;
 %token <string> INTEGER FLOAT
 %token <string> QSTRING
 %token <string> COMPARATION
-%token MAIN
-%token IF ELSE WHILE
+%token MAIN 
+%token COMMENT
+%token ELSE IF WHILE
 %token SYSTEM_TOKEN CONFIG_TOKEN 
 %token TYPE_STR TYPE_NUM TYPE_BOOL
 %token TRUE_TK FALSE_TK
-%token GRAVITY_CONF BOUNCE_CONF
+%token GRAVITY_CONF BOUNCE_CONF TRAIL_CONF
 %token ADDBODY PRINT READ_STR READ_NUM 
 
 //Set precedences
@@ -97,15 +98,15 @@ start:  /* lambda */
     ;
 
 variable_definitions: /* lambda */ {
-        $$ = "";
+        $$ = "\n";
     }
-    | variable_definition{
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "variable_definition\n" ANSI_COLOR_RESET);
+    // | variable_definition{
+    //     if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "variable_definition\n" ANSI_COLOR_RESET);
 
-        char * s = malloc(strlen($1)+2);
-        sprintf(s,"%s\n",$1);
-        $$ = s;
-    }
+    //     char * s = malloc(strlen($1)+2);
+    //     sprintf(s,"%s\n",$1);
+    //     $$ = s;
+    // }
     | variable_definitions variable_definition{
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "variable_definition\n" ANSI_COLOR_RESET);
 
@@ -191,14 +192,14 @@ variable_definition: TYPE_NUM NAME {
     ;
 
 statement_list: /* lambda */ {
-        $$ = "";
+        $$ = "\n";
     }
-    | statement {
-    if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement 1:"ANSI_COLOR_RESET "%s\n",$1);
-        char * s = malloc(strlen($1)+2);
-        sprintf(s,"%s\n",$1);
-        $$ = s;
-    }
+    // | statement {
+    // if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement 1:"ANSI_COLOR_RESET "%s\n",$1);
+    //     char * s = malloc(strlen($1)+2);
+    //     sprintf(s,"%s\n",$1);
+    //     $$ = s;
+    // }
     |  statement_list statement   {
         if(DEBUGGING) {
             yydebug(ANSI_COLOR_GREEN"statement list:"ANSI_COLOR_RESET "%s\n",$1);
@@ -276,6 +277,9 @@ statement:
         
         $$ = s;
     }
+    | COMMENT{
+
+    }
     ;
 
 if_statement: IF '(' exp ')' '{' statement_list '}' %prec LOWER_THAN_ELSE {
@@ -345,7 +349,14 @@ exp: exp '+' exp {
         char * s = expOp($1->sval,"-",$3->sval);
 
         aux->sval = s;
-        aux->type = $1->type;     
+        aux->type = $1->type;  
+        
+        //free previous allocations
+        free($1->sval);
+        free($1);
+        free($3->sval);
+        free($3);
+           
         $$ = aux;
         
     }
@@ -357,9 +368,16 @@ exp: exp '+' exp {
         
         struct exp_t* aux = malloc(EXP_SIZE);
         char *s = expOp($1->sval,"/",$3->sval);
-        
+
         aux->sval = s;
-        aux->type = $1->type;     
+        aux->type = $1->type;
+                
+        //free previous allocations
+        free($1->sval);
+        free($1);
+        free($3->sval);
+        free($3);
+     
         $$ = aux;
     }
     | exp '*' exp {
@@ -370,9 +388,16 @@ exp: exp '+' exp {
 
         struct exp_t* aux = malloc(EXP_SIZE);
         char *s = expOp($1->sval,"*",$3->sval);
-        
+
         aux->sval = s;
-        aux->type = $1->type;     
+        aux->type = $1->type;
+                
+        //free previous allocations
+        free($1->sval);
+        free($1);
+        free($3->sval);
+        free($3);
+     
         $$ = aux;
     }
     | '-' exp %prec UMINUS {
@@ -385,9 +410,14 @@ exp: exp '+' exp {
         char *s = malloc(strlen($2->sval) +2);
         if(s == NULL) yyerror("no memory left");
         sprintf(s,"-%s",$2->sval);
-        
+
         aux->sval = s;
-        aux->type = $2->type;          
+        aux->type = $2->type;   
+                
+        //free previous allocations
+        free($2->sval);
+        free($2);
+       
         $$ = aux;
     }
     | '(' exp ')' {
@@ -397,9 +427,14 @@ exp: exp '+' exp {
         char *s = malloc(strlen($2->sval) +3);
         if(s == NULL) yyerror("no memory left");
         sprintf(s,"(%s)",$2->sval);
-        
+
         aux->sval = s;
-        aux->type = $2->type;        
+        aux->type = $2->type;
+            
+        //free previous allocations
+        free($2->sval);
+        free($2);
+                
         $$ = aux;
     }
     |   exp AND exp {
@@ -415,6 +450,13 @@ exp: exp '+' exp {
 
         aux->sval = s;
         aux->type = BOOL_TYPE;
+                        
+        //free previous allocations
+        free($1->sval);
+        free($1);
+        free($3->sval);
+        free($3);
+     
         $$ = aux;
     }
     |   exp OR exp {
@@ -430,6 +472,13 @@ exp: exp '+' exp {
         
         aux->sval = s;
         aux->type = BOOL_TYPE;
+                        
+        //free previous allocations
+        free($1->sval);
+        free($1);
+        free($3->sval);
+        free($3);
+     
         $$ = aux;
     }
     |   NOT exp {
@@ -445,6 +494,11 @@ exp: exp '+' exp {
         sprintf(s,"!%s",$2->sval);
         aux->sval = s;
         aux->type = BOOL_TYPE;
+                    
+        //free previous allocations
+        free($2->sval);
+        free($2);
+                
         $$ = aux;
     }
     |   exp COMPARATION exp {
@@ -460,6 +514,13 @@ exp: exp '+' exp {
         
         aux->sval = s;
         aux->type = BOOL_TYPE;
+                        
+        //free previous allocations
+        free($1->sval);
+        free($1);
+        free($3->sval);
+        free($3);
+     
         $$ = aux;
     }
     | NAME '[' exp ']' {
@@ -477,6 +538,12 @@ exp: exp '+' exp {
 
         aux->sval = s;
         aux->type = sym->type;
+                                
+        //free previous allocations
+        free($1); // Cuestionable
+        free($3->sval);
+        free($3);
+     
         $$ = aux;
     }
     | NAME {
@@ -486,7 +553,7 @@ exp: exp '+' exp {
         if(sym == NULL) yyerror("Variable not declared");
         
         struct exp_t* aux = malloc(EXP_SIZE);
-        aux->sval = sym->name;
+        aux->sval = strdup(sym->name);
         aux->type = sym->type;
         $$ = aux;
     }
@@ -516,7 +583,7 @@ exp: exp '+' exp {
 
         struct exp_t* aux = malloc(EXP_SIZE);
         aux->type = BOOL_TYPE;
-        aux->sval = "true";
+        aux->sval = strdup("true");
         $$ = aux;
     }
     | FALSE_TK{ 
@@ -524,7 +591,7 @@ exp: exp '+' exp {
 
         struct exp_t* aux = malloc(EXP_SIZE);
         aux->type = BOOL_TYPE;
-        aux->sval = "false";
+        aux->sval = strdup("false");
         $$ = aux;
     }
     | READ_STR '(' exp ')' { 
@@ -614,6 +681,8 @@ system:
 system_action: ADDBODY '(' exp ',' exp ',' exp ',' exp ',' exp ',' exp ',' exp ')' { 
             if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"system_action: "ANSI_COLOR_RESET "ADDBODY\n");
 
+            //printf("%d, %d, %d, %d, %d, %d, %d", $3->type, $5->type, $7->type, $9->type, $11->type, $13->type,$15->type);
+
             //type verification
             if($3->type != NUM_TYPE || $5->type != NUM_TYPE || $7->type != NUM_TYPE || $9->type != NUM_TYPE || $11->type != NUM_TYPE || $13->type != NUM_TYPE || $15->type != STR_TYPE) yyerror("Type conflict: addBody(num,num,num,num,num,num,str)");
             char *s = malloc(strlen($3->sval) + strlen($5->sval) + strlen($7->sval) + strlen($9->sval) + strlen($11->sval) + strlen($13->sval) + strlen($15->sval) + strlen("bodies.push(new Body(,,,,,,))")+1);
@@ -652,6 +721,17 @@ config_action: GRAVITY_CONF '(' exp ')' {
             if(s == NULL) yyerror("no memory left");
             
             sprintf(s,"worldBorderBounce = %s",$3->sval);
+            $$ = s;
+        }
+        | TRAIL_CONF '(' exp ')' {
+            if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"config_action: "ANSI_COLOR_RESET "TRAIL_CONF\n");  
+            
+            //type verification
+            if($3->type != BOOL_TYPE) yyerror("Type conflict: enableBodyTrail(boolean)");
+            char *s = malloc(strlen($3->sval) + strlen("bodyTrail = ") + 1);
+            if(s == NULL) yyerror("no memory left");
+            
+            sprintf(s,"bodyTrail = %s",$3->sval);
             $$ = s;
         }
     ;

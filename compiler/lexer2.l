@@ -10,6 +10,9 @@ nl (\n|\r\n|\r)
 qstring \"[^\"\n]*[\"\n"]
 %%
 
+
+^[ \t]*"/*".*"*/"[ \t]*\n { printf("coment"); return COMMENT;}
+
 ([0-9]+) {
     yylval.string = strdup(yytext);
     return INTEGER;
@@ -35,7 +38,10 @@ readStr {return READ_STR;}
 readNum {return READ_NUM;}
 gravityConstant     {return GRAVITY_CONF;}
 worldBorderBounce   {return BOUNCE_CONF;}
+enableBodyTrail     {return TRAIL_CONF;}
 main    {return MAIN;}
+
+
 
 [A-Za-z][A-Za-z0-9]* {
     yylval.string = strdup(yytext);
