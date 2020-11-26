@@ -89,7 +89,7 @@ extern FILE *yyin, *yyout;
 start:  /* lambda */
     |  MAIN '(' ')' '{' statement_list '}'  {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "main\n" ANSI_COLOR_RESET);
-        char * s = malloc(strlen($5)+1);
+        char * s = malloc(strlen($5)+3);
           if(s == NULL){
             yyerror("no memory left");
         }
@@ -163,7 +163,7 @@ statement:
         
         $2->type = type;
          
-        char *s = malloc(strlen($2->name) + strlen($6->sval) +8);
+        char *s = malloc(strlen($2->name) + strlen($6->sval) + 10);
      
         if(s == NULL){
             yyerror("no memory left");
@@ -216,7 +216,7 @@ statement:
     }
     | STR_ARR_NAME '[' INTEGER ']'  '=' str_exp {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "str array\n");
-        char *s = malloc(strlen($1->name) + strlen($3) + strlen($6) +8);
+        char *s = malloc(strlen($1->name) + strlen($3) + strlen($6) +6);
         if(s == NULL){
             yyerror("no memory left");
         }
@@ -244,7 +244,7 @@ statement:
     }
     | STR_NAME '=' str_exp {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "str eq\n");
-        char *s = malloc(strlen($1->name) + strlen($3) +6);
+        char *s = malloc(strlen($1->name) + strlen($3) +4);
         if(s == NULL){
             yyerror("no memory left");
         }
@@ -311,7 +311,7 @@ if_statement: IF '(' bool_exp ')' '{' statement_list '}' %prec LOWER_THAN_ELSE {
 
 while_statement: WHILE '(' bool_exp ')' '{' statement_list '}' {
     if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"while_statement: "ANSI_COLOR_RESET "while\n");
-    char * s  = malloc(17+strlen($3)+strlen($6));
+    char * s  = malloc(strlen($3) + strlen($6) + 14);
     if(s == NULL){
         yyerror("no memory left");
     }
@@ -554,7 +554,7 @@ arr_item: exp {
                 yyerror("no memory left");
             }
             aux->type = $1->type;
-            char * s = malloc(strlen($1->sval) + strlen($3->sval) + 2);
+            char * s = malloc(strlen($1->sval) + strlen($3->sval) + 3);
             if(s == NULL){
                 yyerror("no memory left");
             }
