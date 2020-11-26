@@ -95,8 +95,10 @@ start:  /* lambda */
     }
     ;
 
-variable_definitions:
-    variable_definition{
+variable_definitions: /* lambda */ {
+        $$ = "";
+    }
+    | variable_definition{
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "variable_definition\n" ANSI_COLOR_RESET);
 
         char * s = malloc(strlen($1)+2);
@@ -187,7 +189,10 @@ variable_definition: TYPE_NUM NAME {
     }
     ;
 
-statement_list: statement {
+statement_list: /* lambda */ {
+        $$ = "";
+    }
+    | statement {
     if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement 1:"ANSI_COLOR_RESET "%s\n",$1);
         char * s = malloc(strlen($1)+2);
         sprintf(s,"%s\n",$1);
