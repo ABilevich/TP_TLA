@@ -350,7 +350,6 @@ exp: exp '+' exp {
 
         //type verification
         if($1->type != NUM_TYPE || $3->type != NUM_TYPE ) yyerror("Type conflict: in division expression!");
-        if($3->type == NUM_TYPE && ((int)atoi($3->sval)) == 0) yyerror("Error: division by zero!");
         
         struct exp_t* aux = malloc(EXP_SIZE);
         char *s = expOp($1->sval,"/",$3->sval);
@@ -411,7 +410,7 @@ exp: exp '+' exp {
         sprintf(s,"%s && %s",$1->sval,$3->sval);
 
         aux->sval = s;
-        aux->type = BOOL_TPYE;
+        aux->type = BOOL_TYPE;
         $$ = aux;
     }
     |   exp OR exp {
@@ -426,7 +425,7 @@ exp: exp '+' exp {
         sprintf(s,"%s || %s",$1->sval,$3->sval);
         
         aux->sval = s;
-        aux->type = BOOL_TPYE;
+        aux->type = BOOL_TYPE;
         $$ = aux;
     }
     |   NOT exp {
@@ -441,7 +440,7 @@ exp: exp '+' exp {
         
         sprintf(s,"!%s",$2->sval);
         aux->sval = s;
-        aux->type = BOOL_TPYE;
+        aux->type = BOOL_TYPE;
         $$ = aux;
     }
     |   exp COMPARATION exp {
