@@ -354,7 +354,6 @@ exp: exp '+' exp {
 
         //type verification
         if($1->type != NUM_TYPE || $3->type != NUM_TYPE ) yyerror("Type conflict: in division expression!");
-        if($3->type == NUM_TYPE && ((int)atoi($3->sval)) == 0) yyerror("Error: division by zero!");
         
         struct exp_t* aux = malloc(EXP_SIZE);
         char *s = expOp($1->sval,"/",$3->sval);
