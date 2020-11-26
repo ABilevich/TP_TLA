@@ -451,7 +451,7 @@ exp: exp '+' exp {
         sprintf(s,"%s %s %s",$1->sval, $2, $3->sval);
         
         aux->sval = s;
-        aux->type = $1->type;
+        aux->type = BOOL_TYPE;
         $$ = aux;
     }
     | NAME '[' exp ']' {
