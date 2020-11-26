@@ -118,73 +118,73 @@ variable_definitions: /* lambda */ {
 variable_definition: TYPE_NUM NAME {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "type_num name\n" ANSI_COLOR_RESET);
         //save symbol
-        symSave($2,NUM_TYPE);
+        struct symtab * sym = symSave($2,NUM_TYPE);
         
-        char * s = malloc(strlen($2)+5);
+        char * s = malloc(strlen(sym->name)+5);
         if(s == NULL) yyerror("no memory left");
         
         //save code
-        sprintf(s,"let %s",$2);
+        sprintf(s,"let %s",sym->name);
         $$ = s;
     }
     | TYPE_STR NAME {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "type_str name\n" ANSI_COLOR_RESET);
 
-        symSave($2,STR_TYPE);
+        struct symtab * sym = symSave($2,STR_TYPE);
 
-        char * s = malloc(strlen($2)+5);
+        char * s = malloc(strlen(sym->name)+5);
         if(s == NULL) yyerror("no memory left");
         
         //save code
-        sprintf(s,"let %s",$2);
+        sprintf(s,"let %s",sym->name);
         $$ = s;
     }
     | TYPE_BOOL NAME {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "type_bool name\n" ANSI_COLOR_RESET);
 
-        symSave($2,BOOL_TYPE);
+        struct symtab * sym = symSave($2,BOOL_TYPE);
       
-        char * s = malloc(strlen($2)+5);
+        char * s = malloc(strlen(sym->name)+5);
         if(s == NULL) yyerror("no memory left");
         
         //save code
-        sprintf(s,"let %s",$2);
+        sprintf(s,"let %s",sym->name);
         $$ = s;
     }
     | TYPE_NUM NAME '[' ']' {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "type_num name\n" ANSI_COLOR_RESET);
         //save symbol
-        symSave($2,NUM_ARR_TYPE);
+        struct symtab * sym = symSave($2,NUM_ARR_TYPE);
         
-        char * s = malloc(strlen($2)+10);
+        char * s = malloc(strlen(sym->name)+10);
         if(s == NULL) yyerror("no memory left");
         
         //save code
-        sprintf(s,"let %s = []",$2);
+        sprintf(s,"let %s = []",sym->name);
         $$ = s;
     }
     | TYPE_STR NAME '[' ']' {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "type_str name\n" ANSI_COLOR_RESET);
 
-        symSave($2,STR_ARR_TYPE);
+        struct symtab * sym = symSave($2,STR_ARR_TYPE);
 
-        char * s = malloc(strlen($2)+10);
+        char * s = malloc(strlen(sym->name)+10);
         if(s == NULL) yyerror("no memory left");
         
         //save code
-        sprintf(s,"let %s = []",$2);
+        sprintf(s,"let %s = []",sym->name);
         $$ = s;
     }
     | TYPE_BOOL NAME '[' ']' {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "type_bool name\n" ANSI_COLOR_RESET);
 
-        symSave($2,BOOL_ARR_TYPE);
+        struct symtab * sym = symSave($2,BOOL_ARR_TYPE);
       
-        char * s = malloc(strlen($2)+10);
+        char * s = malloc(strlen(sym->name)+10);
         if(s == NULL) yyerror("no memory left");
         
         //save code
-        sprintf(s,"let %s = []",$2);
+        sprintf(s,"let %s = []",sym->name);
         $$ = s;
     }
     ;
@@ -237,11 +237,11 @@ statement:
         if(sym->type != $6->type) yyerror("Invalid assignment value type");    
         
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement: "ANSI_COLOR_RESET "NAME[exp] = exp\n");
-        char *s = malloc(strlen($1) + strlen($3->sval) + strlen($6->sval) +6);
+        char *s = malloc(strlen(sym->name) + strlen($3->sval) + strlen($6->sval) +6);
         if(s == NULL){
             yyerror("no memory left");
         }
-        sprintf(s,"%s[%s] = %s",$1,$3->sval,$6->sval);
+        sprintf(s,"%s[%s] = %s",sym->name,$3->sval,$6->sval);
         $$ = s;
     }
     | NAME '=' exp {
@@ -251,9 +251,9 @@ statement:
         if(sym == NULL) yyerror("Variable not declared");
         if(sym->type != $3->type) yyerror("Type conflict: Assigning variable with incorrect value type");
     
-        char *s = malloc(strlen($1) + strlen($3->sval) +4);
+        char *s = malloc(strlen(sym->name) + strlen($3->sval) +4);
         if(s == NULL) yyerror("no memory left");
-        sprintf(s,"%s = %s",$1,$3->sval);
+        sprintf(s,"%s = %s",sym->name,$3->sval);
         
         $$ = s;
     }
@@ -266,9 +266,9 @@ statement:
         if(sym->type != NUM_ARR_TYPE && sym->type != STR_ARR_TYPE && sym->type != BOOL_ARR_TYPE) yyerror("Initializing non array variable as array");
     
         //line building
-        char *s = malloc(strlen($1) + strlen($3->sval) +4);
+        char *s = malloc(strlen(sym->name) + strlen($3->sval) +4);
         if(s == NULL) yyerror("no memory left");
-        sprintf(s,"%s = %s",$1,$3->sval);
+        sprintf(s,"%s = %s",sym->name,$3->sval);
         
         $$ = s;
     }
@@ -470,7 +470,7 @@ exp: exp '+' exp {
         struct exp_t* aux = malloc(EXP_SIZE);
         char *s = malloc(strlen($1) + strlen($3->sval) +3);
         if(s == NULL) yyerror("no memory left");
-        sprintf(s,"%s[%s]",$1,$3->sval); 
+        sprintf(s,"%s[%s]",sym->name,$3->sval); 
 
         aux->sval = s;
         aux->type = sym->type;
@@ -483,7 +483,7 @@ exp: exp '+' exp {
         if(sym == NULL) yyerror("Variable not declared");
         
         struct exp_t* aux = malloc(EXP_SIZE);
-        aux->sval = $1;
+        aux->sval = sym->name;
         aux->type = sym->type;
         $$ = aux;
     }
@@ -679,10 +679,10 @@ struct symtab * symLook(char* s){
     }
     return NULL;
 }
-void symSave(char* s,enum var_type type){
+struct symtab * symSave(char* s,enum var_type type){
     struct symtab * sp;
 
-    //printf("searching for: %s\n", s);
+    printf("searching for: %s\n", s);
 
     for(sp= symtab; sp <&symtab[MAX_SYMBOLS];sp++){
         /* is it alredy here? */
@@ -695,15 +695,18 @@ void symSave(char* s,enum var_type type){
         // }
         /* is it free */
         if(!sp->name) {
-            char * snew = malloc(sizeof(s)+3);
+            char * snew = malloc(strlen(s)+3);
             sprintf(snew, "u_%s", s);
             sp->name = snew;
             sp->type = type;
-            return;
+            printTable();
+            return sp;
             // sp->name = strdup(s);
         }
         /* otherwise continue to next */
     }
+    yyerror("Variable creation error: Too many symbols");
+    
 
     
 }
