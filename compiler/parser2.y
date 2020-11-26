@@ -108,11 +108,16 @@ statement_list: statement {
         // printf("statement list: %s\n",$1);
         // printf("statement: %s\n",$2);
         // char *s = malloc(strlen($$) +strlen($2) +3);
-        // sprintf(s,"%s\t%s\n",$$,$2);    
-        char *s = $$;
-        strcat(s,$2);
-        strcat(s,"\n");
-        $$ =s;
+        // sprintf(s,"%s\t%s\n",$$,$2);  
+
+        char * s = malloc(strlen($1)+strlen($2)+2);
+        sprintf(s,"%s%s\n",$1,$2);
+        $$ = s;
+
+        // // char *s = strdup($1);
+        // // strcat(s,$2);
+        // // strcat(s,"\n");
+        // $$ =s;
     }
     ;
 
