@@ -451,7 +451,7 @@ exp: exp '+' exp {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "exp %s exp\n",$2);
         
         //type verification
-        if($1->type != NUM_TYPE || $3->type != NUM_TYPE ) yyerror("Type conflict: both expressions must be numbers!");
+        if(!($1->type == NUM_TYPE && $3->type == NUM_TYPE) && !($1->type == STR_TYPE && $3->type == STR_TYPE)  ) yyerror("Type conflict: both expressions must be numbers!");
 
         struct exp_t* aux = malloc(EXP_SIZE);
         char *s = malloc(strlen($1->sval) + strlen($3->sval) + strlen($2) + 3);
