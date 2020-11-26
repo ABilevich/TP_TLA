@@ -1,6 +1,7 @@
 DEBUG=FALSE
-DEBUG_FLAGS = -fsanitize=address -g -DDEBUG_TRUE
-CFLAGS = -Wall -Wextra
+DEBUG_FLAGS = -fsanitize=address -g -DDEBUG_TRUE 
+CFLAGS = -Wall -pedantic -std=c99 -Wextra -D_POSIX_C_SOURCE=200809L -std=c99
+
 
 all: parser lexer link
 
