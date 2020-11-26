@@ -59,6 +59,7 @@ qstring \"[^\"\n]*[\"\n"]
     }
     struct symtab* sym = symLook(yytext);
     yylval.symp = sym;
+    printf("symlook: %s , %d\n",sym->name,sym->type);
     switch(sym->type){
         case NUM_TYPE:
             return NUM_NAME;
