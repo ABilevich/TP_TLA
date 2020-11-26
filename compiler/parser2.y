@@ -662,7 +662,6 @@ print: PRINT '(' exp ')' {
             char *s = malloc(strlen($3->sval) + strlen("console.log()") + 1);
             if(s == NULL) yyerror("no memory left");
             sprintf(s,"console.log(%s)",$3->sval); 
-            printf("print: %s, %s\n", $$, s);
             
             $$ = s; 
         }
