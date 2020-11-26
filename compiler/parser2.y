@@ -711,18 +711,14 @@ struct symtab * symSave(char* s,enum var_type type){
 }
 
 char * expOp(char * exp1,char * op,char * exp2){
-    if(!strcmp("/",op) && atof(exp2) == 0.0){
-        yyerror("divide by zero");
-    }else{
-        char *s = malloc(strlen(exp1) + strlen(op) + strlen(exp2)+4);
-        if(s == NULL){
-            yyerror("no memory left");
-        }
-        if(exp1 != NULL && op != NULL && exp2 != NULL){
-            sprintf(s,"%s %s %s",exp1,op,exp2);
-             return s;            
-        } 
+    char *s = malloc(strlen(exp1) + strlen(op) + strlen(exp2)+4);
+    if(s == NULL){
+        yyerror("no memory left");
     }
+    if(exp1 != NULL && op != NULL && exp2 != NULL){
+        sprintf(s,"%s %s %s",exp1,op,exp2);
+            return s;            
+    } 
     return NULL;
 }
 
