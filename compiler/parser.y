@@ -205,7 +205,7 @@ statement:
         $$ = $1;
 
     }
-    | NUM_ARR_NAME '[' INTEGER ']'  '=' num_exp {
+    | NUM_ARR_NAME '[' num_exp ']'  '=' num_exp {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "num array\n");
         char *s = malloc(strlen($1->name) + strlen($3) + strlen($6) +6);
         if(s == NULL){
@@ -214,7 +214,7 @@ statement:
         sprintf(s,"%s[%s] = %s",$1->name,$3,$6);
         $$ = s;
     }
-    | STR_ARR_NAME '[' INTEGER ']'  '=' str_exp {
+    | STR_ARR_NAME '[' num_exp ']'  '=' str_exp {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "str array\n");
         char *s = malloc(strlen($1->name) + strlen($3) + strlen($6) +6);
         if(s == NULL){
@@ -223,7 +223,7 @@ statement:
         sprintf(s,"%s[%s] = %s",$1->name,$3,$6);
         $$ = s;
     }
-    | BOOL_ARR_NAME '[' INTEGER ']' '=' bool_exp {
+    | BOOL_ARR_NAME '[' num_exp ']' '=' bool_exp {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "bool array\n");
         char *s = malloc(strlen($1->name) + strlen($3) + strlen($6) +6);
         if(s == NULL){
@@ -485,6 +485,7 @@ bool_exp: bool_exp AND bool_exp {
         $$ = str;
     }
     |   num_exp COMPARATION num_exp {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"bool exp: "ANSI_COLOR_RESET "%s %s %s\n",$1,$2,$3);
         char *str = malloc(strlen($1) + strlen($3) + strlen($2) + 3);
         if(str == NULL){
             yyerror("No memory left");
@@ -659,10 +660,10 @@ struct symtab * symLook(char* s){
       
         /* is it free */
         if(!sp->name) {
-            // char * snew = malloc(sizeof(s)+3);
-            // sprintf(snew, "u_%s", s);
-            // sp->name = snew;
-            sp->name = strdup(s);
+            char * snew = malloc(sizeof(s)+3);
+            sprintf(snew, "u_%s", s);
+            sp->name = snew;
+            // sp->name = strdup(s);
             sp->type = NOT_DEFINED;
             return sp;
         }else{
@@ -717,8 +718,6 @@ int main(int argc, char* argv[]){
         }
       
     }
-
-    
 
     yyout = fopen(DEFAULT_OUTFILE,"w");
     if(yyout == NULL){

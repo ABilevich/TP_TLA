@@ -5,11 +5,11 @@ main(){
     Config.gravityConstant( 12 )
     Config.worldBorderBounce(false)
     print("caca")
-    read("cacacaca")
+    str pepe = readStr("cacacaca")
 
     if(true){
         if(x >= 0){
-
+            str pepetunia = "cacatuatua"
         }else{
             if(y <= x){
                 while(x <= 0){
@@ -17,7 +17,7 @@ main(){
                          Config.gravityConstant( 12 )
                          Config.worldBorderBounce(false)
                          print("caca" + 213)
-                         read("cacacaca")
+                         pepe = readStr("cacacaca")
                     }
                 }
             }
@@ -27,7 +27,7 @@ main(){
     System.addBody(12, 12, 12, 12, 12, 12, "cacacaca")
 
     num arr[] = [x, x]
-    arr[x] = x
+    arr[y] = x
 }
 
 
