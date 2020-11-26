@@ -532,7 +532,7 @@ exp: exp '+' exp {
         struct symtab * sym = symLook($1);
         if(sym == NULL) yyerror("Variable not declared");
         struct exp_t* aux = malloc(EXP_SIZE);
-        char *s = malloc(strlen($1) + strlen($3->sval) +3);
+        char *s = malloc(strlen(sym->name) + strlen($3->sval) +3);
         if(s == NULL) yyerror("no memory left");
         sprintf(s,"%s[%s]",sym->name,$3->sval); 
 
@@ -742,7 +742,6 @@ print: PRINT '(' exp ')' {
             char *s = malloc(strlen($3->sval) + strlen("console.log()") + 1);
             if(s == NULL) yyerror("no memory left");
             sprintf(s,"console.log(%s)",$3->sval); 
-            printf("print: %s, %s\n", $$, s);
             
             $$ = s; 
         }
