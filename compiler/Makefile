@@ -2,8 +2,8 @@ DEBUG=FALSE
 
 all: parser lexer link
 
-parser: parser2.y
-	yacc -d  -v parser2.y
+parser: parser.y
+	yacc -d  -v parser.y
 
 lexer: lexer.l
 	lex lexer.l
