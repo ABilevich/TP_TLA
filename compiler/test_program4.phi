@@ -1,4 +1,5 @@
 main(){
-    num x = 3
-    x = 4
+    num x = 2
+    str y = "asd"
+    x = 3
 }

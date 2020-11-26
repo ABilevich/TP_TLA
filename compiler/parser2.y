@@ -27,6 +27,7 @@ void appendFiles(char source[], FILE * fd2);
 int yylex();
 void yyerror(const char *s);
 void yydebug(const char * format,...);
+void printTable();
 extern FILE *yyin, *yyout;
 
 
@@ -98,15 +99,15 @@ start:  /* lambda */
     ;
 
 statement_list: statement {
-    if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "%s\n",$1);
+    if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement 1:"ANSI_COLOR_RESET "%s\n",$1);
         char * s = malloc(strlen($1)+2);
         sprintf(s,"%s\n",$1);
         $$ = s;
     }
-    |   statement_list statement {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement:"ANSI_COLOR_RESET "%s\n",$2);
-        // printf("statement list: %s\n",$1);
-        // printf("statement: %s\n",$2);
+    |  statement_list statement   {
+        if(DEBUGGING) {yydebug(ANSI_COLOR_GREEN"statement list:"ANSI_COLOR_RESET "%s\n",$1);
+        yydebug(ANSI_COLOR_GREEN"statement 2:"ANSI_COLOR_RESET "%s\n",$2);}
+
         // char *s = malloc(strlen($$) +strlen($2) +3);
         // sprintf(s,"%s\t%s\n",$$,$2);  
 
@@ -125,11 +126,13 @@ statement:
 
     data_type NAME '=' exp {
     
-        if($1->type != $4->type){
+       if($1->type != $4->type){
               yyerror("invalid type assignment.");
-        }
-
+       }
+       printf("before datatype= %d\nname type= %d\n",$1->type,$2->type);
+     
         $2->type = $1->type;
+        printf("after datatype= %d\nname type= %d\n",$1->type,$2->type);
         char *s = malloc(strlen($2->name) + strlen($4->sval) + 8);
         if(s == NULL){
             yyerror("no memory left");
@@ -258,6 +261,7 @@ statement:
         sprintf(s,"%s = %s",$1->name,$3);
         $$ = s;
     }
+
     ;
 
 data_type: TYPE_STR {
@@ -395,8 +399,10 @@ num_exp: num_exp '+' num_exp {
         $$ = strdup($1->name);
     }
     | INTEGER {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "integer: %s\n",$1);
     }
     | FLOAT {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "float: %s\n",$1);
     }
     | read_num {
         printf("num exp: read_num\n");
@@ -643,8 +649,11 @@ struct symtab * symLook(char* s){
 
     for(sp= symtab; sp <&symtab[MAX_SYMBOLS];sp++){
         /* is it alredy here? */
-        printf("comparing: %s\n", sp->name);
-        if (sp->name && !strcmp(sp->name, s) ){
+
+        if (sp->name && !strcmp((sp->name)+2, s) ){
+            
+            printf("comparing: %s\n", (sp->name)+2);
+            printTable();
             return sp;
         }
       
@@ -656,6 +665,8 @@ struct symtab * symLook(char* s){
             sp->name = strdup(s);
             sp->type = NOT_DEFINED;
             return sp;
+        }else{
+            printTable();
         }
         /* otherwise continue to next */
     }
@@ -689,9 +700,9 @@ int main(int argc, char* argv[]){
 
     extern double sqrt(),exp(),log();
    
-    addFunc("sqrt",sqrt);
-    addFunc("exp",exp);
-    addFunc("log",log);
+    // addFunc("sqrt",sqrt);
+    // addFunc("exp",exp);
+    // addFunc("log",log);
     char * infile;
 
     char * progname = argv[0];
@@ -762,7 +773,16 @@ void appendFiles(char source[], FILE * fp2)
 
 }
  
-
+void printTable(){
+    printf("########################\n");
+    for(int i = 0; i< MAX_SYMBOLS;i++){
+        if(symtab[i].name == NULL){
+            break;
+        }
+        printf("symb[%d].name = %s\nsymb[%d].type = %d\n",i,symtab[i].name,i,symtab[i].type);
+    }
+      printf("########################\n");
+}
 void yyerror(const char *s)
 {
     fprintf (stderr,ANSI_COLOR_RED "Error: %s\n" ANSI_COLOR_RESET, s);
