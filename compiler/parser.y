@@ -451,7 +451,7 @@ str_exp: QSTRING {
         $$ = s;
     }
     | STR_NAME {
-        printf("string name = %s\n",$1);
+        printf("string name = %s\n",$1->name);
         $$ = strdup($1->name);
     }
     | read_str {
