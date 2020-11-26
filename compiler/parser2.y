@@ -411,7 +411,7 @@ exp: exp '+' exp {
         sprintf(s,"%s && %s",$1->sval,$3->sval);
 
         aux->sval = s;
-        aux->type = BOOL_TPYE;
+        aux->type = BOOL_TYPE;
         $$ = aux;
     }
     |   exp OR exp {
@@ -426,7 +426,7 @@ exp: exp '+' exp {
         sprintf(s,"%s || %s",$1->sval,$3->sval);
         
         aux->sval = s;
-        aux->type = BOOL_TPYE;
+        aux->type = BOOL_TYPE;
         $$ = aux;
     }
     |   NOT exp {
@@ -441,7 +441,7 @@ exp: exp '+' exp {
         
         sprintf(s,"!%s",$2->sval);
         aux->sval = s;
-        aux->type = BOOL_TPYE;
+        aux->type = BOOL_TYPE;
         $$ = aux;
     }
     |   exp COMPARATION exp {
