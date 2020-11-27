@@ -34,3 +34,6 @@ A continuación una breve descripción de cada programa:
 
 - sample_program5.phy
     Este programa es una demostración de como deshabilitar la constante gravitatioria, elimina las atracciones entre curpos y solo se aprecian las colisiones
+    
+### Informe
+Para más información acerca del desarrollo del proyecto, leer el informe que se encuentra en el archivo `informe.pdf`
