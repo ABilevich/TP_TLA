@@ -47,7 +47,7 @@ extern FILE *yyin, *yyout;
 %token <string> QSTRING
 %token <string> COMPARATION
 %token MAIN 
-%token ELSE IF WHILE
+%token ELSE IF WHILE FOR
 %token SYSTEM_TOKEN CONFIG_TOKEN 
 %token TYPE_STR TYPE_NUM TYPE_BOOL
 %token TRUE_TK FALSE_TK
@@ -79,6 +79,7 @@ extern FILE *yyin, *yyout;
 %type <string> config
 %type <string> if_statement
 %type <string> while_statement
+%type <string> for_statement
 %type <string> system_action
 %type <string> config_action
 %type <string> variable_definitions
@@ -99,10 +100,10 @@ start:  /* lambda */
                                      
         //free previous allocations
         free($1);
-        free($6);   
-
+        free($6);
+        
         //priting code on index.html
-        fprintf(yyout,"%s",s);  
+        fprintf(yyout,"%s",s);
         free(s);
     }
     ;
@@ -139,7 +140,7 @@ variable_definition: TYPE_NUM NAME {
         
         //free previous allocations
         free($2);
-            
+
 
         $$ = s;
     }
@@ -156,7 +157,7 @@ variable_definition: TYPE_NUM NAME {
         
         //free previous allocations
         free($2);
-        
+
         $$ = s;
     }
     | TYPE_BOOL NAME {
@@ -172,7 +173,7 @@ variable_definition: TYPE_NUM NAME {
         
         //free previous allocations
         free($2);
-
+        
         $$ = s;
     }
     | TYPE_NUM NAME '[' ']' {
@@ -185,7 +186,7 @@ variable_definition: TYPE_NUM NAME {
         char * s = malloc(strlen(sym->name)+10);
         if(s == NULL) yyerror("no memory left");
         sprintf(s,"let %s = []",sym->name);
-        
+
         //free previous allocations
         free($2);
 
@@ -201,9 +202,9 @@ variable_definition: TYPE_NUM NAME {
         char * s = malloc(strlen(sym->name)+10);
         if(s == NULL) yyerror("no memory left");
         sprintf(s,"let %s = []",sym->name);
-                
+
         //free previous allocations
-        free($2);
+        free($2); 
 
         $$ = s;
     }
@@ -217,7 +218,7 @@ variable_definition: TYPE_NUM NAME {
         char * s = malloc(strlen(sym->name)+10);
         if(s == NULL) yyerror("no memory left");
         sprintf(s,"let %s = []",sym->name);
-        
+
         //free previous allocations
         free($2);
 
@@ -225,7 +226,7 @@ variable_definition: TYPE_NUM NAME {
     }
     ;
 
-statement_list: /* lambda */ {
+statement_list:     /* lambda */ {
         $$ = strdup("\n");
     }
     |  statement_list statement   {
@@ -264,6 +265,10 @@ statement:
         $$ = $1;
     }
     | while_statement {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "while\n");
+        $$ = $1;
+    }
+    | for_statement {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "while\n");
         $$ = $1;
     }
@@ -424,6 +429,30 @@ while_statement: WHILE '(' exp ')' '{' statement_list '}' {
         $$ = s;
     }
     ;
+
+
+for_statement: FOR  '(' statement ';' exp ';' statement')' '{' statement_list '}' {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"for_statement: "ANSI_COLOR_RESET "for(statement;exp;statement){ statement_list}\n");
+
+        //type verification
+        if($5->type != BOOL_TYPE ) yyerror("Type conflict: missing boolean exit condition!");
+        
+        //build js answer
+        char * s  = malloc(strlen($3) + strlen($5->sval)+strlen($7)+strlen($10)+ 14);
+        if(s == NULL) yyerror("no memory left");
+        sprintf(s,"for(%s; %s; %s) {\n%s}",$3,$5->sval,$7, $10);
+                                                                                                                   
+        //free previous allocations
+        free($3);
+        free($5->sval);
+        free($5);
+        free($7);
+        free($10);
+
+
+        $$ = s;   
+}
+;
 
 exp: exp '+' exp {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "exp + exp\n");

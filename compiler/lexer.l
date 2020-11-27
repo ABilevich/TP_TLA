@@ -24,6 +24,7 @@ qstring \"[^\"\n]*[\"\n"]
 if      {return IF;} 
 else    {return ELSE;}
 while   {return WHILE;}
+for     {return FOR;}
 System  {return SYSTEM_TOKEN;}
 Config  {return CONFIG_TOKEN;}
 num     {return TYPE_NUM;}
@@ -31,6 +32,7 @@ str     {return TYPE_STR;}
 bool    {return TYPE_BOOL;}
 true    {return TRUE_TK;}
 false   {return FALSE_TK;}
+
 
 
  /*  --------- FUNCIONES Y TOKENS DE NUESTRO LENGUAJE --------  */
