@@ -260,34 +260,34 @@ statement:
     ;
 
 block_statement: if_statement {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "if\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"block_statement "ANSI_COLOR_RESET "if\n");
         $$ = $1;
     }
     | while_statement {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "while\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"block_statement "ANSI_COLOR_RESET "while\n");
         $$ = $1;
     }
     | for_statement {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "for\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"block_statement "ANSI_COLOR_RESET "for\n");
         $$ = $1;
     }
     ;
 
 expression_statement: 
     system {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET"system %s\n",$1);
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"expression_statement "ANSI_COLOR_RESET"system %s\n",$1);
         $$ = $1;
     }
     | config {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "config %s\n",$1);
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"expression_statement "ANSI_COLOR_RESET "config %s\n",$1);
         $$ = $1;
     }
     | print {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "print\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"expression_statement "ANSI_COLOR_RESET "print\n");
         $$ = $1;
     }
     | NAME '[' exp ']' OPEQ exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement: "ANSI_COLOR_RESET "NAME = exp\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"expression_statement: "ANSI_COLOR_RESET "NAME = exp\n");
         
         //get variable info
         struct symtab * sym = symLook($1);
@@ -309,16 +309,17 @@ expression_statement:
                                                                                    
         //free previous allocations
         free($1);
-        free($6->sval);
-        free($6);
         free($3->sval);
         free($3);
         free($5);
-            
+        free($6->sval);
+        free($6);
+
+
         $$ = s;
     }
     | NAME '[' exp ']'  '=' exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement: "ANSI_COLOR_RESET "NAME[exp] = exp\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"expression_statement: "ANSI_COLOR_RESET "NAME[exp] = exp\n");
         
         //get variable info
         struct symtab * sym = symLook($1);
@@ -343,7 +344,7 @@ expression_statement:
         $$ = s;
     }
     | NAME '=' exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement: "ANSI_COLOR_RESET "NAME = exp\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"expression_statement: "ANSI_COLOR_RESET "NAME = exp\n");
         
         //get variable info
         struct symtab * sym = symLook($1);
@@ -366,7 +367,7 @@ expression_statement:
         $$ = s;
     }
     | NAME OPEQ exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement: "ANSI_COLOR_RESET "NAME = exp\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"expression_statement: "ANSI_COLOR_RESET "NAME = exp\n");
         
         //get variable info
         struct symtab * sym = symLook($1);
@@ -393,7 +394,7 @@ expression_statement:
         $$ = s;
     }
     | NAME '=' arr_init { 
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement: "ANSI_COLOR_RESET "NAME = arr_init\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"expression_statement: "ANSI_COLOR_RESET "NAME = arr_init\n");
         
         //get variable info
         struct symtab * sym = symLook($1);
@@ -961,9 +962,9 @@ exp: exp '+' exp {
         struct exp_t* aux = malloc(EXP_SIZE);  
 
         //build js answer
-        char *s = malloc(strlen($3->sval) + strlen("window.prompt()") + 1);
+        char *s = malloc(strlen($3->sval) + strlen("parseInt(window.prompt())") + 1);
         if(s == NULL || aux == NULL) yyerror("no memory left");
-        sprintf(s,"window.prompt(%s)",$3->sval); 
+        sprintf(s,"parseInt(window.prompt(%s))",$3->sval); 
 
         //fill expression struct
         aux->type = NUM_TYPE;
