@@ -290,6 +290,7 @@ statement:
         free($1);
         free($3->sval);
         free($3);
+  
             
         $$ = s;
     }
@@ -724,6 +725,9 @@ exp: exp '+' exp {
         //fill expression struct
         aux->sval = strdup(sym->name);
         aux->type = sym->type;
+
+        //free previous allocations
+        free($1);
 
         $$ = aux;
     }
