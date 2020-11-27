@@ -10,9 +10,6 @@ nl (\n|\r\n|\r)
 qstring \"[^\"\n]*[\"\n"]
 %%
 
-
-^[ \t]*"/*".*"*/"[ \t]*\n { printf("coment"); return COMMENT;}
-
 ([0-9]+) {
     yylval.string = strdup(yytext);
     return INTEGER;
@@ -43,8 +40,6 @@ getHeigth           {return GET_HEIGHT;}
 getWidth            {return GET_WIDTH;}
 main    {return MAIN;}
 
-
-
 [A-Za-z][A-Za-z0-9_]* {
     yylval.string = strdup(yytext);
     return NAME;
@@ -53,7 +48,6 @@ main    {return MAIN;}
 {nl} ;
 {ws} ; /* ignore whitespace */
 "$" return 0; /* EOF when running in command line */
-
 
 {qstring} {yylval.string = strdup(yytext);
             if(yylval.string[yyleng-1] != '"'){
@@ -74,13 +68,18 @@ main    {return MAIN;}
     return COMPARATION;
 }   
 
-"++" {return PLUSPLUS;}
+"+=" |
+"-=" |   
+"*=" |
+"/=" { yylval.string = strdup(yytext);
+       return OPEQ;
+    }
 
 "&&" {return AND;}
 "||"  {return OR;}
 "!" {return NOT;}
 
-[:(){},.;] {return yytext[0];}
+[:(){},.;%\+/-] {return yytext[0];}
 
 .   return yytext[0];
 %%

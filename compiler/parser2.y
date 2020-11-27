@@ -47,22 +47,20 @@ extern FILE *yyin, *yyout;
 %token <string> QSTRING
 %token <string> COMPARATION
 %token MAIN 
-%token COMMENT
 %token ELSE IF WHILE
 %token SYSTEM_TOKEN CONFIG_TOKEN 
 %token TYPE_STR TYPE_NUM TYPE_BOOL
 %token TRUE_TK FALSE_TK
 %token GRAVITY_CONF BOUNCE_CONF TRAIL_CONF GET_HEIGHT GET_WIDTH
 %token ADDBODY PRINT READ_STR READ_NUM 
-%token PLUSPLUS
+%token <string> OPEQ
 //Set precedences
 %left OR
 %left AND
 %left NOT
 %left COMPARATION
 %left '-' '+'
-%left '*' '/'
-%left PLUSPLUS
+%left '*' '/' '%'
 
 %nonassoc UMINUS
 %nonassoc LOWER_THAN_ELSE
@@ -281,6 +279,31 @@ statement:
             
         $$ = s;
     }
+    | NAME OPEQ exp {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement: "ANSI_COLOR_RESET "NAME = exp\n");
+        
+        //type verification  
+        struct symtab * sym = symLook($1);
+        if(sym == NULL) yyerror("Variable not declared");
+        if( strcmp($2,"+=") == 0){
+            if( !(sym->type == NUM_TYPE && $3->type == NUM_TYPE) && !(sym->type == STR_TYPE && $3->type == STR_TYPE)) yyerror("Type conflict: increment value is not a valid type!");
+        }else{
+            if(!(sym->type == NUM_TYPE && $3->type == NUM_TYPE)) yyerror("Type conflict: increment value is not a valid type!");
+        }
+        
+    
+        char *s = malloc(strlen(sym->name) + strlen($3->sval) +5);
+        if(s == NULL) yyerror("no memory left");
+        sprintf(s,"%s %s %s",sym->name,$2,$3->sval);
+                                                                                   
+        //free previous allocations
+        free($1);
+        free($2);
+        free($3->sval);
+        free($3);
+            
+        $$ = s;
+    }
     | NAME '=' arr_init { 
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"if_statement: "ANSI_COLOR_RESET "if(exp){statement_list}\n");
         
@@ -300,18 +323,6 @@ statement:
         free($3);
             
         $$ = s;
-    }
-    | exp {
-        char *s = strdup($1->sval);
-
-        //free previous allocations
-        free($1->sval);
-        free($1);
-
-        $$ = s;
-    }
-    | COMMENT{
-
     }
     ;
 
@@ -457,7 +468,7 @@ exp: exp '+' exp {
      
         $$ = aux;
     }
-        | exp '%' exp {
+    | exp '%' exp {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "exp % exp\n");
         
         //type verification
@@ -635,27 +646,27 @@ exp: exp '+' exp {
         aux->type = sym->type;
         $$ = aux;
     }
-    | NAME PLUSPLUS{
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "NAME++: %s\n",$1);
+    // | NAME PLUSPLUS{
+    //     if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "NAME++: %s\n",$1);
         
-        struct symtab * sym = symLook($1);
-        if(sym == NULL) yyerror("Variable not declared");
-        if(sym->type != NUM_TYPE) yyerror("Type conflict: variable must be type num in ++ increment!");
+    //     struct symtab * sym = symLook($1);
+    //     if(sym == NULL) yyerror("Variable not declared");
+    //     if(sym->type != NUM_TYPE) yyerror("Type conflict: variable must be type num in ++ increment!");
 
-        struct exp_t* aux = malloc(EXP_SIZE);
+    //     struct exp_t* aux = malloc(EXP_SIZE);
 
-        char *s = malloc(strlen(sym->name) +3);
-        if(s == NULL) yyerror("no memory left");
-        sprintf(s,"%s++",sym->name); 
+    //     char *s = malloc(strlen(sym->name) +3);
+    //     if(s == NULL) yyerror("no memory left");
+    //     sprintf(s,"%s++",sym->name); 
 
-        aux->sval = s;
-        aux->type = sym->type;
+    //     aux->sval = s;
+    //     aux->type = sym->type;
                                                                    
-        //free previous allocations
-        free($1);
+    //     //free previous allocations
+    //     free($1);
 
-        $$ = aux;
-    }
+    //     $$ = aux;
+    // }
     | INTEGER {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "INTEGER: %s\n",$1);
         struct exp_t* aux = malloc(EXP_SIZE);
