@@ -8,6 +8,7 @@ num dist
 num dist_inc
 str message
 str errMessage
+str colors[]
 
 main(){
     Config.worldBorderBounce(false)
@@ -29,11 +30,13 @@ main(){
         cantPlanets = readNum(message)
     }
 
+    colors = ["#cf9400", "#b3cf00", "#b3cf00", "#00cf87", "#0300cf", "#9100cf"]
+
     System.addBody(centerx, centery, 100000, 30, 0, 0, "#FF6347")
 
     i = 0
     while(i < cantPlanets){
-        System.addBody(centerx + dist + (dist_inc*i), centery, 100, 5 , 0, -10, "#87CEFA")
+        System.addBody(centerx + dist + (dist_inc*i), centery, 100, 5 , 0, -10, colors[i])
         i = i + 1
     }
 }

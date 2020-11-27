@@ -179,19 +179,14 @@ variable_definition: TYPE_NUM NAME {
         
         //save code
         sprintf(s,"let %s = []",sym->name);
+
         $$ = s;
     }
     ;
 
 statement_list: /* lambda */ {
-        $$ = "\n";
+        $$ = strdup("\n");
     }
-    // | statement {
-    // if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement 1:"ANSI_COLOR_RESET "%s\n",$1);
-    //     char * s = malloc(strlen($1)+2);
-    //     sprintf(s,"%s\n",$1);
-    //     $$ = s;
-    // }
     |  statement_list statement   {
         if(DEBUGGING) {
             yydebug(ANSI_COLOR_GREEN"statement list:"ANSI_COLOR_RESET "%s\n",$1);
@@ -200,6 +195,12 @@ statement_list: /* lambda */ {
 
         char * s = malloc(strlen($1)+strlen($2)+2);
         sprintf(s,"%s%s\n",$1,$2);
+                
+        //free previous allocations
+
+        free($1);
+        free($2);
+           
         $$ = s;
     }
     ;
@@ -238,6 +239,14 @@ statement:
             yyerror("no memory left");
         }
         sprintf(s,"%s[%s] = %s",sym->name,$3->sval,$6->sval);
+                                                                           
+        //free previous allocations
+        free($1);
+        free($3->sval);
+        free($3);
+        free($6->sval);
+        free($6);
+            
         $$ = s;
     }
     | NAME '=' exp {
@@ -251,7 +260,12 @@ statement:
         char *s = malloc(strlen(sym->name) + strlen($3->sval) +4);
         if(s == NULL) yyerror("no memory left");
         sprintf(s,"%s = %s",sym->name,$3->sval);
-        
+                                                                                   
+        //free previous allocations
+        free($1);
+        free($3->sval);
+        free($3);
+            
         $$ = s;
     }
     | NAME '=' arr_init { 
@@ -266,7 +280,12 @@ statement:
         char *s = malloc(strlen(sym->name) + strlen($3->sval) +4);
         if(s == NULL) yyerror("no memory left");
         sprintf(s,"%s = %s",sym->name,$3->sval);
-        
+                                                                                           
+        //free previous allocations
+        free($1);
+        free($3->sval);
+        free($3);
+            
         $$ = s;
     }
     | COMMENT{
@@ -284,6 +303,12 @@ if_statement: IF '(' exp ')' '{' statement_list '}' %prec LOWER_THAN_ELSE {
         if(s == NULL) yyerror("no memory left");
         
         sprintf(s,"if( %s ) {\n%s}",$3->sval,$6);
+                                                                                                   
+        //free previous allocations
+        free($3->sval);
+        free($3);
+        free($6);
+
         $$ = s;
     }
     | IF '(' exp ')' '{' statement_list '}' ELSE '{' statement_list '}' {
@@ -296,6 +321,12 @@ if_statement: IF '(' exp ')' '{' statement_list '}' %prec LOWER_THAN_ELSE {
         if(s == NULL) yyerror("no memory left");
         
         sprintf(s,"if( %s ) {\n%s}else{\n%s}",$3->sval,$6,$10);
+                                                                                                           
+        //free previous allocations
+        free($3->sval);
+        free($6);
+        free($10);
+
         $$ = s;
     }
     ;
@@ -310,6 +341,11 @@ while_statement: WHILE '(' exp ')' '{' statement_list '}' {
         if(s == NULL) yyerror("no memory left");
         
         sprintf(s,"while( %s ) {\n%s}",$3->sval,$6);
+                                                                                                                   
+        //free previous allocations
+        free($3->sval);
+        free($6);
+
         $$ = s;
     }
     ;
@@ -329,6 +365,13 @@ exp: exp '+' exp {
         }else{
             aux->type = STR_TYPE; 
         }
+                
+        //free previous allocations
+        free($1->sval);
+        free($1);
+        free($3->sval);
+        free($3);
+           
         $$ = aux;
     }
     | exp '-' exp {
@@ -529,8 +572,8 @@ exp: exp '+' exp {
         sprintf(s,"%s[%s]",sym->name,$3->sval); 
 
         aux->sval = s;
-        aux->type = sym->type;
-                                
+        aux->type = arrTypeToNormal(sym->type);
+        
         //free previous allocations
         free($1); // Cuestionable
         free($3->sval);
@@ -697,6 +740,13 @@ arr_item: exp {
         
         sprintf(s,"%s, %s",$1->sval,$3->sval);
         aux->sval = s;
+                                                         
+        //free previous allocations
+        free($1->sval);
+        free($1);
+        free($3->sval);
+        free($3);
+     
         $$ = aux;
     }
     ;
@@ -720,7 +770,24 @@ system_action: ADDBODY '(' exp ',' exp ',' exp ',' exp ',' exp ',' exp ',' exp '
             if(s == NULL){
                 yyerror("no memory left");
             }
-            sprintf(s,"bodies.push(new Body(%s,%s,%s,%s,%s,%s,%s))",$3->sval,$5->sval,$7->sval,$9->sval,$11->sval,$13->sval,$15->sval); 
+            sprintf(s,"bodies.push(new Body(%s,%s,%s,%s,%s,%s,%s))",$3->sval,$5->sval,$7->sval,$9->sval,$11->sval,$13->sval,$15->sval);
+                                                                     
+            //free previous allocations
+            free($3->sval);
+            free($3);
+            free($5->sval);
+            free($5);
+            free($7->sval);
+            free($7);
+            free($9->sval);
+            free($9);
+            free($11->sval);
+            free($11);
+            free($13->sval);
+            free($13);
+            free($15->sval);
+            free($15);
+            
             $$ = s; 
         }
     ;
@@ -740,7 +807,11 @@ config_action: GRAVITY_CONF '(' exp ')' {
             char *s = malloc(strlen($3->sval) + strlen("Gc = ")+1);
             if(s == NULL) yyerror("no memory left");
             sprintf(s,"Gc = %s",$3->sval);
-            
+                                                                                 
+            //free previous allocations
+            free($3->sval);
+            free($3);
+
             $$ = s;
         }
         | BOUNCE_CONF '(' exp ')' {
@@ -752,6 +823,11 @@ config_action: GRAVITY_CONF '(' exp ')' {
             if(s == NULL) yyerror("no memory left");
             
             sprintf(s,"worldBorderBounce = %s",$3->sval);
+                                                                                             
+            //free previous allocations
+            free($3->sval);
+            free($3);
+            
             $$ = s;
         }
         | TRAIL_CONF '(' exp ')' {
@@ -763,6 +839,11 @@ config_action: GRAVITY_CONF '(' exp ')' {
             if(s == NULL) yyerror("no memory left");
             
             sprintf(s,"bodyTrail = %s",$3->sval);
+                                                                                             
+            //free previous allocations
+            free($3->sval);
+            free($3);
+            
             $$ = s;
         }
     ;
@@ -772,7 +853,12 @@ print: PRINT '(' exp ')' {
 
             char *s = malloc(strlen($3->sval) + strlen("alert()") + 1);
             if(s == NULL) yyerror("no memory left");
-            sprintf(s,"alert(%s)",$3->sval); 
+            sprintf(s,"alert(%s)",$3->sval);
+                                                                                             
+            //free previous allocations
+            free($3->sval);
+            free($3);
+             
             $$ = s; 
         }
     ;
