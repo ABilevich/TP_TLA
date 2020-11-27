@@ -25,7 +25,7 @@ main(){
     errMessage = "invalid number!"
 
     cantPlanets = readNum(message)
-    while(cantPlanets < minCant || cantPlanets > maxCant){
+    while(cantPlanets<minCant||cantPlanets > maxCant){
         print(errMessage)
         cantPlanets = readNum(message)
     }
@@ -37,6 +37,6 @@ main(){
     i = 0
     while(i < cantPlanets){
         System.addBody(centerx + dist + (dist_inc*i), centery, 100, 5 , 0, -10, colors[i])
-        i = i + 1
+        i++
     }
 }

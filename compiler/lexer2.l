@@ -74,6 +74,7 @@ main    {return MAIN;}
     return COMPARATION;
 }   
 
+"++" {return PLUSPLUS;}
 
 "&&" {return AND;}
 "||"  {return OR;}

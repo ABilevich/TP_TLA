@@ -28,6 +28,7 @@ int yylex();
 void yyerror(const char *s);
 void yydebug(const char * format,...);
 void printTable();
+void freeTable();
 enum var_type arrTypeToNormal(enum var_type type);
 extern FILE *yyin, *yyout;
 
@@ -53,7 +54,7 @@ extern FILE *yyin, *yyout;
 %token TRUE_TK FALSE_TK
 %token GRAVITY_CONF BOUNCE_CONF TRAIL_CONF GET_HEIGHT GET_WIDTH
 %token ADDBODY PRINT READ_STR READ_NUM 
-
+%token PLUSPLUS
 //Set precedences
 %left OR
 %left AND
@@ -61,6 +62,7 @@ extern FILE *yyin, *yyout;
 %left COMPARATION
 %left '-' '+'
 %left '*' '/'
+%left PLUSPLUS
 
 %nonassoc UMINUS
 %nonassoc LOWER_THAN_ELSE
@@ -91,13 +93,18 @@ start:  /* lambda */
         char * s = malloc(strlen($1) + strlen($6) + 4);
         if(s == NULL) yyerror("no memory left");
         
-        sprintf(s,"\n%s\n%s\n",$1, $6);
+        sprintf(s,"\n%s\n%s\n",$1, $6);                                
+        //free previous allocations
+        free($1);
+        free($6);
+        
         fprintf(yyout,"%s",s);
+        free(s);
     }
     ;
 
 variable_definitions: /* lambda */ {
-        $$ = "\n";
+        $$ = strdup("\n");
     }
     | variable_definitions variable_definition{
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "variable_definition\n" ANSI_COLOR_RESET);
@@ -105,6 +112,11 @@ variable_definitions: /* lambda */ {
         char * s = malloc(strlen($1)+strlen($2)+2);
         if(s == NULL) yyerror("no memory left");
         sprintf(s,"%s%s\n",$1,$2);
+                                
+        //free previous allocations
+        free($1);
+        free($2);
+
         $$ = s;
     }
     ;
@@ -236,6 +248,7 @@ statement:
         
         char *s = malloc(strlen(sym->name) + strlen($3->sval) + strlen($6->sval) +6);
         if(s == NULL){
+
             yyerror("no memory left");
         }
         sprintf(s,"%s[%s] = %s",sym->name,$3->sval,$6->sval);
@@ -286,6 +299,15 @@ statement:
         free($3->sval);
         free($3);
             
+        $$ = s;
+    }
+    | exp {
+        char *s = strdup($1->sval);
+
+        //free previous allocations
+        free($1->sval);
+        free($1);
+
         $$ = s;
     }
     | COMMENT{
@@ -435,6 +457,26 @@ exp: exp '+' exp {
      
         $$ = aux;
     }
+        | exp '%' exp {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "exp % exp\n");
+        
+        //type verification
+        if($1->type != NUM_TYPE || $3->type != NUM_TYPE ) yyerror("Type conflict: in product expression!");
+
+        struct exp_t* aux = malloc(EXP_SIZE);
+        char *s = expOp($1->sval,"%",$3->sval);
+
+        aux->sval = s;
+        aux->type = $1->type;
+                
+        //free previous allocations
+        free($1->sval);
+        free($1);
+        free($3->sval);
+        free($3);
+     
+        $$ = aux;
+    }
     | '-' exp %prec UMINUS {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "-exp\n");
         
@@ -555,6 +597,7 @@ exp: exp '+' exp {
         free($1);
         free($3->sval);
         free($3);
+        free($2);
      
         $$ = aux;
     }
@@ -575,7 +618,7 @@ exp: exp '+' exp {
         aux->type = arrTypeToNormal(sym->type);
         
         //free previous allocations
-        free($1); // Cuestionable
+        free($1);
         free($3->sval);
         free($3);
      
@@ -590,6 +633,27 @@ exp: exp '+' exp {
         struct exp_t* aux = malloc(EXP_SIZE);
         aux->sval = strdup(sym->name);
         aux->type = sym->type;
+        $$ = aux;
+    }
+    | NAME PLUSPLUS{
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "NAME++: %s\n",$1);
+        
+        struct symtab * sym = symLook($1);
+        if(sym == NULL) yyerror("Variable not declared");
+        if(sym->type != NUM_TYPE) yyerror("Type conflict: variable must be type num in ++ increment!");
+
+        struct exp_t* aux = malloc(EXP_SIZE);
+
+        char *s = malloc(strlen(sym->name) +3);
+        if(s == NULL) yyerror("no memory left");
+        sprintf(s,"%s++",sym->name); 
+
+        aux->sval = s;
+        aux->type = sym->type;
+                                                                   
+        //free previous allocations
+        free($1);
+
         $$ = aux;
     }
     | INTEGER {
@@ -963,6 +1027,7 @@ int main(int argc, char* argv[]){
   
     fclose(yyin);
     fclose(yyout);
+    freeTable();
     exit(0);
     // while(!feof(yyin)){
     //     yyparse();
@@ -1013,6 +1078,17 @@ void printTable(){
       printf("########################\n");
 }
 
+void freeTable(){
+    for(int i = 0; i < MAX_SYMBOLS; i++){
+        struct symtab * sym = &symtab[i];
+        if(sym->name){
+            free(sym->name);
+        }else{
+            return;
+        }
+
+    }
+}
 enum var_type arrTypeToNormal(enum var_type type){
     switch(type){
         case NUM_ARR_TYPE:
