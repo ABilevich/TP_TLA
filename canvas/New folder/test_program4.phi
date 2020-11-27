@@ -1,11 +1,6 @@
-str x
-num pepe
-num asd
+num x[]
 
 main(){
-    asd = 3
-    x = "hola mundo"
-    pepe = pow(2, asd)
-    print(pepe + x)
+    x = [1,2,3]
+    x["julio"] = 2
 }
-

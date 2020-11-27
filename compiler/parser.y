@@ -256,6 +256,7 @@ statement:
         
         //type verification  
         if(arrTypeToNormal(sym->type) != $6->type) yyerror("Invalid assignment value type");  
+        if($3->type != NUM_TYPE) yyerror("Invalid arrey index!");  
         
         //build js answer
         char *s = malloc(strlen(sym->name) + strlen($3->sval) + strlen($6->sval) +6);
