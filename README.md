@@ -14,5 +14,8 @@ Para compilar el compilador ejecutar el comando `make` en el directorio en la qu
 ### Compilar programas
 Una vez generado el ejecutable del compilador, ya es posible compilar programas escritos en **Physique**. Para lograr esto, ejecutar el comando `./compile archivo.phy`, siendo `archivo.phy` el archivo que contiene el codigo **Physique**.
 
+### Ejecutar programa resultante
+Una vez compilado el programa, se generará un archivo `index.html` que se puede ejecutar en cualquier browser.
+
 ### Programas de ejemplo
 Para acostumbrarse a la sintaxis del lenguaje, ofrecemos algunos programas de ejemplo, desde `sample_program1.phi` hasta `sample_program6.phi`. Estos se compilan de la misma forma que la vista en la sección anterior.
