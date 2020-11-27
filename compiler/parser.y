@@ -30,6 +30,7 @@ void yyerror(const char *format,...);
 void yydebug(const char * format,...);
 void printTable();
 void freeTable();
+void yylex_destroy();
 enum var_type arrTypeToNormal(enum var_type type);
 char*typeToPrintableType(enum var_type type);
 
@@ -255,10 +256,12 @@ statement_list:     /* lambda */ {
 
 statement:
     block_statement{
+   
         $$ = $1;
     }
     |
     expression_statement{
+      
         $$ = $1;
     }
     ;
@@ -1294,6 +1297,7 @@ int main(int argc, char* argv[]){
     fclose(yyin);
     fclose(yyout);
     freeTable();
+    yylex_destroy();
     exit(0);
   
     return 0;

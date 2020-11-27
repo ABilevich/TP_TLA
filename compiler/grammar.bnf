@@ -1,4 +1,6 @@
-<start> ::=  lambda | <variable_definitions> MAIN '(' ')' '{' <statement_list> '}'  
+<start> ::=  
+  lambda 
+| <variable_definitions> MAIN '(' ')' '{' <statement_list> '}'  
     
 <variable_definitions> ::= 
   lambda 
@@ -17,11 +19,19 @@
 | <statement_list> <statement>   
  
 <statement> ::= 
+    <block_statement>
+    | <expression_statement>
+ 
+<block_statement> ::= 
+    | <if_statement> 
+    | <while_statement> 
+    | <for_statement> 
+ 
+<expression_statement> ::= 
       <system> 
     | <config> 
     | <print> 
-    | <if_statement> 
-    | <while_statement> 
+    | NAME '[' <exp> ']' OPEQ <exp> 
     | NAME '[' <exp> ']'  '=' <exp> 
     | NAME '=' <exp>
     | NAME OPEQ <exp> 
@@ -32,10 +42,13 @@
 | IF '(' <exp> ')' '{' <statement_list> '}' ELSE '{' <statement_list> '}' 
  
 <while_statement> ::= 
-WHILE '(' <exp> ')' '{' <statement_list> '}' 
+  WHILE '(' <exp> ')' '{' <statement_list> '}' 
+ 
+<for_statement> ::= 
+  FOR  '(' <expression_statement> ';' <exp> ';' <expression_statement>')' '{' <statement_list> '}' 
  
 <exp> ::= 
-<exp> '+' <exp> 
+      <exp> '+' <exp> 
     | <exp> '-' <exp> 
     | <exp> '/' <exp> 
     | <exp> '*' <exp> 
@@ -48,7 +61,8 @@ WHILE '(' <exp> ')' '{' <statement_list> '}'
     | <exp> COMPARATION <exp> 
     | NAME '[' <exp> ']' 
     | NAME 
-    | NUM_FUNCT '(' <exp> ')' 
+    | NUM_FUNCT_1 '(' <exp> ')' 
+    | NUM_FUNCT_2 '(' <exp>  ',' <exp> ')' 
     | INTEGER 
     | FLOAT 
     | QSTRING 
@@ -59,11 +73,12 @@ WHILE '(' <exp> ')' '{' <statement_list> '}'
     | GET_HEIGHT '(' ')' 
     | GET_WIDTH '(' ')'
  
-<arr_init> ::= '[' <arr_item> ']' 
+<arr_init> ::= 
+  '[' <arr_item> ']' 
     
 <arr_item>::= 
-   <exp> 
-|  <exp> ',' <arr_item> 
+    <exp> 
+  | <exp> ',' <arr_item> 
  
 <system> ::= SYSTEM_TOKEN '.' <system_action> 
  
@@ -73,8 +88,8 @@ WHILE '(' <exp> ')' '{' <statement_list> '}'
 <config> ::= CONFIG_TOKEN '.' <config_action> 
  
 <config_action> ::= 
-  GRAVITY_CONF '(' <exp> ')' 
-     	| BOUNCE_CONF '(' <exp> ')'        
-| TRAIL_CONF '(' <exp> ')' 
+    GRAVITY_CONF '(' <exp> ')' 
+  | BOUNCE_CONF '(' <exp> ')'        
+  | TRAIL_CONF '(' <exp> ')' 
  
 <print> ::= PRINT '(' <exp> ')' 
