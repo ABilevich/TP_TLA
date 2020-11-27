@@ -1319,6 +1319,8 @@ void appendFiles(char source[], FILE * fp2)
         fprintf(fp2, "%s", buf);
     }
 
+    fclose(fp1);
+
 }
  
 void printTable(){
