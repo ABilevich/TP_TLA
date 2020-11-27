@@ -99,9 +99,10 @@ start:  /* lambda */
                                      
         //free previous allocations
         free($1);
-        free($6);
-        
-        fprintf(yyout,"%s",s);
+        free($6);   
+
+        //priting code on index.html
+        fprintf(yyout,"%s",s);  
         free(s);
     }
     ;
@@ -135,6 +136,10 @@ variable_definition: TYPE_NUM NAME {
         char * s = malloc(strlen(sym->name)+5);
         if(s == NULL) yyerror("no memory left");
         sprintf(s,"let %s",sym->name);
+        
+        //free previous allocations
+        free($2);
+            
 
         $$ = s;
     }
@@ -148,7 +153,10 @@ variable_definition: TYPE_NUM NAME {
         char * s = malloc(strlen(sym->name)+5);
         if(s == NULL) yyerror("no memory left");
         sprintf(s,"let %s",sym->name);
-
+        
+        //free previous allocations
+        free($2);
+        
         $$ = s;
     }
     | TYPE_BOOL NAME {
@@ -162,6 +170,9 @@ variable_definition: TYPE_NUM NAME {
         if(s == NULL) yyerror("no memory left");
         sprintf(s,"let %s",sym->name);
         
+        //free previous allocations
+        free($2);
+
         $$ = s;
     }
     | TYPE_NUM NAME '[' ']' {
@@ -174,6 +185,9 @@ variable_definition: TYPE_NUM NAME {
         char * s = malloc(strlen(sym->name)+10);
         if(s == NULL) yyerror("no memory left");
         sprintf(s,"let %s = []",sym->name);
+        
+        //free previous allocations
+        free($2);
 
         $$ = s;
     }
@@ -187,7 +201,10 @@ variable_definition: TYPE_NUM NAME {
         char * s = malloc(strlen(sym->name)+10);
         if(s == NULL) yyerror("no memory left");
         sprintf(s,"let %s = []",sym->name);
-        
+                
+        //free previous allocations
+        free($2);
+
         $$ = s;
     }
     | TYPE_BOOL NAME '[' ']' {
@@ -200,6 +217,9 @@ variable_definition: TYPE_NUM NAME {
         char * s = malloc(strlen(sym->name)+10);
         if(s == NULL) yyerror("no memory left");
         sprintf(s,"let %s = []",sym->name);
+        
+        //free previous allocations
+        free($2);
 
         $$ = s;
     }
