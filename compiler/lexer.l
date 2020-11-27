@@ -1,6 +1,5 @@
 %{
 #include "y.tab.h"
-#include "parser.h"
 #include <math.h>
 #include <stdio.h>
 

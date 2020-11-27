@@ -14,10 +14,10 @@ lexer: lexer.l
 link: lex.yy.c y.tab.c
 ifeq ($(DEBUG),TRUE)
 	gcc $(DEBUG_FLAGS) $(CFLAGS) -c lex.yy.c y.tab.c -lm
-	gcc $(DEBUG_FLAGS) $(CFLAGS) -o compile lex.yy.o y.tab.o -ll -lm
+	gcc $(DEBUG_FLAGS) $(CFLAGS) -o compile lex.yy.o y.tab.o -lfl -lm
 else
 	gcc $(CFLAGS) -c lex.yy.c y.tab.c -lm
-	gcc $(CFLAGS) -o compile lex.yy.o y.tab.o -ll -lm
+	gcc $(CFLAGS) -o compile lex.yy.o y.tab.o -lfl -lm
 endif
 	
 clean:
