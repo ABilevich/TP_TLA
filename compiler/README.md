@@ -19,18 +19,18 @@ Una vez compilado el programa, se generará un archivo `index.html` que se puede
 
 ### Programas de ejemplo
 Para acostumbrarse a la sintaxis del lenguaje, ofrecemos algunos programas de ejemplo, desde `sample_program1.phy` hasta `sample_program5.phy`. Estos se compilan de la misma forma que la vista en la sección de compilar programas.
-A continuacion una breve descripcion de cada programa:
+A continuación una breve descripción de cada programa:
 - sample_program1.phy
     Este programa pide al usuario que ingrese un numero entre el 0 y el 6 y genera un sistema solar semi-estable con esa cantidad de planetas
 
 - sample_program2.phy
-    Este programa muestra el comportamiento del trail y de como un cuerpo orbita a otro en moviemiento
+    Este programa muestra el comportamiento del trail y de como un cuerpo orbita a otro en movimiento
 
 - sample_program3.phy
-    Este protrama pide al usuario un numero arbitrio de curpos y genera estos para poder ver la colision e interaccion entre ellos
+    Este protrama pide al usuario un numero arbitrio de curpos y genera estos para poder ver la colisión e interacción entre ellos
 
 - sample_program4.phy
     Este programa simula un sistema binario semi-estable donde dos "soles" orbitan el uno al otro y dos "planetas" orbitan el sistema binaro
 
 - sample_program5.phy
-    Este programa es una demostracion de como deshabilitar la constante gravitatioria elimina las atracciones entre curpos y solo se aprecian las colisiones
+    Este programa es una demostración de como deshabilitar la constante gravitatioria, elimina las atracciones entre curpos y solo se aprecian las colisiones
