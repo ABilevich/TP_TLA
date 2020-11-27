@@ -518,7 +518,7 @@ for_statement: FOR  '(' expression_statement ';' exp ';' expression_statement')'
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"for_statement: "ANSI_COLOR_RESET "for(statement;exp;statement){ statement_list}\n");
 
         //type verification
-        if($5->type != BOOL_TYPE ) yyerror(ERROR_STR("Type conflict: missing boolean exit condition in for\n"));
+        if($5->type != BOOL_TYPE ) yyerror(ERROR_STR("Type conflict: missing boolean exit condition in for statement\n"));
         
         //build js answer
         char * s  = malloc(strlen($3) + strlen($5->sval)+strlen($7)+strlen($10)+ 14);
