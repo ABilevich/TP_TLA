@@ -56,7 +56,11 @@ enableBodyTrail     {return TRAIL_CONF;}
 floor |
 ceil  |
 sqrt  { yylval.string = strdup(yytext);
-        return NUM_FUNCT;
+        return NUM_FUNCT_1;
+}
+
+pow { yylval.string = strdup(yytext);
+      return NUM_FUNCT_2;    
 }
 
 

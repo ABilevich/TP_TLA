@@ -1,7 +1,11 @@
 str x
+num pepe
+num asd
 
 main(){
+    asd = 3
     x = "hola mundo"
-    print(x)
+    pepe = pow(2, asd)
+    print(pepe + x)
 }
 

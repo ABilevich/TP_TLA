@@ -41,7 +41,7 @@ extern FILE *yyin, *yyout;
     struct exp_t* exp_type;
 }
 
-//Token defnitions
+/* ------------------------------ TOKEN DEFINITIONS ---------------------------------- */
 %token <string> NAME
 %token <string> INTEGER FLOAT
 %token <string> QSTRING
@@ -54,8 +54,9 @@ extern FILE *yyin, *yyout;
 %token GRAVITY_CONF BOUNCE_CONF TRAIL_CONF GET_HEIGHT GET_WIDTH
 %token ADDBODY PRINT READ_STR READ_NUM 
 %token <string> OPEQ
-%token <string> NUM_FUNCT
-//Set precedences
+%token <string> NUM_FUNCT_1 NUM_FUNCT_2
+
+/* ---------------------------------- PRECEDENCE ------------------------------------ */
 %left OR
 %left AND
 %left NOT
@@ -67,6 +68,7 @@ extern FILE *yyin, *yyout;
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
 
+/* ---------------------------------- NON TERMINALS ---------------------------------- */
 %type <exp_type> exp
 %type <exp_type> arr_init
 %type <exp_type> arr_item
@@ -84,15 +86,17 @@ extern FILE *yyin, *yyout;
 
 %%
 
+/* ---------------------------------- PRODUCTIONS ------------------------------------ */
 
 start:  /* lambda */
     |  variable_definitions MAIN '(' ')' '{' statement_list '}'  {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "main\n" ANSI_COLOR_RESET);
 
+        //build js answer
         char * s = malloc(strlen($1) + strlen($6) + 4);
         if(s == NULL) yyerror("no memory left");
-        
-        sprintf(s,"\n%s\n%s\n",$1, $6);                                
+        sprintf(s,"\n%s\n%s\n",$1, $6);   
+                                     
         //free previous allocations
         free($1);
         free($6);
@@ -108,6 +112,7 @@ variable_definitions: /* lambda */ {
     | variable_definitions variable_definition{
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "variable_definition\n" ANSI_COLOR_RESET);
 
+        //build js answer
         char * s = malloc(strlen($1)+strlen($2)+2);
         if(s == NULL) yyerror("no memory left");
         sprintf(s,"%s%s\n",$1,$2);
@@ -122,73 +127,78 @@ variable_definitions: /* lambda */ {
 
 variable_definition: TYPE_NUM NAME {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "type_num name\n" ANSI_COLOR_RESET);
+        
         //save symbol
         struct symtab * sym = symSave($2,NUM_TYPE);
         
+        //build js answer
         char * s = malloc(strlen(sym->name)+5);
         if(s == NULL) yyerror("no memory left");
-        
-        //save code
         sprintf(s,"let %s",sym->name);
+
         $$ = s;
     }
     | TYPE_STR NAME {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "type_str name\n" ANSI_COLOR_RESET);
 
+        //save symbol
         struct symtab * sym = symSave($2,STR_TYPE);
 
+        //build js answer
         char * s = malloc(strlen(sym->name)+5);
         if(s == NULL) yyerror("no memory left");
-        
-        //save code
         sprintf(s,"let %s",sym->name);
+
         $$ = s;
     }
     | TYPE_BOOL NAME {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "type_bool name\n" ANSI_COLOR_RESET);
 
+        //save symbol
         struct symtab * sym = symSave($2,BOOL_TYPE);
       
+        //build js answer
         char * s = malloc(strlen(sym->name)+5);
         if(s == NULL) yyerror("no memory left");
-        
-        //save code
         sprintf(s,"let %s",sym->name);
+        
         $$ = s;
     }
     | TYPE_NUM NAME '[' ']' {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "type_num name\n" ANSI_COLOR_RESET);
+        
         //save symbol
         struct symtab * sym = symSave($2,NUM_ARR_TYPE);
         
+        //build js answer
         char * s = malloc(strlen(sym->name)+10);
         if(s == NULL) yyerror("no memory left");
-        
-        //save code
         sprintf(s,"let %s = []",sym->name);
+
         $$ = s;
     }
     | TYPE_STR NAME '[' ']' {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "type_str name\n" ANSI_COLOR_RESET);
-
+        
+        //get variable info
         struct symtab * sym = symSave($2,STR_ARR_TYPE);
 
+        //build js answer
         char * s = malloc(strlen(sym->name)+10);
         if(s == NULL) yyerror("no memory left");
-        
-        //save code
         sprintf(s,"let %s = []",sym->name);
+        
         $$ = s;
     }
     | TYPE_BOOL NAME '[' ']' {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "type_bool name\n" ANSI_COLOR_RESET);
 
+        //get variable info
         struct symtab * sym = symSave($2,BOOL_ARR_TYPE);
       
+        //build js answer
         char * s = malloc(strlen(sym->name)+10);
         if(s == NULL) yyerror("no memory left");
-        
-        //save code
         sprintf(s,"let %s = []",sym->name);
 
         $$ = s;
@@ -204,11 +214,11 @@ statement_list: /* lambda */ {
             yydebug(ANSI_COLOR_GREEN"statement 2:"ANSI_COLOR_RESET "%s\n",$2);
         }
 
+        //build js answer
         char * s = malloc(strlen($1)+strlen($2)+2);
         sprintf(s,"%s%s\n",$1,$2);
                 
         //free previous allocations
-
         free($1);
         free($2);
            
@@ -240,16 +250,16 @@ statement:
     | NAME '[' exp ']'  '=' exp {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement: "ANSI_COLOR_RESET "NAME[exp] = exp\n");
         
-         //type verification 
+        //get variable info
         struct symtab * sym = symLook($1);
         if(sym == NULL) yyerror("Variable not declared");
+        
+        //type verification  
         if(arrTypeToNormal(sym->type) != $6->type) yyerror("Invalid assignment value type");  
         
+        //build js answer
         char *s = malloc(strlen(sym->name) + strlen($3->sval) + strlen($6->sval) +6);
-        if(s == NULL){
-
-            yyerror("no memory left");
-        }
+        if(s == NULL) yyerror("no memory left");
         sprintf(s,"%s[%s] = %s",sym->name,$3->sval,$6->sval);
                                                                            
         //free previous allocations
@@ -264,11 +274,14 @@ statement:
     | NAME '=' exp {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement: "ANSI_COLOR_RESET "NAME = exp\n");
         
-        //type verification  
+        //get variable info
         struct symtab * sym = symLook($1);
         if(sym == NULL) yyerror("Variable not declared");
+
+        //type verification  
         if(sym->type != $3->type) yyerror("Type conflict: Assigning variable with incorrect value type");
     
+        //build js answer
         char *s = malloc(strlen(sym->name) + strlen($3->sval) +4);
         if(s == NULL) yyerror("no memory left");
         sprintf(s,"%s = %s",sym->name,$3->sval);
@@ -283,16 +296,18 @@ statement:
     | NAME OPEQ exp {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement: "ANSI_COLOR_RESET "NAME = exp\n");
         
-        //type verification  
+        //get variable info
         struct symtab * sym = symLook($1);
         if(sym == NULL) yyerror("Variable not declared");
+        
+        //type verification  
         if( strcmp($2,"+=") == 0){
             if( !(sym->type == NUM_TYPE && $3->type == NUM_TYPE) && !(sym->type == STR_TYPE && $3->type == STR_TYPE)) yyerror("Type conflict: increment value is not a valid type!");
         }else{
             if(!(sym->type == NUM_TYPE && $3->type == NUM_TYPE)) yyerror("Type conflict: increment value is not a valid type!");
         }
         
-    
+        //build js answer
         char *s = malloc(strlen(sym->name) + strlen($3->sval) +5);
         if(s == NULL) yyerror("no memory left");
         sprintf(s,"%s %s %s",sym->name,$2,$3->sval);
@@ -308,12 +323,14 @@ statement:
     | NAME '=' arr_init { 
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"if_statement: "ANSI_COLOR_RESET "if(exp){statement_list}\n");
         
-        //type verification  
+        //get variable info
         struct symtab * sym = symLook($1);
         if(sym == NULL) yyerror("Variable not declared");
+
+        //type verification  
         if(arrTypeToNormal(sym->type) != $3->type) yyerror("Type conflict: Invalid array initialization type");  
     
-        //line building
+        //build js answer
         char *s = malloc(strlen(sym->name) + strlen($3->sval) +4);
         if(s == NULL) yyerror("no memory left");
         sprintf(s,"%s = %s",sym->name,$3->sval);
@@ -332,10 +349,10 @@ if_statement: IF '(' exp ')' '{' statement_list '}' %prec LOWER_THAN_ELSE {
 
         //type verification
         if($3->type != BOOL_TYPE ) yyerror("Type conflict: if condition must be boolean!");
-
+    
+        //build js answer
         char * s  = malloc( strlen("if(  ) {\n}") + strlen($3->sval) + strlen($6) +1);
-        if(s == NULL) yyerror("no memory left");
-        
+        if(s == NULL) yyerror("no memory left");   
         sprintf(s,"if( %s ) {\n%s}",$3->sval,$6);
                                                                                                    
         //free previous allocations
@@ -351,9 +368,9 @@ if_statement: IF '(' exp ')' '{' statement_list '}' %prec LOWER_THAN_ELSE {
         //type verification
         if($3->type != BOOL_TYPE ) yyerror("Type conflict: if condition must be boolean!");
         
+        //build js answer
         char * s  = malloc(strlen("if(  ) {\n}else{\n}") + strlen($3->sval) + strlen($6) + strlen($10) + 1);
         if(s == NULL) yyerror("no memory left");
-        
         sprintf(s,"if( %s ) {\n%s}else{\n%s}",$3->sval,$6,$10);
                                                                                                            
         //free previous allocations
@@ -372,9 +389,9 @@ while_statement: WHILE '(' exp ')' '{' statement_list '}' {
         //type verification
         if($3->type != BOOL_TYPE ) yyerror("Type conflict: expression between () must be boolean!");
         
+        //build js answer
         char * s  = malloc(strlen($3->sval) + strlen($6) + 14);
         if(s == NULL) yyerror("no memory left");
-        
         sprintf(s,"while( %s ) {\n%s}",$3->sval,$6);
                                                                                                                    
         //free previous allocations
@@ -392,9 +409,14 @@ exp: exp '+' exp {
         //type verification
         if($1->type == BOOL_TYPE || $3->type == BOOL_TYPE ) yyerror("Type conflict: in sum expression!");
 
+        //create exression struct
         struct exp_t* aux = malloc(EXP_SIZE);
+
+        //build js answer
         char * s = expOp($1->sval,"+",$3->sval);
         if(s == NULL  || aux == NULL) yyerror("no memory left");
+
+        //fill expression struct
         aux->sval = s;
         if($1->type == NUM_TYPE && $3->type == NUM_TYPE ){
             aux->type = NUM_TYPE;   
@@ -416,9 +438,14 @@ exp: exp '+' exp {
         //type verification
         if($1->type != NUM_TYPE || $3->type != NUM_TYPE ) yyerror("Type conflict: in sustraction expression!");
 
+        //create exression struct
         struct exp_t* aux = malloc(EXP_SIZE);
+
+        //build js answer
         char * s = expOp($1->sval,"-",$3->sval);
         if(s == NULL  || aux == NULL) yyerror("no memory left");
+
+        //fill expression struct
         aux->sval = s;
         aux->type = $1->type;  
         
@@ -437,9 +464,14 @@ exp: exp '+' exp {
         //type verification
         if($1->type != NUM_TYPE || $3->type != NUM_TYPE ) yyerror("Type conflict: in division expression!");
         
+        //create exression struct
         struct exp_t* aux = malloc(EXP_SIZE);
+
+        //build js answer
         char *s = expOp($1->sval,"/",$3->sval);
         if(s == NULL  || aux == NULL) yyerror("no memory left");
+        
+        //fill expression struct
         aux->sval = s;
         aux->type = $1->type;
                 
@@ -457,9 +489,14 @@ exp: exp '+' exp {
         //type verification
         if($1->type != NUM_TYPE || $3->type != NUM_TYPE ) yyerror("Type conflict: in product expression!");
 
+        //create exression struct
         struct exp_t* aux = malloc(EXP_SIZE);
+
+        //build js answer
         char *s = expOp($1->sval,"*",$3->sval);
         if(s == NULL  || aux == NULL) yyerror("no memory left");
+
+        //fill expression struct
         aux->sval = s;
         aux->type = $1->type;
                 
@@ -477,9 +514,14 @@ exp: exp '+' exp {
         //type verification
         if($1->type != NUM_TYPE || $3->type != NUM_TYPE ) yyerror("Type conflict: in product expression!");
 
+        //create exression struct
         struct exp_t* aux = malloc(EXP_SIZE);
+
+        //build js answer
         char *s = expOp($1->sval,"%",$3->sval);
         if(s == NULL  || aux == NULL) yyerror("no memory left");
+
+        //fill expression struct
         aux->sval = s;
         aux->type = $1->type;
                 
@@ -497,11 +539,15 @@ exp: exp '+' exp {
         //type verification
         if($2->type != NUM_TYPE)  yyerror("Type conflict: in minus assignment expression!");
         
+        //create exression struct
         struct exp_t* aux = malloc(EXP_SIZE);
+        
+        //build js answer
         char *s = malloc(strlen($2->sval) +2);
         if(s == NULL  || aux == NULL) yyerror("no memory left");
         sprintf(s,"-%s",$2->sval);
 
+        //fill expression struct
         aux->sval = s;
         aux->type = $2->type;   
                 
@@ -514,11 +560,15 @@ exp: exp '+' exp {
     | '(' exp ')' {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "(exp)\n");
 
-        char *s = malloc(strlen($2->sval) +3);
+        
         struct exp_t* aux = malloc(EXP_SIZE);
+
+        //build js answer
+        char *s = malloc(strlen($2->sval) +3);
         if(s == NULL || aux == NULL) yyerror("no memory left");
         sprintf(s,"(%s)",$2->sval);
 
+        //fill expression struct
         aux->sval = s;
         aux->type = $2->type;
             
@@ -534,11 +584,15 @@ exp: exp '+' exp {
         //type verification
         if($1->type != BOOL_TYPE || $3->type != BOOL_TYPE) yyerror("invalid types in and clause");
     
-        char * s = malloc(strlen($1->sval) + strlen($3->sval) + 5);
+        //create exression struct
         struct exp_t* aux = malloc(EXP_SIZE);
+        
+        //build js answer
+        char * s = malloc(strlen($1->sval) + strlen($3->sval) + 5);
         if(s == NULL || aux == NULL) yyerror("No memory left");
         sprintf(s,"%s && %s",$1->sval,$3->sval);
 
+        //fill expression struct
         aux->sval = s;
         aux->type = BOOL_TYPE;
                         
@@ -556,12 +610,15 @@ exp: exp '+' exp {
         //type verification
         if($1->type != BOOL_TYPE || $3->type != BOOL_TYPE) yyerror("invalid types in or clause");
         
-      
-        char * s = malloc(strlen($1->sval) + strlen($3->sval) + 5);
+        //create exression struct
         struct exp_t* aux = malloc(EXP_SIZE);
+        
+        //build js answer
+        char * s = malloc(strlen($1->sval) + strlen($3->sval) + 5);
         if(s == NULL || aux == NULL) yyerror("No memory left");
         sprintf(s,"%s || %s",$1->sval,$3->sval);
         
+        //fill expression struct
         aux->sval = s;
         aux->type = BOOL_TYPE;
                         
@@ -578,13 +635,16 @@ exp: exp '+' exp {
         
         //type verification
         if($2->type != BOOL_TYPE) yyerror("Type conflict: expression must be bool!");
-        
-      
-        char * s = malloc(strlen($2->sval) +2);
+
+        //create exression struct
         struct exp_t* aux = malloc(EXP_SIZE);
+
+        //build js answer
+        char * s = malloc(strlen($2->sval) +2);
         if(s == NULL || aux == NULL) yyerror("No memory left");
-        
         sprintf(s,"!%s",$2->sval);
+
+        //fill expression struct
         aux->sval = s;
         aux->type = BOOL_TYPE;
                     
@@ -600,13 +660,15 @@ exp: exp '+' exp {
         //type verification
         if(!($1->type == NUM_TYPE && $3->type == NUM_TYPE) && !($1->type == STR_TYPE && $3->type == STR_TYPE)  ) yyerror("Type conflict: both expressions must be numbers!");
 
-     
-        char *s = malloc(strlen($1->sval) + strlen($3->sval) + strlen($2) + 3);
+        //create exression struct
         struct exp_t* aux = malloc(EXP_SIZE);
-        if(s == NULL || aux == NULL) yyerror("No memory left");
 
+        //build js answer
+        char *s = malloc(strlen($1->sval) + strlen($3->sval) + strlen($2) + 3);
+        if(s == NULL || aux == NULL) yyerror("No memory left");
         sprintf(s,"%s %s %s",$1->sval, $2, $3->sval);
         
+        //fill expression struct
         aux->sval = s;
         aux->type = BOOL_TYPE;
                         
@@ -625,15 +687,19 @@ exp: exp '+' exp {
         //type verification
         if($3->type != NUM_TYPE) yyerror("Type conflict: array index must be a number!");
         
+        //fetching variable info
         struct symtab * sym = symLook($1);
-
         if(sym == NULL) yyerror("Variable not declared");
-      
-        char *s = malloc(strlen(sym->name) + strlen($3->sval) +3);
+
+        //create exression struct
         struct exp_t* aux = malloc(EXP_SIZE);
+
+        //build js answer
+        char *s = malloc(strlen(sym->name) + strlen($3->sval) +3);
         if(s == NULL || aux == NULL) yyerror("no memory left");
         sprintf(s,"%s[%s]",sym->name,$3->sval); 
 
+        //fill expression struct
         aux->sval = s;
         aux->type = arrTypeToNormal(sym->type);
         
@@ -647,29 +713,37 @@ exp: exp '+' exp {
     | NAME {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "NAME: %s\n",$1);
         
+        //fetching variable info
         struct symtab * sym = symLook($1);
+        if(sym == NULL) yyerror("Variable not declared");
+
+        //create exression struct
         struct exp_t* aux = malloc(EXP_SIZE);
-        if(sym == NULL || aux == NULL) yyerror("Variable not declared");
-        
-       
+        if(aux == NULL) yyerror("no memory left");
+
+        //fill expression struct
         aux->sval = strdup(sym->name);
         aux->type = sym->type;
+
         $$ = aux;
     }
-    | NUM_FUNCT '(' exp ')' {
+    | NUM_FUNCT_1 '(' exp ')' {
          if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "NUM_FUNCT(exp): %s\n",$1);
         
         //type verification
         if($3->type != NUM_TYPE) yyerror("Type conflict: array index must be a number!");
         
-        char *s = malloc(strlen($1) + strlen($3->sval) +8);
+        //create exression struct
         struct exp_t* aux = malloc(EXP_SIZE);
+
+        //build js answer
+        char *s = malloc(strlen($1) + strlen($3->sval) +8);
         if(s == NULL || aux == NULL) yyerror("no memory left");
-       
         sprintf(s,"Math.%s(%s)",$1,$3->sval); 
 
+        //fill expression struct
         aux->sval = s;
-        aux->type = $3->type;
+        aux->type = NUM_TYPE;
         
         //free previous allocations
         free($1);
@@ -678,41 +752,81 @@ exp: exp '+' exp {
      
         $$ = aux;
     }
+    | NUM_FUNCT_2 '(' exp ',' exp ')' {
+         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "NUM_FUNCT(exp, exp): %s\n",$1);
+        
+        //type verification
+        if($3->type != NUM_TYPE || $5->type != NUM_TYPE) yyerror("Type conflict: array index must be a number!");
+        
+        //create exression struct
+        struct exp_t* aux = malloc(EXP_SIZE);
+
+        //build js answer
+        char *s = malloc(strlen($1) + strlen($3->sval) + strlen($5->sval) +9);
+        if(s == NULL || aux == NULL) yyerror("no memory left");
+        sprintf(s,"Math.%s(%s,%s)",$1,$3->sval,$5->sval); 
+
+        //fill expression struct
+        aux->sval = s;
+        aux->type = NUM_TYPE;
+        
+        //free previous allocations
+        free($1);
+        free($3->sval);
+        free($3);
+        free($5->sval);
+        free($5);
+     
+        $$ = aux;
+    }
     | INTEGER {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "INTEGER: %s\n",$1);
+        
+        //create and fill exression struct
         struct exp_t* aux = malloc(EXP_SIZE);
         aux->type = NUM_TYPE;
         aux->sval = $1;
+
         $$ = aux;
     }
     | FLOAT {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "FLOAT: %s\n",$1);
+        
+        //create and fill exression struct
         struct exp_t* aux = malloc(EXP_SIZE);
         aux->type = NUM_TYPE;
         aux->sval = $1;
+
         $$ = aux;
     }
     | QSTRING {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "QSTRING: %s\n",$1);
+        
+        //create and fill exression struct
         struct exp_t* aux = malloc(EXP_SIZE);
         aux->type = STR_TYPE;
         aux->sval = $1;
+        
         $$ = aux;
     }
     | TRUE_TK { 
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "TRUE_TK\n");
 
+        //create and fill exression struct
         struct exp_t* aux = malloc(EXP_SIZE);
         aux->type = BOOL_TYPE;
         aux->sval = strdup("true");
+
         $$ = aux;
     }
     | FALSE_TK{ 
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "FALSE_TK\n");
 
+        //create and fill exression struct
         struct exp_t* aux = malloc(EXP_SIZE);
         aux->type = BOOL_TYPE;
         aux->sval = strdup("false");
+
         $$ = aux;
     }
     | READ_STR '(' exp ')' { 
@@ -721,11 +835,15 @@ exp: exp '+' exp {
         //type verification
         if($3->type != STR_TYPE) yyerror("Type conflict: read message must be a string!");
 
-        struct exp_t* aux = malloc(EXP_SIZE);   
+        //create exression struct
+        struct exp_t* aux = malloc(EXP_SIZE);  
+        
+        //build js answer 
         char *s = malloc(strlen($3->sval) + strlen("window.prompt()") + 1);
-        if(s == NULL) yyerror("no memory left");
+        if(s == NULL || aux == NULL) yyerror("no memory left");
         sprintf(s,"window.prompt(%s)",$3->sval); 
 
+        //fill expression struct
         aux->type = STR_TYPE;
         aux->sval = s;
                                          
@@ -741,11 +859,15 @@ exp: exp '+' exp {
         //type verification
         if($3->type != STR_TYPE) yyerror("Type conflict: read message must be a string!");
 
-        struct exp_t* aux = malloc(EXP_SIZE);   
+        //create exression struct
+        struct exp_t* aux = malloc(EXP_SIZE);  
+
+        //build js answer
         char *s = malloc(strlen($3->sval) + strlen("window.prompt()") + 1);
-        if(s == NULL) yyerror("no memory left");
+        if(s == NULL || aux == NULL) yyerror("no memory left");
         sprintf(s,"window.prompt(%s)",$3->sval); 
 
+        //fill expression struct
         aux->type = NUM_TYPE;
         aux->sval = s;
                                                  
@@ -758,25 +880,35 @@ exp: exp '+' exp {
     | GET_HEIGHT '(' ')' {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "GET_HEIGHT\n");    
         
-        struct exp_t* aux = malloc(EXP_SIZE);   
+        //create exression struct
+        struct exp_t* aux = malloc(EXP_SIZE);
+        
+        //build js answer
         char *s = malloc(strlen("window.innerHeight")+1);
-        if(s == NULL) yyerror("no memory left");
+        if(s == NULL || aux == NULL) yyerror("no memory left");
         sprintf(s,"window.innerHeight");
 
+        //fill expression struct
         aux->type = NUM_TYPE;
         aux->sval = s;
+        
         $$ = aux;
     }
     | GET_WIDTH '(' ')' {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "GET_WIDTH\n");    
         
+        //create exression struct
         struct exp_t* aux = malloc(EXP_SIZE);   
+        
+        //build js answer
         char *s = malloc(strlen("window.innerWidth")+1);
-        if(s == NULL) yyerror("no memory left");
+        if(s == NULL || aux == NULL) yyerror("no memory left");
         sprintf(s,"window.innerWidth");
 
+        //fill expression struct
         aux->type = NUM_TYPE;
         aux->sval = s;
+        
         $$ = aux;
     }
     ;
@@ -785,11 +917,15 @@ exp: exp '+' exp {
 arr_init: '[' arr_item ']' {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"arr_init: "ANSI_COLOR_RESET "arr_item\n");
         
+        //create exression struct
         struct exp_t* aux = malloc(EXP_SIZE);
-        if(aux == NULL) yyerror("no memory left");
+
+        //build js answer
         char  *s = malloc(strlen($2->sval) + 3);
+        if(aux == NULL || aux == NULL) yyerror("no memory left");
         sprintf(s,"[%s]",$2->sval);
         
+        //fill expression struct
         aux->type = $2->type;
         aux->sval = s;
                                                  
@@ -804,11 +940,18 @@ arr_init: '[' arr_item ']' {
 arr_item: exp {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"arr_item: "ANSI_COLOR_RESET "exp\n");
         
+        //create exression struct
         struct exp_t* aux = malloc(EXP_SIZE);
         if(aux == NULL) yyerror("no memory left");
 
+        //fill expression struct
         aux->type = $1->type;
-        aux->sval = $1->sval;
+        aux->sval = strdup($1->sval);
+        
+        //free previous allocations
+        free($1->sval);
+        free($1);
+
         $$ = aux;
     } 
     |  exp ',' arr_item {
@@ -817,14 +960,16 @@ arr_item: exp {
         //type verification
         if($1->type != $3->type) yyerror("Type conflict: invalid type for array item");
         
+        //create exression struct
         struct exp_t* aux = malloc(EXP_SIZE);
-        if(aux == NULL) yyerror("no memory left");
-        
-        aux->type = $1->type;
+
+        //build js answer
         char * s = malloc(strlen($1->sval) + strlen($3->sval) + 3);
-        if(s == NULL) yyerror("no memory left");
-        
+        if(s == NULL || aux == NULL) yyerror("no memory left");
         sprintf(s,"%s, %s",$1->sval,$3->sval);
+        
+        //fill expression struct
+        aux->type = $1->type;
         aux->sval = s;
                                                          
         //free previous allocations
@@ -848,14 +993,13 @@ system:
 system_action: ADDBODY '(' exp ',' exp ',' exp ',' exp ',' exp ',' exp ',' exp ')' { 
             if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"system_action: "ANSI_COLOR_RESET "ADDBODY\n");
 
-            //printf("%d, %d, %d, %d, %d, %d, %d", $3->type, $5->type, $7->type, $9->type, $11->type, $13->type,$15->type);
-
             //type verification
             if($3->type != NUM_TYPE || $5->type != NUM_TYPE || $7->type != NUM_TYPE || $9->type != NUM_TYPE || $11->type != NUM_TYPE || $13->type != NUM_TYPE || $15->type != STR_TYPE) yyerror("Type conflict: addBody(num,num,num,num,num,num,str)");
+            
+            //build js answer
             char *s = malloc(strlen($3->sval) + strlen($5->sval) + strlen($7->sval) + strlen($9->sval) + strlen($11->sval) + strlen($13->sval) + strlen($15->sval) + strlen("bodies.push(new Body(,,,,,,))")+1);
-            if(s == NULL){
-                yyerror("no memory left");
-            }
+            if(s == NULL) yyerror("no memory left");
+            
             sprintf(s,"bodies.push(new Body(%s,%s,%s,%s,%s,%s,%s))",$3->sval,$5->sval,$7->sval,$9->sval,$11->sval,$13->sval,$15->sval);
                                                                      
             //free previous allocations
@@ -890,6 +1034,7 @@ config_action: GRAVITY_CONF '(' exp ')' {
             //type verification 
             if($3->type != NUM_TYPE) yyerror("Type conflict: gravityConstant(num)");
             
+            //build js answer
             char *s = malloc(strlen($3->sval) + strlen("Gc = ")+1);
             if(s == NULL) yyerror("no memory left");
             sprintf(s,"Gc = %s",$3->sval);
@@ -905,9 +1050,10 @@ config_action: GRAVITY_CONF '(' exp ')' {
             
             //type verification
             if($3->type != BOOL_TYPE) yyerror("Type conflict: worldBorderBounce(boolean)");
+
+            //build js answer
             char *s = malloc(strlen($3->sval) + strlen("worldBorderBounce = ") + 1);
             if(s == NULL) yyerror("no memory left");
-            
             sprintf(s,"worldBorderBounce = %s",$3->sval);
                                                                                              
             //free previous allocations
@@ -921,9 +1067,10 @@ config_action: GRAVITY_CONF '(' exp ')' {
             
             //type verification
             if($3->type != BOOL_TYPE) yyerror("Type conflict: enableBodyTrail(boolean)");
+
+            //build js answer
             char *s = malloc(strlen($3->sval) + strlen("bodyTrail = ") + 1);
             if(s == NULL) yyerror("no memory left");
-            
             sprintf(s,"bodyTrail = %s",$3->sval);
                                                                                              
             //free previous allocations
@@ -937,6 +1084,7 @@ config_action: GRAVITY_CONF '(' exp ')' {
 print: PRINT '(' exp ')' {
             if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"print: "ANSI_COLOR_RESET "PRINT\n");  
 
+            //build js answer
             char *s = malloc(strlen($3->sval) + strlen("alert()") + 1);
             if(s == NULL) yyerror("no memory left");
             sprintf(s,"alert(%s)",$3->sval);
@@ -952,6 +1100,9 @@ print: PRINT '(' exp ')' {
 %%
 
 
+/* ---------------------------------- PROGRAM FUNCTIONS ------------------------------------ */
+
+// Looks for symbol in symbol table
 struct symtab * symLook(char* s){
    struct symtab * sym;
     for(int i = 0; i < MAX_SYMBOLS; i++){
@@ -964,6 +1115,8 @@ struct symtab * symLook(char* s){
     }
     return NULL;
 }
+
+// Stores symbol in symbol table if not already stored
 struct symtab * symSave(char* s,enum var_type type){
     struct symtab * sp;
 
@@ -976,11 +1129,12 @@ struct symtab * symSave(char* s,enum var_type type){
             sp->type = type;
          
             return sp;
-   
+        }
+        else if(sp->name && !strcmp((sp->name)+2,s)){
+            yyerror("Variable definition error: variable already defined");
+        }
     }
-}
-
-    yyerror("Variable creation error: Too many symbols");
+    yyerror("Variable definition error: Too many symbols");
 
     return NULL;
 }
@@ -998,14 +1152,12 @@ char * expOp(char * exp1,char * op,char * exp2){
 }
 
 
+/* -------------------------------------- MAIN ----------------------------------------- */
 
 int main(int argc, char* argv[]){
 
     extern double sqrt(),exp(),log();
    
-    // addFunc("sqrt",sqrt);
-    // addFunc("exp",exp);
-    // addFunc("log",log);
     char * infile;
 
     char * progname = argv[0];
@@ -1028,22 +1180,18 @@ int main(int argc, char* argv[]){
     }
 
     appendFiles(HEADER_FILE, yyout);
-
     yyparse();
-
     appendFiles(FOOTER_FILE, yyout);
   
     fclose(yyin);
     fclose(yyout);
     freeTable();
     exit(0);
-    // while(!feof(yyin)){
-    //     yyparse();
-    // }
   
     return 0;
 }
 
+// appends necessary source content to destination file
 void appendFiles(char source[], FILE * fp2)
 {
     // declaring file pointers
@@ -1086,6 +1234,7 @@ void printTable(){
       printf("########################\n");
 }
 
+// Frees table content
 void freeTable(){
     for(int i = 0; i < MAX_SYMBOLS; i++){
         struct symtab * sym = &symtab[i];
@@ -1097,6 +1246,8 @@ void freeTable(){
 
     }
 }
+
+// Transforms TYPES to ARR_TYPES
 enum var_type arrTypeToNormal(enum var_type type){
     switch(type){
         case NUM_ARR_TYPE:
@@ -1115,6 +1266,7 @@ enum var_type arrTypeToNormal(enum var_type type){
     return 0;
 }
 
+// Error handler, prints error and exits program
 void yyerror(const char *s)
 {
     fprintf (stderr,ANSI_COLOR_RED "%s\n" ANSI_COLOR_RESET, s);
