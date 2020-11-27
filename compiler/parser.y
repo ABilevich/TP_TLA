@@ -30,6 +30,7 @@ void yydebug(const char * format,...);
 void printTable();
 void freeTable();
 enum var_type arrTypeToNormal(enum var_type type);
+
 extern FILE *yyin, *yyout;
 
 
@@ -84,7 +85,8 @@ extern FILE *yyin, *yyout;
 %type <string> config_action
 %type <string> variable_definitions
 %type <string> variable_definition
-
+%type <string> block_statement
+%type <string> expression_statement
 %%
 
 /* ---------------------------------- PRODUCTIONS ------------------------------------ */
@@ -247,7 +249,31 @@ statement_list:     /* lambda */ {
     }
     ;
 
-statement: 
+statement:
+    block_statement{
+        $$ = $1;
+    }
+    |
+    expression_statement{
+        $$ = $1;
+    }
+    ;
+
+block_statement: if_statement {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "if\n");
+        $$ = $1;
+    }
+    | while_statement {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "while\n");
+        $$ = $1;
+    }
+    | for_statement {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "for\n");
+        $$ = $1;
+    }
+    ;
+
+expression_statement: 
     system {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET"system %s\n",$1);
         $$ = $1;
@@ -260,17 +286,36 @@ statement:
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "print\n");
         $$ = $1;
     }
-    | if_statement {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "if\n");
-        $$ = $1;
-    }
-    | while_statement {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "while\n");
-        $$ = $1;
-    }
-    | for_statement {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "while\n");
-        $$ = $1;
+    | NAME '[' exp ']' OPEQ exp {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement: "ANSI_COLOR_RESET "NAME = exp\n");
+        
+        //get variable info
+        struct symtab * sym = symLook($1);
+        if(sym == NULL) yyerror("Variable not declared");
+        
+        //type verification  
+        if(arrTypeToNormal(sym->type) != $6->type) yyerror("Invalid assignment value type");  
+        if($3->type != NUM_TYPE) yyerror("Invalid arrey index!");  
+        if( strcmp($5,"+=") == 0){
+            if( !(arrTypeToNormal(sym->type) == NUM_TYPE && $6->type == NUM_TYPE) && !(arrTypeToNormal(sym->type) == STR_TYPE && $6->type == STR_TYPE)) yyerror("Type conflict: increment value is not a valid type!");
+        }else{
+            if(!(arrTypeToNormal(sym->type) == NUM_TYPE && $6->type == NUM_TYPE)) yyerror("Type conflict: increment value is not a valid type!");
+        }
+        
+        //build js answer
+        char *s = malloc(strlen(sym->name) + strlen($3->sval) + strlen($6->sval) +7);
+        if(s == NULL) yyerror("no memory left");
+        sprintf(s,"%s[%s] %s %s",sym->name, $3->sval, $5, $6->sval);
+                                                                                   
+        //free previous allocations
+        free($1);
+        free($6->sval);
+        free($6);
+        free($3->sval);
+        free($3);
+        free($5);
+            
+        $$ = s;
     }
     | NAME '[' exp ']'  '=' exp {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement: "ANSI_COLOR_RESET "NAME[exp] = exp\n");
@@ -348,7 +393,7 @@ statement:
         $$ = s;
     }
     | NAME '=' arr_init { 
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"if_statement: "ANSI_COLOR_RESET "if(exp){statement_list}\n");
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement: "ANSI_COLOR_RESET "NAME = arr_init\n");
         
         //get variable info
         struct symtab * sym = symLook($1);
@@ -430,8 +475,7 @@ while_statement: WHILE '(' exp ')' '{' statement_list '}' {
     }
     ;
 
-
-for_statement: FOR  '(' statement ';' exp ';' statement')' '{' statement_list '}' {
+for_statement: FOR  '(' expression_statement ';' exp ';' expression_statement')' '{' statement_list '}' {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"for_statement: "ANSI_COLOR_RESET "for(statement;exp;statement){ statement_list}\n");
 
         //type verification
@@ -451,8 +495,8 @@ for_statement: FOR  '(' statement ';' exp ';' statement')' '{' statement_list '}
 
 
         $$ = s;   
-}
-;
+    }
+    ;
 
 exp: exp '+' exp {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "exp + exp\n");
@@ -1314,7 +1358,7 @@ enum var_type arrTypeToNormal(enum var_type type){
             return STR_TYPE;
         break;
         default:
-            yyerror("Type doesn't exist");
+            yyerror("Variable is not an array type!");
         break;
     }
     return 0;
