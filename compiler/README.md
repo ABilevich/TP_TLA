@@ -2,8 +2,8 @@
 Integrantes del proyecto:
 - Bilevich, Andres Leonardo  	59108 
 - Margossian, Gabriel Viken  	59130
-- Mónaco, Matías Damian		59102
-- Lin, Scott				59339
+- Mónaco, Matías Damian		    59102
+- Lin, Scott				    59339
 ### Physique
 **Physique** es un lenguaje de programación que permite generar simulaciones físicas entre cuerpos. Estos cuerpos pueden interactuar entre ellos, utilizando características como la densidad, tamaño y la constante gravitacional de un espacio. Con estos parámetros se utilizan ecuaciones físicas para calcular la atracción y las fuerzas producidas entre dichos cuerpos y visualizar esto en la pantalla. Este lenguaje permite, entre otras cosas, simular sistemas solares estables o inestables y colisiones inelásticas entre cuerpos.
 Para compilar codigo de dicho lenguaje, se implementó un compilador del lenguaje que traduce el código a código JavaScript.
