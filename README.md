@@ -8,7 +8,7 @@ Integrantes del proyecto:
 **Physique** es un lenguaje de programación que permite generar simulaciones físicas entre cuerpos. Estos cuerpos pueden interactuar entre ellos, utilizando características como la densidad, tamaño y la constante gravitacional de un espacio. Con estos parámetros se utilizan ecuaciones físicas para calcular la atracción y las fuerzas producidas entre dichos cuerpos y visualizar esto en la pantalla. Este lenguaje permite, entre otras cosas, simular sistemas solares estables o inestables y colisiones inelásticas entre cuerpos.
 Para compilar codigo de dicho lenguaje, se implementó un compilador del lenguaje que traduce el código a código JavaScript.
 
-### Compilación del compilador:
+### Compilación del compilador
 Para compilar el compilador ejecutar el comando `make` en el directorio en la que se encuentra el archivo Makefile. Esto generará el ejecutable compile dentro del mismo directorio. Para recompilar el ejecutable, hacer primero `make clean`.
 
 ### Compilar programas
