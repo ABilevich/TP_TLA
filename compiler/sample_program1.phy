@@ -37,4 +37,6 @@ main(){
     for(i=0; i < cantPlanets; i+=1){
         System.addBody(centerx + dist + (dist_inc*i), centery, 100, 5 , 0, -10, colors[i])
     }
+
+    
 }

@@ -1,6 +1,6 @@
 %{
 #include "y.tab.h"
-#include <math.h>
+#include "parser.h"
 #include <stdio.h>
 %}
 
@@ -74,7 +74,7 @@ pow { yylval.string = strdup(yytext);
 
 
  /*  ----------------- CARACTERES IGNORADOS -----------------  */
-{nl} ;
+{nl} {numLine++;}
 {ws} ;  /* ignore whitespace */
 
 

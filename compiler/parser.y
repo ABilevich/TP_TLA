@@ -3,7 +3,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <math.h>
 #include <stdarg.h>
 
 #define YYDEBUGGING 1
@@ -24,6 +23,38 @@
   #define DEBUGGING 0
 #endif
 #define ERROR_STR(str) ANSI_COLOR_RED str ANSI_COLOR_RESET
+
+#define MAX_SYMBOLS 50 // Maximum number of symbols
+
+enum var_type
+{
+    NUM_TYPE,
+    STR_TYPE,
+    BOOL_TYPE,
+    NUM_ARR_TYPE,
+    STR_ARR_TYPE,
+    BOOL_ARR_TYPE,
+
+};
+
+struct symtab
+{
+    char *name;
+    enum var_type type;
+
+} symtab[MAX_SYMBOLS];
+
+struct exp_t
+{
+    char *sval;
+    enum var_type type;
+};
+
+struct symtab *symLook(char *s);
+
+struct symtab *symSave(char *s, enum var_type type);
+char *expOp(char *exp1, char *op, char *exp2);
+
 void appendFiles(char source[], FILE * fd2);
 int yylex();
 void yyerror(const char *format,...);
@@ -34,7 +65,6 @@ void yylex_destroy();
 enum var_type arrTypeToNormal(enum var_type type);
 char*typeToPrintableType(enum var_type type);
 
-int numLine = 0;
 
 extern FILE *yyin, *yyout;
 
@@ -1263,7 +1293,7 @@ char * expOp(char * exp1,char * op,char * exp2){
 
 int main(int argc, char* argv[]){
 
-    extern double sqrt(),exp(),log();
+    
    
     char * infile;
 
@@ -1289,7 +1319,7 @@ int main(int argc, char* argv[]){
         
     }
 
-
+    numLine = 0;
     appendFiles(HEADER_FILE, yyout);
     yyparse();
     appendFiles(FOOTER_FILE, yyout);
