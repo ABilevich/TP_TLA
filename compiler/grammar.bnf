@@ -1,0 +1,80 @@
+<start> ::=  lambda | <variable_definitions> MAIN '(' ')' '{' <statement_list> '}'  
+    
+<variable_definitions> ::= 
+  lambda 
+| <variable_definitions> <variable_definition>
+ 
+<variable_definition> ::= 
+  TYPE_NUM NAME 
+| TYPE_STR NAME 
+| TYPE_BOOL NAME 
+| TYPE_NUM NAME '[' ']' 
+| TYPE_STR NAME '[' ']' 
+| TYPE_BOOL NAME '[' ']'
+ 
+<statement_list> ::= 
+  lambda 
+| <statement_list> <statement>   
+ 
+<statement> ::= 
+      <system> 
+    | <config> 
+    | <print> 
+    | <if_statement> 
+    | <while_statement> 
+    | NAME '[' <exp> ']'  '=' <exp> 
+    | NAME '=' <exp>
+    | NAME OPEQ <exp> 
+    | NAME '=' <arr_init> 
+ 
+<if_statement> ::= 
+  IF '(' <exp> ')' '{' <statement_list> '}' 
+| IF '(' <exp> ')' '{' <statement_list> '}' ELSE '{' <statement_list> '}' 
+ 
+<while_statement> ::= 
+WHILE '(' <exp> ')' '{' <statement_list> '}' 
+ 
+<exp> ::= 
+<exp> '+' <exp> 
+    | <exp> '-' <exp> 
+    | <exp> '/' <exp> 
+    | <exp> '*' <exp> 
+    | <exp> '%' <exp> 
+    | '-' <exp>
+    | '(' <exp> ')'
+    | <exp> AND <exp> 
+    | <exp> OR <exp> 
+    | NOT <exp> 
+    | <exp> COMPARATION <exp> 
+    | NAME '[' <exp> ']' 
+    | NAME 
+    | NUM_FUNCT '(' <exp> ')' 
+    | INTEGER 
+    | FLOAT 
+    | QSTRING 
+    | TRUE_TK 
+    | FALSE_TK
+    | READ_STR '(' <exp> ')'
+    | READ_NUM '(' <exp> ')' 
+    | GET_HEIGHT '(' ')' 
+    | GET_WIDTH '(' ')'
+ 
+<arr_init> ::= '[' <arr_item> ']' 
+    
+<arr_item>::= 
+   <exp> 
+|  <exp> ',' <arr_item> 
+ 
+<system> ::= SYSTEM_TOKEN '.' <system_action> 
+ 
+<system_action> ::= 
+  ADDBODY '(' <exp> ',' <exp> ',' <exp> ',' <exp> ',' <exp> ',' <exp> ',' <exp> ')'     
+    
+<config> ::= CONFIG_TOKEN '.' <config_action> 
+ 
+<config_action> ::= 
+  GRAVITY_CONF '(' <exp> ')' 
+     	| BOUNCE_CONF '(' <exp> ')'        
+| TRAIL_CONF '(' <exp> ')' 
+ 
+<print> ::= PRINT '(' <exp> ')' 
