@@ -1,4 +1,0 @@
-main(){
-    num pepe = 12
-    pepe = 346
-}

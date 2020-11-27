@@ -5,11 +5,11 @@ CFLAGS = -Wall -pedantic -std=c99 -Wextra -D_POSIX_C_SOURCE=200809L -std=c99 -Wn
 
 all: parser lexer link
 
-parser: parser2.y
-	yacc -d -v parser2.y
+parser: parser.y
+	yacc -d -v parser.y
 
-lexer: lexer2.l
-	lex lexer2.l
+lexer: lexer.l
+	lex lexer.l
 
 link: lex.yy.c y.tab.c
 ifeq ($(DEBUG),TRUE)

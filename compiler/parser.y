@@ -7,7 +7,7 @@
 #include <stdarg.h>
 
 #define YYDEBUGGING 1
-
+#define EXP_SIZE sizeof(struct exp_t)
 #define HEADER_FILE "header.aux"
 #define DEFAULT_OUTFILE "index.html"
 #define FOOTER_FILE "footer.aux"
@@ -28,6 +28,8 @@ int yylex();
 void yyerror(const char *s);
 void yydebug(const char * format,...);
 void printTable();
+void freeTable();
+enum var_type arrTypeToNormal(enum var_type type);
 extern FILE *yyin, *yyout;
 
 
@@ -40,142 +42,182 @@ extern FILE *yyin, *yyout;
 }
 
 //Token defnitions
-%token <symp> NAME NUM_NAME STR_NAME BOOL_NAME NUM_ARR_NAME STR_ARR_NAME BOOL_ARR_NAME
+%token <string> NAME
 %token <string> INTEGER FLOAT
 %token <string> QSTRING
 %token <string> COMPARATION
-%token MAIN NEW_LINE TAB 
-%token IF ELSE WHILE
+%token MAIN 
+%token ELSE IF WHILE
 %token SYSTEM_TOKEN CONFIG_TOKEN 
 %token TYPE_STR TYPE_NUM TYPE_BOOL
 %token TRUE_TK FALSE_TK
-%token GRAVITY_CONF BOUNCE_CONF
-%token ADDBODY PRINT READ_STR READ_NUM
-
+%token GRAVITY_CONF BOUNCE_CONF TRAIL_CONF GET_HEIGHT GET_WIDTH
+%token ADDBODY PRINT READ_STR READ_NUM 
+%token <string> OPEQ
+%token <string> NUM_FUNCT
 //Set precedences
 %left OR
 %left AND
 %left NOT
 %left COMPARATION
 %left '-' '+'
-%left '*' '/'
+%left '*' '/' '%'
 
 %nonassoc UMINUS
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
 
 %type <exp_type> exp
-%type <string> num_exp
-%type <string> str_exp
-%type <string> bool_exp
 %type <exp_type> arr_init
 %type <exp_type> arr_item
-%type <exp_type> data_type
 %type <string> statement
 %type <string> statement_list
 %type <string> print
-%type <string> read_str
-%type <string> read_num
 %type <string> system
 %type <string> config
 %type <string> if_statement
 %type <string> while_statement
 %type <string> system_action
 %type <string> config_action
-//%type <string> print_func
+%type <string> variable_definitions
+%type <string> variable_definition
+
 %%
 
 
 start:  /* lambda */
-    |  MAIN '(' ')' '{' statement_list '}'  {
+    |  variable_definitions MAIN '(' ')' '{' statement_list '}'  {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "main\n" ANSI_COLOR_RESET);
-        char * s = malloc(strlen($5)+3);
-          if(s == NULL){
-            yyerror("no memory left");
-        }
-        sprintf(s,"\n%s\n",$5);
+
+        char * s = malloc(strlen($1) + strlen($6) + 4);
+        if(s == NULL) yyerror("no memory left");
+        
+        sprintf(s,"\n%s\n%s\n",$1, $6);                                
+        //free previous allocations
+        free($1);
+        free($6);
+        
         fprintf(yyout,"%s",s);
+        free(s);
     }
     ;
 
-statement_list: statement {
-    if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement 1:"ANSI_COLOR_RESET "%s\n",$1);
-        char * s = malloc(strlen($1)+2);
-        sprintf(s,"%s\n",$1);
+variable_definitions: /* lambda */ {
+        $$ = strdup("\n");
+    }
+    | variable_definitions variable_definition{
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "variable_definition\n" ANSI_COLOR_RESET);
+
+        char * s = malloc(strlen($1)+strlen($2)+2);
+        if(s == NULL) yyerror("no memory left");
+        sprintf(s,"%s%s\n",$1,$2);
+                                
+        //free previous allocations
+        free($1);
+        free($2);
+
         $$ = s;
     }
-    |  statement_list statement   {
-        if(DEBUGGING) {yydebug(ANSI_COLOR_GREEN"statement list:"ANSI_COLOR_RESET "%s\n",$1);
-        yydebug(ANSI_COLOR_GREEN"statement 2:"ANSI_COLOR_RESET "%s\n",$2);}
+    ;
 
-        // char *s = malloc(strlen($$) +strlen($2) +3);
-        // sprintf(s,"%s\t%s\n",$$,$2);  
+variable_definition: TYPE_NUM NAME {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "type_num name\n" ANSI_COLOR_RESET);
+        //save symbol
+        struct symtab * sym = symSave($2,NUM_TYPE);
+        
+        char * s = malloc(strlen(sym->name)+5);
+        if(s == NULL) yyerror("no memory left");
+        
+        //save code
+        sprintf(s,"let %s",sym->name);
+        $$ = s;
+    }
+    | TYPE_STR NAME {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "type_str name\n" ANSI_COLOR_RESET);
+
+        struct symtab * sym = symSave($2,STR_TYPE);
+
+        char * s = malloc(strlen(sym->name)+5);
+        if(s == NULL) yyerror("no memory left");
+        
+        //save code
+        sprintf(s,"let %s",sym->name);
+        $$ = s;
+    }
+    | TYPE_BOOL NAME {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "type_bool name\n" ANSI_COLOR_RESET);
+
+        struct symtab * sym = symSave($2,BOOL_TYPE);
+      
+        char * s = malloc(strlen(sym->name)+5);
+        if(s == NULL) yyerror("no memory left");
+        
+        //save code
+        sprintf(s,"let %s",sym->name);
+        $$ = s;
+    }
+    | TYPE_NUM NAME '[' ']' {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "type_num name\n" ANSI_COLOR_RESET);
+        //save symbol
+        struct symtab * sym = symSave($2,NUM_ARR_TYPE);
+        
+        char * s = malloc(strlen(sym->name)+10);
+        if(s == NULL) yyerror("no memory left");
+        
+        //save code
+        sprintf(s,"let %s = []",sym->name);
+        $$ = s;
+    }
+    | TYPE_STR NAME '[' ']' {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "type_str name\n" ANSI_COLOR_RESET);
+
+        struct symtab * sym = symSave($2,STR_ARR_TYPE);
+
+        char * s = malloc(strlen(sym->name)+10);
+        if(s == NULL) yyerror("no memory left");
+        
+        //save code
+        sprintf(s,"let %s = []",sym->name);
+        $$ = s;
+    }
+    | TYPE_BOOL NAME '[' ']' {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "type_bool name\n" ANSI_COLOR_RESET);
+
+        struct symtab * sym = symSave($2,BOOL_ARR_TYPE);
+      
+        char * s = malloc(strlen(sym->name)+10);
+        if(s == NULL) yyerror("no memory left");
+        
+        //save code
+        sprintf(s,"let %s = []",sym->name);
+
+        $$ = s;
+    }
+    ;
+
+statement_list: /* lambda */ {
+        $$ = strdup("\n");
+    }
+    |  statement_list statement   {
+        if(DEBUGGING) {
+            yydebug(ANSI_COLOR_GREEN"statement list:"ANSI_COLOR_RESET "%s\n",$1);
+            yydebug(ANSI_COLOR_GREEN"statement 2:"ANSI_COLOR_RESET "%s\n",$2);
+        }
 
         char * s = malloc(strlen($1)+strlen($2)+2);
         sprintf(s,"%s%s\n",$1,$2);
-        $$ = s;
+                
+        //free previous allocations
 
-        // // char *s = strdup($1);
-        // // strcat(s,$2);
-        // // strcat(s,"\n");
-        // $$ =s;
+        free($1);
+        free($2);
+           
+        $$ = s;
     }
     ;
 
 statement: 
-
-    data_type NAME '=' exp {
-    
-        if($1->type != $4->type){
-                yyerror("invalid type assignment.");
-        }
-        printf("before datatype= %d\nname type= %d\n",$1->type,$2->type);
-
-        $2->type = $1->type;
-
-        printf("after datatype= %d\nname type= %d\n",$1->type,$2->type);
-        char *s = malloc(strlen($2->name) + strlen($4->sval) + 8);
-
-        if(s == NULL){
-            yyerror("no memory left");
-        }
-
-        sprintf(s,"let %s = %s",$2->name,$4->sval);
-        $$ = s;
-    }
-    | data_type NAME '[' ']' '=' arr_init {
-        if($1->type != $6->type){
-              yyerror("invalid type assignment.");
-              exit(1);
-        }
-        enum var_type type;
-
-        switch($1->type){
-            case NUM_TYPE:
-                type = NUM_ARR_TYPE;
-            break;
-            case STR_TYPE:
-                type = STR_ARR_TYPE;
-            break;
-            case BOOL_TYPE:
-                type = BOOL_ARR_TYPE;
-            break;
-            default:
-            break;
-        }
-        
-        $2->type = type;
-         
-        char *s = malloc(strlen($2->name) + strlen($6->sval) + 10);
-     
-        if(s == NULL){
-            yyerror("no memory left");
-        }
-  
-        sprintf(s,"let %s = [%s]",$2->name,$6->sval);
-        $$ = s;
-    }
-    | system {
+    system {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET"system %s\n",$1);
         $$ = $1;
     }
@@ -187,14 +229,6 @@ statement:
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "print\n");
         $$ = $1;
     }
-    | read_str {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "read\n");
-        $$ = $1;
-    }
-    | read_num {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "read\n");
-        $$ = $1;
-    }
     | if_statement {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "if\n");
         $$ = $1;
@@ -203,366 +237,604 @@ statement:
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "while\n");
         $$ = $1;
     }
-    | NUM_ARR_NAME '[' num_exp ']'  '=' num_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "num array\n");
-        char *s = malloc(strlen($1->name) + strlen($3) + strlen($6) +6);
+    | NAME '[' exp ']'  '=' exp {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement: "ANSI_COLOR_RESET "NAME[exp] = exp\n");
+        
+         //type verification 
+        struct symtab * sym = symLook($1);
+        if(sym == NULL) yyerror("Variable not declared");
+        if(arrTypeToNormal(sym->type) != $6->type) yyerror("Invalid assignment value type");  
+        
+        char *s = malloc(strlen(sym->name) + strlen($3->sval) + strlen($6->sval) +6);
         if(s == NULL){
-            yyerror("no memory left");
-        }
-        sprintf(s,"%s[%s] = %s",$1->name,$3,$6);
-        $$ = s;
-    }
-    | STR_ARR_NAME '[' num_exp ']'  '=' str_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "str array\n");
-        char *s = malloc(strlen($1->name) + strlen($3) + strlen($6) +6);
-        if(s == NULL){
-            yyerror("no memory left");
-        }
-        sprintf(s,"%s[%s] = %s",$1->name,$3,$6);
-        $$ = s;
-    }
-    | BOOL_ARR_NAME '[' num_exp ']' '=' bool_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "bool array\n");
-        char *s = malloc(strlen($1->name) + strlen($3) + strlen($6) +6);
-        if(s == NULL){
-            yyerror("no memory left");
-        }
-        sprintf(s,"%s[%s] = %s",$1->name,$3,$6);
-        $$ = s;
-    }
-    | NUM_NAME '=' num_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "num eq\n");
-        char *s = malloc(strlen($1->name) + strlen($3) +4);
-        if(s == NULL){
-            yyerror("no memory left");
-        }
-          printf("%s = %s\n",$1->name,$3);
-        sprintf(s,"%s = %s",$1->name,$3);
-        $$ = s;
-    }
-    | STR_NAME '=' str_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "str eq\n");
-        char *s = malloc(strlen($1->name) + strlen($3) +4);
-        if(s == NULL){
-            yyerror("no memory left");
-        }
-        printf("%s = %s\n",$1->name,$3);
-        sprintf(s,"%s = %s",$1->name,$3);
-        $$ = s;
-    }
-    | BOOL_NAME '=' bool_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement "ANSI_COLOR_RESET "bool eq\n");
-        char *s = malloc(strlen($1->name) + strlen($3) +4);
-        if(s == NULL){
-            yyerror("no memory left");
-        }
-        sprintf(s,"%s = %s",$1->name,$3);
-        $$ = s;
-    }
-    ;
 
-
+            yyerror("no memory left");
+        }
+        sprintf(s,"%s[%s] = %s",sym->name,$3->sval,$6->sval);
+                                                                           
+        //free previous allocations
+        free($1);
+        free($3->sval);
+        free($3);
+        free($6->sval);
+        free($6);
+            
+        $$ = s;
+    }
+    | NAME '=' exp {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement: "ANSI_COLOR_RESET "NAME = exp\n");
+        
+        //type verification  
+        struct symtab * sym = symLook($1);
+        if(sym == NULL) yyerror("Variable not declared");
+        if(sym->type != $3->type) yyerror("Type conflict: Assigning variable with incorrect value type");
     
-data_type: TYPE_STR {
-      if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"data_type "ANSI_COLOR_RESET "STR_TYPE\n");
-        struct exp_t* aux = malloc(sizeof(struct exp_t));
-        aux->type = STR_TYPE;
-        aux->sval = "str";
-        $$ = aux; 
-    }
-    | TYPE_NUM { 
-              if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"data_type "ANSI_COLOR_RESET "NUM_TYPE\n");
-        struct exp_t* aux = malloc(sizeof(struct exp_t));
-        aux->type = NUM_TYPE;
-         aux->sval = "num";
-        $$ = aux; 
-    }
-    | TYPE_BOOL { 
-              if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"data_type "ANSI_COLOR_RESET "BOOL_TYPE\n");
-        struct exp_t* aux = malloc(sizeof(struct exp_t));
-        aux->type = BOOL_TYPE;
-        aux->sval = "bool";
-        $$ = aux; 
-    }
-    ;
-
-if_statement: IF '(' bool_exp ')' '{' statement_list '}' %prec LOWER_THAN_ELSE {
-    char * s  = malloc( strlen("if(  ) {\n}") + strlen($3) + strlen($6) +1);
-        if(s == NULL){
-            yyerror("no memory left");
-        }    
-        sprintf(s,"if( %s ) {\n%s}",$3,$6);
-        //    free($3);
-        //    free($6);
+        char *s = malloc(strlen(sym->name) + strlen($3->sval) +4);
+        if(s == NULL) yyerror("no memory left");
+        sprintf(s,"%s = %s",sym->name,$3->sval);
+                                                                                   
+        //free previous allocations
+        free($1);
+        free($3->sval);
+        free($3);
+            
         $$ = s;
     }
-    | IF '(' bool_exp ')' '{' statement_list '}' ELSE '{' statement_list '}' {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"while_statement: "ANSI_COLOR_RESET "while\n");
-        char * s  = malloc(strlen("if(  ) {\n}else{\n}") + strlen($3) + strlen($6) + strlen($10) + 1);
-        if(s == NULL){
-            yyerror("no memory left");
+    | NAME OPEQ exp {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"statement: "ANSI_COLOR_RESET "NAME = exp\n");
+        
+        //type verification  
+        struct symtab * sym = symLook($1);
+        if(sym == NULL) yyerror("Variable not declared");
+        if( strcmp($2,"+=") == 0){
+            if( !(sym->type == NUM_TYPE && $3->type == NUM_TYPE) && !(sym->type == STR_TYPE && $3->type == STR_TYPE)) yyerror("Type conflict: increment value is not a valid type!");
+        }else{
+            if(!(sym->type == NUM_TYPE && $3->type == NUM_TYPE)) yyerror("Type conflict: increment value is not a valid type!");
         }
-        sprintf(s,"if( %s ) {\n%s}else{\n%s}",$3,$6,$10);
-        //    free($3);
-        //    free($6);
-        //    free($10);
+        
+    
+        char *s = malloc(strlen(sym->name) + strlen($3->sval) +5);
+        if(s == NULL) yyerror("no memory left");
+        sprintf(s,"%s %s %s",sym->name,$2,$3->sval);
+                                                                                   
+        //free previous allocations
+        free($1);
+        free($2);
+        free($3->sval);
+        free($3);
+            
+        $$ = s;
+    }
+    | NAME '=' arr_init { 
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"if_statement: "ANSI_COLOR_RESET "if(exp){statement_list}\n");
+        
+        //type verification  
+        struct symtab * sym = symLook($1);
+        if(sym == NULL) yyerror("Variable not declared");
+        if(arrTypeToNormal(sym->type) != $3->type) yyerror("Type conflict: Invalid array initialization type");  
+    
+        //line building
+        char *s = malloc(strlen(sym->name) + strlen($3->sval) +4);
+        if(s == NULL) yyerror("no memory left");
+        sprintf(s,"%s = %s",sym->name,$3->sval);
+                                                                                           
+        //free previous allocations
+        free($1);
+        free($3->sval);
+        free($3);
+            
         $$ = s;
     }
     ;
 
-while_statement: WHILE '(' bool_exp ')' '{' statement_list '}' {
-    if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"while_statement: "ANSI_COLOR_RESET "while\n");
-    char * s  = malloc(strlen($3) + strlen($6) + 14);
-    if(s == NULL){
-        yyerror("no memory left");
+if_statement: IF '(' exp ')' '{' statement_list '}' %prec LOWER_THAN_ELSE {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"if_statement: "ANSI_COLOR_RESET "if(exp){statement_list}\n");
+
+        //type verification
+        if($3->type != BOOL_TYPE ) yyerror("Type conflict: if condition must be boolean!");
+
+        char * s  = malloc( strlen("if(  ) {\n}") + strlen($3->sval) + strlen($6) +1);
+        if(s == NULL) yyerror("no memory left");
+        
+        sprintf(s,"if( %s ) {\n%s}",$3->sval,$6);
+                                                                                                   
+        //free previous allocations
+        free($3->sval);
+        free($3);
+        free($6);
+
+        $$ = s;
     }
-        sprintf(s,"while( %s ) {\n%s}",$3,$6);
+    | IF '(' exp ')' '{' statement_list '}' ELSE '{' statement_list '}' {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"if_statement: "ANSI_COLOR_RESET "if(exp){ statement_list}else{ statement_list}\n");
+        
+        //type verification
+        if($3->type != BOOL_TYPE ) yyerror("Type conflict: if condition must be boolean!");
+        
+        char * s  = malloc(strlen("if(  ) {\n}else{\n}") + strlen($3->sval) + strlen($6) + strlen($10) + 1);
+        if(s == NULL) yyerror("no memory left");
+        
+        sprintf(s,"if( %s ) {\n%s}else{\n%s}",$3->sval,$6,$10);
+                                                                                                           
+        //free previous allocations
+        free($3->sval);
+        free($3);
+        free($6);
+        free($10);
+
         $$ = s;
     }
     ;
 
-exp: num_exp { 
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "num exp\n");
-        struct exp_t* aux = malloc(sizeof(struct exp_t));
-        if(aux == NULL){
-            yyerror("no memory left");
+while_statement: WHILE '(' exp ')' '{' statement_list '}' {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"while_statement: "ANSI_COLOR_RESET "while(exp){ statement_list}\n");
+
+        //type verification
+        if($3->type != BOOL_TYPE ) yyerror("Type conflict: expression between () must be boolean!");
+        
+        char * s  = malloc(strlen($3->sval) + strlen($6) + 14);
+        if(s == NULL) yyerror("no memory left");
+        
+        sprintf(s,"while( %s ) {\n%s}",$3->sval,$6);
+                                                                                                                   
+        //free previous allocations
+        free($3->sval);
+        free($3);
+        free($6);
+
+        $$ = s;
+    }
+    ;
+
+exp: exp '+' exp {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "exp + exp\n");
+
+        //type verification
+        if($1->type == BOOL_TYPE || $3->type == BOOL_TYPE ) yyerror("Type conflict: in sum expression!");
+
+        struct exp_t* aux = malloc(EXP_SIZE);
+        char * s = expOp($1->sval,"+",$3->sval);
+        if(s == NULL  || aux == NULL) yyerror("no memory left");
+        aux->sval = s;
+        if($1->type == NUM_TYPE && $3->type == NUM_TYPE ){
+            aux->type = NUM_TYPE;   
+        }else{
+            aux->type = STR_TYPE; 
         }
-        aux->type = NUM_TYPE;
-        aux->sval = $1;
+                
+        //free previous allocations
+        free($1->sval);
+        free($1);
+        free($3->sval);
+        free($3);
+           
         $$ = aux;
     }
-    | str_exp { 
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "str exp\n");
-        struct exp_t* aux = malloc(sizeof(struct exp_t));
-        if(aux == NULL){
-            yyerror("no memory left");
-        }
-        aux->type = STR_TYPE;
-        aux->sval = $1;
+    | exp '-' exp {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "exp - exp\n");
+
+        //type verification
+        if($1->type != NUM_TYPE || $3->type != NUM_TYPE ) yyerror("Type conflict: in sustraction expression!");
+
+        struct exp_t* aux = malloc(EXP_SIZE);
+        char * s = expOp($1->sval,"-",$3->sval);
+        if(s == NULL  || aux == NULL) yyerror("no memory left");
+        aux->sval = s;
+        aux->type = $1->type;  
+        
+        //free previous allocations
+        free($1->sval);
+        free($1);
+        free($3->sval);
+        free($3);
+           
         $$ = aux;
-    }
-    | bool_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "bool exp\n"); 
-        struct exp_t* aux = malloc(sizeof(struct exp_t));
-        if(aux == NULL){
-            yyerror("no memory left");
-        }
-        aux->type = BOOL_TYPE;
-        aux->sval = $1;
-        $$ = aux;
-    }
-    ;
-
-    
-num_exp: num_exp '+' num_exp {
-        $$ = expOp($1,"+",$3);
-    }
-    | num_exp '-' num_exp {
-        $$ = expOp($1,"-",$3);
-    }
-    | num_exp '/' num_exp {
-        if(!strcmp($3,"0")){
-            yyerror("division by zero.");
-        }
-        $$ = expOp($1,"/",$3);
-    }
-    | num_exp '*' num_exp {
-        $$ = expOp($1,"*",$3);
-    }
-    | '-' num_exp %prec UMINUS {
-        char *s = malloc(strlen($2) +2);
-        if(s == NULL){
-            yyerror("no memory left");
-        }
-        sprintf(s,"-%s",$2);
-                
-        $$ = s;
-    }
-    | '(' num_exp ')' {
-        char *s = malloc(strlen($2) +3);
-        if(s == NULL){
-            yyerror("no memory left");
-        }
-        sprintf(s,"(%s)",$2);
-                
-        $$ = s;
-    }
-    | NUM_ARR_NAME '[' num_exp ']' {
-        char *s = malloc(strlen($1->name) + strlen($3) +3);
-        if(s == NULL){
-            yyerror("no memory left");
-        }
-        sprintf(s,"%s[%s]",$1->name,$3);
-                
-        $$ = s;
-    }
-    | NUM_NAME {
-        $$ = strdup($1->name);
-    }
-    | INTEGER {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "integer: %s\n",$1);
-    }
-    | FLOAT {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"num_exp: "ANSI_COLOR_RESET "float: %s\n",$1);
-    }
-    | read_num {
-        printf("num exp: read_num\n");
-        $$ = $1;
-    }
-    ;
-    
-str_exp: QSTRING {
-
-    }
-
-    | str_exp '+' str_exp {
-        char * str = malloc(strlen($1) + strlen($3) + 4);
-        if(str == NULL){
-            yyerror("No memory left");
-        }
-        sprintf(str,"%s + %s",$1,$3);
-        $$ = str;
-    }
-
-    | num_exp '+' str_exp {
-        char * str = malloc(strlen($1) + strlen($3) + 4);
-        if(str == NULL){
-            yyerror("No memory left");
-        }
-        sprintf(str,"%s + %s",$1,$3);
-        $$ = str;
-    }
-                    
-    | str_exp '+' num_exp {
-        char * str = malloc(strlen($1) + strlen($3) + 4);
-        if(str == NULL){
-            yyerror("No memory left");
-        }
-        sprintf(str,"%s + %s",$1,$3);
-        $$ = str;
-    }
-
-    | STR_ARR_NAME '[' num_exp ']' {
-        char *s = malloc(strlen($1->name) + strlen($3) +3);
-        if(s == NULL){
-            yyerror("no memory left");
-        }
-        sprintf(s,"%s[%s]",$1->name,$3);
-                
-        $$ = s;
-    }
-    | STR_NAME {
-        printf("string name = %s\n",$1->name);
-        $$ = strdup($1->name);
-    }
-    | read_str {
-        printf("str exp: read_str\n");
-        $$ = $1;
-    }
-    ;
-
-bool_exp: bool_exp AND bool_exp {
-        char * str = malloc(strlen($1) + strlen($3) + strlen("&&") + 3);
-        if(str == NULL){
-            yyerror("No memory left");
-        }
-        sprintf(str,"%s && %s",$1,$3);
-        $$ = str;
-    }
-    |   bool_exp OR bool_exp {
-        char * str = malloc(strlen($1) + strlen($3) + strlen("||") + 3);
-        if(str == NULL){
-            yyerror("No memory left");
-        }
-        sprintf(str,"%s || %s",$1,$3);
-        $$ = str;
-    }
-    |   NOT bool_exp {
-        char * str = malloc(strlen($2) + strlen("!") + 1);
-        if(str == NULL){
-            yyerror("No memory left");
-        }
-        sprintf(str,"!%s",$2);
-        $$ = str;
-    }
-    |   num_exp COMPARATION num_exp {
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"bool exp: "ANSI_COLOR_RESET "%s %s %s\n",$1,$2,$3);
-        char *str = malloc(strlen($1) + strlen($3) + strlen($2) + 3);
-        if(str == NULL){
-            yyerror("No memory left");
-        }
-        sprintf(str,"%s %s %s",$1, $2, $3);
-        $$ = str;
-    }
-    |   '(' bool_exp ')' {
-        char *str = malloc(strlen($2) + 3);
-        if(str == NULL){
-            yyerror("No memory left");
-        }
-        sprintf(str,"(%s)",$2);
-        $$ = str;
         
     }
-    |   BOOL_ARR_NAME '[' num_exp ']' {
-        char *s = malloc(strlen($1->name) + strlen($3) +3);
-        if(s == NULL){
-            yyerror("no memory left");
-        }
-        sprintf(s,"%s[%s]",$1->name,$3);
+    | exp '/' exp {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "exp / exp\n");
+
+        //type verification
+        if($1->type != NUM_TYPE || $3->type != NUM_TYPE ) yyerror("Type conflict: in division expression!");
+        
+        struct exp_t* aux = malloc(EXP_SIZE);
+        char *s = expOp($1->sval,"/",$3->sval);
+        if(s == NULL  || aux == NULL) yyerror("no memory left");
+        aux->sval = s;
+        aux->type = $1->type;
                 
-        $$ = s;
+        //free previous allocations
+        free($1->sval);
+        free($1);
+        free($3->sval);
+        free($3);
+     
+        $$ = aux;
     }
-    |   BOOL_NAME {
-            $$ = strdup($1->name);
+    | exp '*' exp {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "exp * exp\n");
+        
+        //type verification
+        if($1->type != NUM_TYPE || $3->type != NUM_TYPE ) yyerror("Type conflict: in product expression!");
+
+        struct exp_t* aux = malloc(EXP_SIZE);
+        char *s = expOp($1->sval,"*",$3->sval);
+        if(s == NULL  || aux == NULL) yyerror("no memory left");
+        aux->sval = s;
+        aux->type = $1->type;
+                
+        //free previous allocations
+        free($1->sval);
+        free($1);
+        free($3->sval);
+        free($3);
+     
+        $$ = aux;
     }
-    |   TRUE_TK { 
+    | exp '%' exp {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "exp % exp\n");
+        
+        //type verification
+        if($1->type != NUM_TYPE || $3->type != NUM_TYPE ) yyerror("Type conflict: in product expression!");
+
+        struct exp_t* aux = malloc(EXP_SIZE);
+        char *s = expOp($1->sval,"%",$3->sval);
+        if(s == NULL  || aux == NULL) yyerror("no memory left");
+        aux->sval = s;
+        aux->type = $1->type;
+                
+        //free previous allocations
+        free($1->sval);
+        free($1);
+        free($3->sval);
+        free($3);
+     
+        $$ = aux;
+    }
+    | '-' exp %prec UMINUS {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "-exp\n");
+        
+        //type verification
+        if($2->type != NUM_TYPE)  yyerror("Type conflict: in minus assignment expression!");
+        
+        struct exp_t* aux = malloc(EXP_SIZE);
+        char *s = malloc(strlen($2->sval) +2);
+        if(s == NULL  || aux == NULL) yyerror("no memory left");
+        sprintf(s,"-%s",$2->sval);
+
+        aux->sval = s;
+        aux->type = $2->type;   
+                
+        //free previous allocations
+        free($2->sval);
+        free($2);
+       
+        $$ = aux;
+    }
+    | '(' exp ')' {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "(exp)\n");
+
+        char *s = malloc(strlen($2->sval) +3);
+        struct exp_t* aux = malloc(EXP_SIZE);
+        if(s == NULL || aux == NULL) yyerror("no memory left");
+        sprintf(s,"(%s)",$2->sval);
+
+        aux->sval = s;
+        aux->type = $2->type;
+            
+        //free previous allocations
+        free($2->sval);
+        free($2);
+                
+        $$ = aux;
+    }
+    |   exp AND exp {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "exp AND exp\n");
+
+        //type verification
+        if($1->type != BOOL_TYPE || $3->type != BOOL_TYPE) yyerror("invalid types in and clause");
     
-        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"TRUE\n"ANSI_COLOR_RESET);
-            $$ = strdup("true");
+        char * s = malloc(strlen($1->sval) + strlen($3->sval) + 5);
+        struct exp_t* aux = malloc(EXP_SIZE);
+        if(s == NULL || aux == NULL) yyerror("No memory left");
+        sprintf(s,"%s && %s",$1->sval,$3->sval);
+
+        aux->sval = s;
+        aux->type = BOOL_TYPE;
+                        
+        //free previous allocations
+        free($1->sval);
+        free($1);
+        free($3->sval);
+        free($3);
+     
+        $$ = aux;
     }
-    |   FALSE_TK{
-         $$ = strdup("false");
+    |   exp OR exp {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "exp OR exp\n");
+
+        //type verification
+        if($1->type != BOOL_TYPE || $3->type != BOOL_TYPE) yyerror("invalid types in or clause");
+        
+      
+        char * s = malloc(strlen($1->sval) + strlen($3->sval) + 5);
+        struct exp_t* aux = malloc(EXP_SIZE);
+        if(s == NULL || aux == NULL) yyerror("No memory left");
+        sprintf(s,"%s || %s",$1->sval,$3->sval);
+        
+        aux->sval = s;
+        aux->type = BOOL_TYPE;
+                        
+        //free previous allocations
+        free($1->sval);
+        free($1);
+        free($3->sval);
+        free($3);
+     
+        $$ = aux;
+    }
+    |   NOT exp {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "NOT exp: %s\n",$2->sval);
+        
+        //type verification
+        if($2->type != BOOL_TYPE) yyerror("Type conflict: expression must be bool!");
+        
+      
+        char * s = malloc(strlen($2->sval) +2);
+        struct exp_t* aux = malloc(EXP_SIZE);
+        if(s == NULL || aux == NULL) yyerror("No memory left");
+        
+        sprintf(s,"!%s",$2->sval);
+        aux->sval = s;
+        aux->type = BOOL_TYPE;
+                    
+        //free previous allocations
+        free($2->sval);
+        free($2);
+                
+        $$ = aux;
+    }
+    |   exp COMPARATION exp {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "exp %s exp\n",$2);
+        
+        //type verification
+        if(!($1->type == NUM_TYPE && $3->type == NUM_TYPE) && !($1->type == STR_TYPE && $3->type == STR_TYPE)  ) yyerror("Type conflict: both expressions must be numbers!");
+
+     
+        char *s = malloc(strlen($1->sval) + strlen($3->sval) + strlen($2) + 3);
+        struct exp_t* aux = malloc(EXP_SIZE);
+        if(s == NULL || aux == NULL) yyerror("No memory left");
+
+        sprintf(s,"%s %s %s",$1->sval, $2, $3->sval);
+        
+        aux->sval = s;
+        aux->type = BOOL_TYPE;
+                        
+        //free previous allocations
+        free($1->sval);
+        free($1);
+        free($3->sval);
+        free($3);
+        free($2);
+     
+        $$ = aux;
+    }
+    | NAME '[' exp ']' {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "NAME[exp]: %s\n",$1);
+        
+        //type verification
+        if($3->type != NUM_TYPE) yyerror("Type conflict: array index must be a number!");
+        
+        struct symtab * sym = symLook($1);
+
+        if(sym == NULL) yyerror("Variable not declared");
+      
+        char *s = malloc(strlen(sym->name) + strlen($3->sval) +3);
+        struct exp_t* aux = malloc(EXP_SIZE);
+        if(s == NULL || aux == NULL) yyerror("no memory left");
+        sprintf(s,"%s[%s]",sym->name,$3->sval); 
+
+        aux->sval = s;
+        aux->type = arrTypeToNormal(sym->type);
+        
+        //free previous allocations
+        free($1);
+        free($3->sval);
+        free($3);
+     
+        $$ = aux;
+    }
+    | NAME {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "NAME: %s\n",$1);
+        
+        struct symtab * sym = symLook($1);
+        struct exp_t* aux = malloc(EXP_SIZE);
+        if(sym == NULL || aux == NULL) yyerror("Variable not declared");
+        
+       
+        aux->sval = strdup(sym->name);
+        aux->type = sym->type;
+        $$ = aux;
+    }
+    | NUM_FUNCT '(' exp ')' {
+         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "NUM_FUNCT(exp): %s\n",$1);
+        
+        //type verification
+        if($3->type != NUM_TYPE) yyerror("Type conflict: array index must be a number!");
+        
+        char *s = malloc(strlen($1) + strlen($3->sval) +8);
+        struct exp_t* aux = malloc(EXP_SIZE);
+        if(s == NULL || aux == NULL) yyerror("no memory left");
+       
+        sprintf(s,"Math.%s(%s)",$1,$3->sval); 
+
+        aux->sval = s;
+        aux->type = $3->type;
+        
+        //free previous allocations
+        free($1);
+        free($3->sval);
+        free($3);
+     
+        $$ = aux;
+    }
+    | INTEGER {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "INTEGER: %s\n",$1);
+        struct exp_t* aux = malloc(EXP_SIZE);
+        aux->type = NUM_TYPE;
+        aux->sval = $1;
+        $$ = aux;
+    }
+    | FLOAT {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "FLOAT: %s\n",$1);
+        struct exp_t* aux = malloc(EXP_SIZE);
+        aux->type = NUM_TYPE;
+        aux->sval = $1;
+        $$ = aux;
+    }
+    | QSTRING {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "QSTRING: %s\n",$1);
+        struct exp_t* aux = malloc(EXP_SIZE);
+        aux->type = STR_TYPE;
+        aux->sval = $1;
+        $$ = aux;
+    }
+    | TRUE_TK { 
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "TRUE_TK\n");
+
+        struct exp_t* aux = malloc(EXP_SIZE);
+        aux->type = BOOL_TYPE;
+        aux->sval = strdup("true");
+        $$ = aux;
+    }
+    | FALSE_TK{ 
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "FALSE_TK\n");
+
+        struct exp_t* aux = malloc(EXP_SIZE);
+        aux->type = BOOL_TYPE;
+        aux->sval = strdup("false");
+        $$ = aux;
+    }
+    | READ_STR '(' exp ')' { 
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "READ\n");
+        
+        //type verification
+        if($3->type != STR_TYPE) yyerror("Type conflict: read message must be a string!");
+
+        struct exp_t* aux = malloc(EXP_SIZE);   
+        char *s = malloc(strlen($3->sval) + strlen("window.prompt()") + 1);
+        if(s == NULL) yyerror("no memory left");
+        sprintf(s,"window.prompt(%s)",$3->sval); 
+
+        aux->type = STR_TYPE;
+        aux->sval = s;
+                                         
+        //free previous allocations
+        free($3->sval);
+        free($3);
+     
+        $$ = aux; 
+    }
+    | READ_NUM '(' exp ')' { 
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "READ\n");
+        
+        //type verification
+        if($3->type != STR_TYPE) yyerror("Type conflict: read message must be a string!");
+
+        struct exp_t* aux = malloc(EXP_SIZE);   
+        char *s = malloc(strlen($3->sval) + strlen("window.prompt()") + 1);
+        if(s == NULL) yyerror("no memory left");
+        sprintf(s,"window.prompt(%s)",$3->sval); 
+
+        aux->type = NUM_TYPE;
+        aux->sval = s;
+                                                 
+        //free previous allocations
+        free($3->sval);
+        free($3);
+     
+        $$ = aux; 
+    }
+    | GET_HEIGHT '(' ')' {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "GET_HEIGHT\n");    
+        
+        struct exp_t* aux = malloc(EXP_SIZE);   
+        char *s = malloc(strlen("window.innerHeight")+1);
+        if(s == NULL) yyerror("no memory left");
+        sprintf(s,"window.innerHeight");
+
+        aux->type = NUM_TYPE;
+        aux->sval = s;
+        $$ = aux;
+    }
+    | GET_WIDTH '(' ')' {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "GET_WIDTH\n");    
+        
+        struct exp_t* aux = malloc(EXP_SIZE);   
+        char *s = malloc(strlen("window.innerWidth")+1);
+        if(s == NULL) yyerror("no memory left");
+        sprintf(s,"window.innerWidth");
+
+        aux->type = NUM_TYPE;
+        aux->sval = s;
+        $$ = aux;
     }
     ;
 
 
 arr_init: '[' arr_item ']' {
-        struct exp_t* aux = malloc(sizeof(struct exp_t));
-        if(aux == NULL){
-            yyerror("no memory left");
-        }
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"arr_init: "ANSI_COLOR_RESET "arr_item\n");
+        
+        struct exp_t* aux = malloc(EXP_SIZE);
+        if(aux == NULL) yyerror("no memory left");
+        char  *s = malloc(strlen($2->sval) + 3);
+        sprintf(s,"[%s]",$2->sval);
+        
         aux->type = $2->type;
-        aux->sval = $2->sval;
+        aux->sval = s;
+                                                 
+        //free previous allocations
+        free($2->sval);
+        free($2);
+     
         $$ = aux;
     }
     ; 
 
 arr_item: exp {
-        struct exp_t* aux = malloc(sizeof(struct exp_t));
-         if(aux == NULL){
-            yyerror("no memory left");
-        }
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"arr_item: "ANSI_COLOR_RESET "exp\n");
+        
+        struct exp_t* aux = malloc(EXP_SIZE);
+        if(aux == NULL) yyerror("no memory left");
+
         aux->type = $1->type;
         aux->sval = $1->sval;
         $$ = aux;
     } 
     |  exp ',' arr_item {
-            if($1->type != $3->type){
-                yyerror("invalid type for array item");
-            }
-            struct exp_t* aux = malloc(sizeof(struct exp_t));
-            if(aux == NULL){
-                yyerror("no memory left");
-            }
-            aux->type = $1->type;
-            char * s = malloc(strlen($1->sval) + strlen($3->sval) + 3);
-            if(s == NULL){
-                yyerror("no memory left");
-            }
-            sprintf(s,"%s, %s",$1->sval,$3->sval);
-            aux->sval = s;
-            $$ = aux;
-        }
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"arr_item: "ANSI_COLOR_RESET "exp, arr_item\n");
+        
+        //type verification
+        if($1->type != $3->type) yyerror("Type conflict: invalid type for array item");
+        
+        struct exp_t* aux = malloc(EXP_SIZE);
+        if(aux == NULL) yyerror("no memory left");
+        
+        aux->type = $1->type;
+        char * s = malloc(strlen($1->sval) + strlen($3->sval) + 3);
+        if(s == NULL) yyerror("no memory left");
+        
+        sprintf(s,"%s, %s",$1->sval,$3->sval);
+        aux->sval = s;
+                                                         
+        //free previous allocations
+        free($1->sval);
+        free($1);
+        free($3->sval);
+        free($3);
+     
+        $$ = aux;
+    }
     ;
 
 
@@ -573,129 +845,159 @@ system:
         }
     ;
 
-system_action: ADDBODY '(' num_exp ',' num_exp ',' num_exp ',' num_exp ',' num_exp ',' num_exp ',' str_exp ')' { 
-            char *s = malloc(strlen($3) + strlen($5) + strlen($7) + strlen($9) + strlen($11) + strlen($13) + strlen($15) + strlen("bodies.push(new Body(,,,,,,))")+1);
+system_action: ADDBODY '(' exp ',' exp ',' exp ',' exp ',' exp ',' exp ',' exp ')' { 
+            if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"system_action: "ANSI_COLOR_RESET "ADDBODY\n");
+
+            //printf("%d, %d, %d, %d, %d, %d, %d", $3->type, $5->type, $7->type, $9->type, $11->type, $13->type,$15->type);
+
+            //type verification
+            if($3->type != NUM_TYPE || $5->type != NUM_TYPE || $7->type != NUM_TYPE || $9->type != NUM_TYPE || $11->type != NUM_TYPE || $13->type != NUM_TYPE || $15->type != STR_TYPE) yyerror("Type conflict: addBody(num,num,num,num,num,num,str)");
+            char *s = malloc(strlen($3->sval) + strlen($5->sval) + strlen($7->sval) + strlen($9->sval) + strlen($11->sval) + strlen($13->sval) + strlen($15->sval) + strlen("bodies.push(new Body(,,,,,,))")+1);
             if(s == NULL){
                 yyerror("no memory left");
             }
-            sprintf(s,"bodies.push(new Body(%s,%s,%s,%s,%s,%s,%s))",$3,$5,$7,$9,$11,$13,$15); 
+            sprintf(s,"bodies.push(new Body(%s,%s,%s,%s,%s,%s,%s))",$3->sval,$5->sval,$7->sval,$9->sval,$11->sval,$13->sval,$15->sval);
+                                                                     
+            //free previous allocations
+            free($3->sval);
+            free($3);
+            free($5->sval);
+            free($5);
+            free($7->sval);
+            free($7);
+            free($9->sval);
+            free($9);
+            free($11->sval);
+            free($11);
+            free($13->sval);
+            free($13);
+            free($15->sval);
+            free($15);
+            
             $$ = s; 
         }
     ;
     
 config: CONFIG_TOKEN '.' config_action { 
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"config\n"ANSI_COLOR_RESET );
-         $$ = $3;
+        $$ = $3;
     }
     ;
 
-config_action: GRAVITY_CONF '(' num_exp ')' { 
-            char *s = malloc(strlen($3) + strlen("Gc = ")+1);
-            if(s == NULL){
-                yyerror("no memory left");
-            }
-            sprintf(s,"Gc = %s",$3);
+config_action: GRAVITY_CONF '(' exp ')' {
+            if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"config_action: "ANSI_COLOR_RESET "GRAVITY_CONF\n");    
+        
+            //type verification 
+            if($3->type != NUM_TYPE) yyerror("Type conflict: gravityConstant(num)");
+            
+            char *s = malloc(strlen($3->sval) + strlen("Gc = ")+1);
+            if(s == NULL) yyerror("no memory left");
+            sprintf(s,"Gc = %s",$3->sval);
+                                                                                 
+            //free previous allocations
+            free($3->sval);
+            free($3);
+
             $$ = s;
         }
-        | BOUNCE_CONF '(' bool_exp ')' {
-            char *s = malloc(strlen($3) + strlen("worldBorderBounce = ") + 1);
-            if(s == NULL){
-                yyerror("no memory left");
-            }
-            sprintf(s,"worldBorderBounce = %s",$3);
+        | BOUNCE_CONF '(' exp ')' {
+            if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"config_action: "ANSI_COLOR_RESET "BOUNCE_CONF\n");  
+            
+            //type verification
+            if($3->type != BOOL_TYPE) yyerror("Type conflict: worldBorderBounce(boolean)");
+            char *s = malloc(strlen($3->sval) + strlen("worldBorderBounce = ") + 1);
+            if(s == NULL) yyerror("no memory left");
+            
+            sprintf(s,"worldBorderBounce = %s",$3->sval);
+                                                                                             
+            //free previous allocations
+            free($3->sval);
+            free($3);
+            
+            $$ = s;
+        }
+        | TRAIL_CONF '(' exp ')' {
+            if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"config_action: "ANSI_COLOR_RESET "TRAIL_CONF\n");  
+            
+            //type verification
+            if($3->type != BOOL_TYPE) yyerror("Type conflict: enableBodyTrail(boolean)");
+            char *s = malloc(strlen($3->sval) + strlen("bodyTrail = ") + 1);
+            if(s == NULL) yyerror("no memory left");
+            
+            sprintf(s,"bodyTrail = %s",$3->sval);
+                                                                                             
+            //free previous allocations
+            free($3->sval);
+            free($3);
+            
             $$ = s;
         }
     ;
 
 print: PRINT '(' exp ')' {
-          
-            char *s = malloc(strlen($3->sval) + strlen("console.log()") + 1);
-            if(s == NULL){
-                yyerror("no memory left");
-            }
-            sprintf(s,"console.log(%s)",$3->sval); 
-            printf("print: %s, %s\n", $$, s);
-            $$ = s; 
-        }
-    ;
+            if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"print: "ANSI_COLOR_RESET "PRINT\n");  
 
-read_str:  READ_STR '(' str_exp ')' {     
-            char *s = malloc(strlen($3) + strlen("window.prompt()") + 1);
-            if(s == NULL){
-                yyerror("no memory left");
-            }
-            sprintf(s,"window.prompt(%s)",$3); 
-            printf("read_str: %s, %s\n", $$, s);
+            char *s = malloc(strlen($3->sval) + strlen("alert()") + 1);
+            if(s == NULL) yyerror("no memory left");
+            sprintf(s,"alert(%s)",$3->sval);
+                                                                                             
+            //free previous allocations
+            free($3->sval);
+            free($3);
+             
             $$ = s; 
         }
     ;
-
-read_num:  READ_NUM '(' str_exp ')' { 
-            char *s = malloc(strlen($3) + strlen("window.prompt()") + 1);
-            if(s == NULL){
-                yyerror("no memory left");
-            }
-            sprintf(s,"window.prompt(%s)",$3); 
-            printf("read_num: %s, %s\n", $$, s);
-            $$ = s; 
-        }
-    ;
+   
 %%
 
 
 struct symtab * symLook(char* s){
-    struct symtab * sp;
-
-    printf("searching for: %s\n", s);
-
-    for(sp= symtab; sp <&symtab[MAX_SYMBOLS];sp++){
-        /* is it alredy here? */
-
-        if (sp->name && !strcmp((sp->name)+2, s) ){
-            
-            printf("comparing: %s\n", (sp->name)+2);
-            //printTable();
-            return sp;
-        }
-      
-        /* is it free */
-        if(!sp->name) {
-            char * snew = malloc(sizeof(s)+3);
-            sprintf(snew, "u_%s", s);
-            sp->name = snew;
-            // sp->name = strdup(s);
-            sp->type = NOT_DEFINED;
-            return sp;
-        }else{
-            //printTable();
-        }
-        /* otherwise continue to next */
-    }
-     yyerror("Too many symbols");
-     exit(1);
-    
-}
-
-char * expOp(char * exp1,char * op,char * exp2){
-    if(!strcmp("/",op) && atof(exp2) == 0.0){
-        yyerror("divide by zero");
-    }else{
-        char *s = malloc(strlen(exp1) + strlen(op) + strlen(exp2)+4);
-        if(s == NULL){
-            yyerror("no memory left");
-        }
-        if(exp1 != NULL && op != NULL && exp2 != NULL){
-            sprintf(s,"%s %s %s",exp1,op,exp2);
-             return s;            
-        } 
+   struct symtab * sym;
+    for(int i = 0; i < MAX_SYMBOLS; i++){
+        sym = &symtab[i];
+        if(sym->name && !strcmp((sym->name)+2,s)){
+            return sym;
+        }else if(!sym->name){
+            return NULL;
+        }       
     }
     return NULL;
 }
+struct symtab * symSave(char* s,enum var_type type){
+    struct symtab * sp;
 
-void addFunc(char *name,double(*func)()){
-    struct symtab *sp = symLook(name);
-    sp->funcptr = func;
+    for(sp= symtab; sp <&symtab[MAX_SYMBOLS];sp++){
+
+        if(!sp->name) {
+            char * snew = malloc(strlen(s)+3);
+            sprintf(snew, "u_%s", s);
+            sp->name = snew;
+            sp->type = type;
+         
+            return sp;
+   
+    }
 }
+
+    yyerror("Variable creation error: Too many symbols");
+
+    return NULL;
+}
+
+char * expOp(char * exp1,char * op,char * exp2){
+    char *s = malloc(strlen(exp1) + strlen(op) + strlen(exp2)+4);
+    if(s == NULL){
+        yyerror("no memory left");
+    }
+    if(exp1 != NULL && op != NULL && exp2 != NULL){
+        sprintf(s,"%s %s %s",exp1,op,exp2);
+        return s;            
+    } 
+    return NULL;
+}
+
+
 
 int main(int argc, char* argv[]){
 
@@ -733,6 +1035,7 @@ int main(int argc, char* argv[]){
   
     fclose(yyin);
     fclose(yyout);
+    freeTable();
     exit(0);
     // while(!feof(yyin)){
     //     yyparse();
@@ -782,9 +1085,39 @@ void printTable(){
     }
       printf("########################\n");
 }
+
+void freeTable(){
+    for(int i = 0; i < MAX_SYMBOLS; i++){
+        struct symtab * sym = &symtab[i];
+        if(sym->name){
+            free(sym->name);
+        }else{
+            return;
+        }
+
+    }
+}
+enum var_type arrTypeToNormal(enum var_type type){
+    switch(type){
+        case NUM_ARR_TYPE:
+            return NUM_TYPE;
+        break;
+        case BOOL_ARR_TYPE:
+            return BOOL_TYPE;
+        break;
+        case STR_ARR_TYPE:
+            return STR_TYPE;
+        break;
+        default:
+            yyerror("Type doesn't exist");
+        break;
+    }
+    return 0;
+}
+
 void yyerror(const char *s)
 {
-    fprintf (stderr,ANSI_COLOR_RED "Error: %s\n" ANSI_COLOR_RESET, s);
+    fprintf (stderr,ANSI_COLOR_RED "%s\n" ANSI_COLOR_RESET, s);
     exit(1);
 }
 

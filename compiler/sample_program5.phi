@@ -9,9 +9,14 @@ main(){
     centery = getHeigth()/2
     centerx = getWidth()/2
 
-    System.addBody(centerx + 600,   centery + 100,    10000     , 30, 3  , 5      , "#cf5219")
-    System.addBody(centerx - 200,   centery + 200,    10000     , 30, 8  , -5      , "#cf5219")
-    System.addBody(centerx + 50,   centery,    10000     , 30, 5  , -5      , "#cf5219")
-    System.addBody(centerx - 500,   centery - 200,    10000     , 30, -5  , 5      , "#cf5219")
-    System.addBody(centerx - 100,   centery,    10000     , 30, 7  , 8      , "#cf5219")
+    System.addBody(centerx + 600,   centery + 100,    10000     , 30, 3   , 5      , "#cf5219")
+    System.addBody(centerx - 200,   centery + 200,    10000     , 30, 8   , -5     , "#cf5219")
+    System.addBody(centerx + 50,   centery,           10000     , 30, 5   , -5     , "#cf5219")
+    System.addBody(centerx - 200,   centery - 300,    10000     , 30, -5  , 5      , "#cf5219")
+    System.addBody(centerx + 500,   centery - 100,    10000     , 30, 5  , -8      , "#cf5219")
+    System.addBody(centerx - 500,   centery + 200,    10000     , 30, -5  , 5      , "#cf5219")
+    System.addBody(centerx + 400,   centery - 300,    10000     , 30, -5  , 8      , "#cf5219")
+    System.addBody(centerx - 300,   centery + 200,    10000     , 30, -5  , -5      , "#cf5219")
+    System.addBody(centerx + 500,   centery - 300,    10000     , 30, 5  , 8      , "#cf5219")
+    System.addBody(centerx - 200,   centery,          10000     , 30, 7   , -8      , "#cf5219")
 }
