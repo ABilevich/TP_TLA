@@ -1,0 +1,16 @@
+num x[]
+bool asd
+bool zxc
+
+main(){
+    x = [1,2,3]
+    asd = true
+    x[1] += "asd"
+    zxc = true
+    if(asd){
+        print("asd")
+    }
+    while(zxc){
+        print("asd")
+    }
+}
