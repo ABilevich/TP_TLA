@@ -1,15 +1,30 @@
+num x
+num y
+str var1
+str pepe
+str pepetunia
+num arr[]
+num f
+
 main(){
-    num x = 32.12
-    num y = 12
-    str var1 = "pendorcho"
+    x = 32.12
+    y = 12
+
+    Config.enableBodyTrail(true)
+
+    var1 = "pendorcho"
     Config.gravityConstant( 12 )
     Config.worldBorderBounce(false)
     print("asds")
-    str pepe = readStr("asdasdas")
+    pepe = readStr("asdasdas")
+
+    if("hola" == "caca"){
+        print("son iguales")
+    }
 
     if(true){
         if(x >= 0){
-            str pepetunia = "asdasd"
+            pepetunia = "asdasd"
         }else{
             if(y <= x){
                 while(x <= 0){
@@ -26,10 +41,10 @@ main(){
 
     System.addBody(12, 12, 12, 12, 12, 12, "asd")
 
-    num arr[] = [32]
+    arr = [32]
     arr[y] = x
 
-    num f = 13
+    f = 13
     f = 123132 
 }
 

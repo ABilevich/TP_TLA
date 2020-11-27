@@ -9,6 +9,7 @@ const mouse = {};
 //let Gc = 6.67*10^(-11);
 let Gc = 0.001;
 let worldBorderBounce = true;
+let bodyTrail = false;
 
 // Event Listeners
 window.addEventListener('mousemove', (event) => {
@@ -198,36 +199,50 @@ function init() {
     // bodies.push(new Body(centerx, centery,       1.989*(10^(30))  , 30, 0  , 0, "#FF6347")); 
     // bodies.push(new Body(centerx + 200, centery, 5.972*(10^(24))  , 10, 0, -30000, "#DA70D6"));
 
-    //ejemplo lindo
+    //ejemplo lindo1
     // bodies.push(new Body(centerx, centery,       100000        , 30, 0  , 0     , "#FF6347")); 
     // bodies.push(new Body(centerx + 250, centery, 100           , 5 , 0  , -10   , "#87CEFA")); 
     // bodies.push(new Body(centerx + 450, centery, 100           , 5 , 0  , -10   , "#ababab")); 
     // bodies.push(new Body(centerx + 350, centery, 100           , 5 , 0  , -10   , "#ababab"));
 
+    //ejemplo lindo2
 
-  //------------------------------------------------START
+    Gc = 0.00001
+
+    bodies.push(new Body(centerx + 100, centery,       1000000        , 30, 0   , 2.3     , "#ebb00e")); 
+    bodies.push(new Body(centerx - 100, centery,       1000000       , 30, 0   , -2.3     , "#ebb00e")); 
+    bodies.push(new Body(centerx + 350, centery,        100           , 5 , 0  , -5   , "#ababab"));
+    bodies.push(new Body(centerx + 250, centery,        100           , 5 , 0  , -4   , "#ababab"));
+
+    //bodies.push(new Body(300, centery - 250, 100           , 5 , 12  , 0    , "#960eeb")); 
+
+
+
+    //------------------------------------------------START
 
 
 
 
 
-  //------------------------------------------------END
+    //------------------------------------------------END
 
 
 
     //ejemplo de luna
-    let planet = new Body(centerx, centery, 10000, 30, 0, 0, "#87CEFA")
-    let moon = createMoon(planet, 100, 100, 10, "FFccFF")
-    //let moon2 = createMoon(moon, 15, 5, 3, "ffffff");
-    bodies.push(planet);
-    bodies.push(moon);
+    // let planet = new Body(centerx, centery, 10000, 30, 0, 0, "#87CEFA")
+    // let moon = createMoon(planet, 100, 100, 10, "FFccFF")
+    // //let moon2 = createMoon(moon, 15, 5, 3, "ffffff");
+    // bodies.push(planet);
+    // bodies.push(moon);
     //bodies.push(moon2)
 }
 
 function animate() {
     requestAnimationFrame(animate);
-    c.clearRect(0, 0, canvas.width, canvas.height);
-
+    if(!bodyTrail){
+        c.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    
     bodies.forEach(body => {
         body.update();
     })

@@ -51,7 +51,7 @@ extern FILE *yyin, *yyout;
 %token SYSTEM_TOKEN CONFIG_TOKEN 
 %token TYPE_STR TYPE_NUM TYPE_BOOL
 %token TRUE_TK FALSE_TK
-%token GRAVITY_CONF BOUNCE_CONF TRAIL_CONF
+%token GRAVITY_CONF BOUNCE_CONF TRAIL_CONF GET_HEIGHT GET_WIDTH
 %token ADDBODY PRINT READ_STR READ_NUM 
 
 //Set precedences
@@ -81,7 +81,6 @@ extern FILE *yyin, *yyout;
 %type <string> variable_definitions
 %type <string> variable_definition
 
-//%type <string> print_func
 %%
 
 
@@ -100,13 +99,6 @@ start:  /* lambda */
 variable_definitions: /* lambda */ {
         $$ = "\n";
     }
-    // | variable_definition{
-    //     if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "variable_definition\n" ANSI_COLOR_RESET);
-
-    //     char * s = malloc(strlen($1)+2);
-    //     sprintf(s,"%s\n",$1);
-    //     $$ = s;
-    // }
     | variable_definitions variable_definition{
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN "variable_definition\n" ANSI_COLOR_RESET);
 
@@ -607,6 +599,11 @@ exp: exp '+' exp {
 
         aux->type = STR_TYPE;
         aux->sval = s;
+                                         
+        //free previous allocations
+        free($3->sval);
+        free($3);
+     
         $$ = aux; 
     }
     | READ_NUM '(' exp ')' { 
@@ -622,7 +619,36 @@ exp: exp '+' exp {
 
         aux->type = NUM_TYPE;
         aux->sval = s;
+                                                 
+        //free previous allocations
+        free($3->sval);
+        free($3);
+     
         $$ = aux; 
+    }
+    | GET_HEIGHT '(' ')' {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "GET_HEIGHT\n");    
+        
+        struct exp_t* aux = malloc(EXP_SIZE);   
+        char *s = malloc(strlen("window.innerHeight")+1);
+        if(s == NULL) yyerror("no memory left");
+        sprintf(s,"window.innerHeight");
+
+        aux->type = NUM_TYPE;
+        aux->sval = s;
+        $$ = aux;
+    }
+    | GET_WIDTH '(' ')' {
+        if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "GET_WIDTH\n");    
+        
+        struct exp_t* aux = malloc(EXP_SIZE);   
+        char *s = malloc(strlen("window.innerWidth")+1);
+        if(s == NULL) yyerror("no memory left");
+        sprintf(s,"window.innerWidth");
+
+        aux->type = NUM_TYPE;
+        aux->sval = s;
+        $$ = aux;
     }
     ;
 
@@ -637,6 +663,11 @@ arr_init: '[' arr_item ']' {
         
         aux->type = $2->type;
         aux->sval = s;
+                                                 
+        //free previous allocations
+        free($2->sval);
+        free($2);
+     
         $$ = aux;
     }
     ; 
@@ -739,10 +770,9 @@ config_action: GRAVITY_CONF '(' exp ')' {
 print: PRINT '(' exp ')' {
             if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"print: "ANSI_COLOR_RESET "PRINT\n");  
 
-            char *s = malloc(strlen($3->sval) + strlen("console.log()") + 1);
+            char *s = malloc(strlen($3->sval) + strlen("alert()") + 1);
             if(s == NULL) yyerror("no memory left");
-            sprintf(s,"console.log(%s)",$3->sval); 
-            
+            sprintf(s,"alert(%s)",$3->sval); 
             $$ = s; 
         }
     ;

@@ -1,0 +1,19 @@
+num centery
+num centerx
+num width
+
+main(){
+    Config.worldBorderBounce(false)
+    Config.enableBodyTrail(false)
+    Config.gravityConstant(0.00001)
+
+    centery = getHeigth()/2
+    centerx = getWidth()/2
+
+    System.addBody(centerx + 100,   centery,    1000000     , 30, 0  , 2.3      , "#cf5219")
+    System.addBody(centerx - 100,   centery,    1000000     , 30, 0  , -2.3     , "#f7cf1b")
+    System.addBody(centerx + 350,   centery,    100         , 10 , 0  , -5       , "#0ba194")
+    System.addBody(centerx + 250,   centery,    100         , 5 , 0  , -4       , "#ababab")
+}
+
+

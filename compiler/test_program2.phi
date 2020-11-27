@@ -1,24 +1,27 @@
+str var
+num x
+num size
+
 main(){
 
-    num size = 12212
+    size = 12212
     System.addBody(12, size, 12, 12, 12, 12, "var")
 
     Config.worldBorderBounce(true)
     Config.gravityConstant(0.01)
 
-    num x = 2
+    x = 2
     
     if(x == 3){
-        str var = "pepe"
+        var = "pepe"
         if(x == 0){
             while(x <= 3){
                 if(x >= 0){
                     while(x == 3){
                         x = 6
                         x = 3
-    System.addBody(12, 12, 12, 12, 12, 12, "var")
-
-    Config.worldBorderBounce(true)
+                        System.addBody(12, 12, 12, 12, 12, 12, "var")
+                        Config.worldBorderBounce(true)
                     }
                 }else{
                     if(x == 3){
@@ -26,9 +29,8 @@ main(){
                             x = 3
                         }else{
                             x = 4
-    System.addBody(12, 12, 12, 12, 12, 12, "var")
-
-    Config.worldBorderBounce(true)
+                            System.addBody(12, 12, 12, 12, 12, 12, "var")
+                            Config.worldBorderBounce(true)
                         }
                     }
                 }

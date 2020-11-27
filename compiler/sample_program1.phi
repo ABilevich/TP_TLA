@@ -1,0 +1,39 @@
+num centery
+num centerx
+num cantPlanets
+num minCant
+num maxCant
+num i
+num dist
+num distInc
+str message
+str errMessage
+
+main(){
+    Config.worldBorderBounce(false)
+
+    centery = getHeigth()/2
+    centerx = getWidth()/2
+
+    dist = 200
+    distInc = 50
+    minCant = 1
+    maxCant = 6
+
+    message = "choose the number of planets between " + minCant + " and " + maxCant + "."
+    errMessage = "invalid number!"
+
+    cantPlanets = readNum(message)
+    while(cantPlanets < minCant || cantPlanets > maxCant){
+        print(errMessage)
+        cantPlanets = readNum(message)
+    }
+
+    System.addBody(centerx, centery, 100000, 30, 0, 0, "#FF6347")
+
+    i = 0
+    while(i < cantPlanets){
+        System.addBody(centerx + dist + (distInc*i), centery, 100, 5 , 0, -10, "#87CEFA")
+        i = i + 1
+    }
+}

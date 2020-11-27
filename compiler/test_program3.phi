@@ -1,32 +1,42 @@
+str var2
+str pepe
+num num1
+num x2
+num y
+str asdasd
+num x
+str arr[]
+num var1 
+
 main(){
 
     Config.worldBorderBounce(true)
-    num var1 = readNum("ingrese un num") 
+    var1 = readNum("ingrese un num") 
 
     print(var1)
     
-    str var2 = "noches"
+    var2 = "noches"
 
-    str pepe = "soy pepe"
+    pepe = "soy pepe"
 
     print(var1)
 
-    num num1 = readNum("ingrese un num")
+    num1 = readNum("ingrese un num")
 
-    num x2 = 3
+    x2 = 3
 
-    num y = 12357932334215
+    y = 12357932334215
     
-    str asdasd = "esta ves si"
+    asdasd = "esta ves si"
 
     print(num1)
 
-    num x = 3
+    x = 3
     while( x > 0){
         System.addBody(100 * x, 100 * x,10000,30,0,-10,"#FFF0FF")
         x = x-1
     }
 
-    str arr[] = ["var","asd"]
+    arr = ["var","asd"]
     arr[2] = "var"
 }

@@ -39,6 +39,8 @@ readNum {return READ_NUM;}
 gravityConstant     {return GRAVITY_CONF;}
 worldBorderBounce   {return BOUNCE_CONF;}
 enableBodyTrail     {return TRAIL_CONF;}
+getHeigth           {return GET_HEIGHT;}
+getWidth            {return GET_WIDTH;}
 main    {return MAIN;}
 
 
