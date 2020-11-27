@@ -10,7 +10,8 @@ enum var_type
     BOOL_TYPE,
     NUM_ARR_TYPE,
     STR_ARR_TYPE,
-    BOOL_ARR_TYPE
+    BOOL_ARR_TYPE,
+
 };
 
 struct symtab
@@ -28,7 +29,6 @@ struct exp_t
 
 struct symtab *symLook(char *s);
 
-struct symtab * symSave(char *s,enum var_type type);
-// void addFunc(char *name, double (*func)());
+struct symtab *symSave(char *s, enum var_type type);
 char *expOp(char *exp1, char *op, char *exp2);
 #endif // MACRO

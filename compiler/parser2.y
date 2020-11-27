@@ -54,6 +54,7 @@ extern FILE *yyin, *yyout;
 %token GRAVITY_CONF BOUNCE_CONF TRAIL_CONF GET_HEIGHT GET_WIDTH
 %token ADDBODY PRINT READ_STR READ_NUM 
 %token <string> OPEQ
+%token <string> NUM_FUNCT
 //Set precedences
 %left OR
 %left AND
@@ -357,6 +358,7 @@ if_statement: IF '(' exp ')' '{' statement_list '}' %prec LOWER_THAN_ELSE {
                                                                                                            
         //free previous allocations
         free($3->sval);
+        free($3);
         free($6);
         free($10);
 
@@ -377,6 +379,7 @@ while_statement: WHILE '(' exp ')' '{' statement_list '}' {
                                                                                                                    
         //free previous allocations
         free($3->sval);
+        free($3);
         free($6);
 
         $$ = s;
@@ -391,7 +394,7 @@ exp: exp '+' exp {
 
         struct exp_t* aux = malloc(EXP_SIZE);
         char * s = expOp($1->sval,"+",$3->sval);
-
+        if(s == NULL  || aux == NULL) yyerror("no memory left");
         aux->sval = s;
         if($1->type == NUM_TYPE && $3->type == NUM_TYPE ){
             aux->type = NUM_TYPE;   
@@ -415,7 +418,7 @@ exp: exp '+' exp {
 
         struct exp_t* aux = malloc(EXP_SIZE);
         char * s = expOp($1->sval,"-",$3->sval);
-
+        if(s == NULL  || aux == NULL) yyerror("no memory left");
         aux->sval = s;
         aux->type = $1->type;  
         
@@ -436,7 +439,7 @@ exp: exp '+' exp {
         
         struct exp_t* aux = malloc(EXP_SIZE);
         char *s = expOp($1->sval,"/",$3->sval);
-
+        if(s == NULL  || aux == NULL) yyerror("no memory left");
         aux->sval = s;
         aux->type = $1->type;
                 
@@ -456,7 +459,7 @@ exp: exp '+' exp {
 
         struct exp_t* aux = malloc(EXP_SIZE);
         char *s = expOp($1->sval,"*",$3->sval);
-
+        if(s == NULL  || aux == NULL) yyerror("no memory left");
         aux->sval = s;
         aux->type = $1->type;
                 
@@ -476,7 +479,7 @@ exp: exp '+' exp {
 
         struct exp_t* aux = malloc(EXP_SIZE);
         char *s = expOp($1->sval,"%",$3->sval);
-
+        if(s == NULL  || aux == NULL) yyerror("no memory left");
         aux->sval = s;
         aux->type = $1->type;
                 
@@ -496,7 +499,7 @@ exp: exp '+' exp {
         
         struct exp_t* aux = malloc(EXP_SIZE);
         char *s = malloc(strlen($2->sval) +2);
-        if(s == NULL) yyerror("no memory left");
+        if(s == NULL  || aux == NULL) yyerror("no memory left");
         sprintf(s,"-%s",$2->sval);
 
         aux->sval = s;
@@ -511,9 +514,9 @@ exp: exp '+' exp {
     | '(' exp ')' {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "(exp)\n");
 
-        struct exp_t* aux = malloc(EXP_SIZE);
         char *s = malloc(strlen($2->sval) +3);
-        if(s == NULL) yyerror("no memory left");
+        struct exp_t* aux = malloc(EXP_SIZE);
+        if(s == NULL || aux == NULL) yyerror("no memory left");
         sprintf(s,"(%s)",$2->sval);
 
         aux->sval = s;
@@ -531,9 +534,9 @@ exp: exp '+' exp {
         //type verification
         if($1->type != BOOL_TYPE || $3->type != BOOL_TYPE) yyerror("invalid types in and clause");
     
-        struct exp_t* aux = malloc(EXP_SIZE);
         char * s = malloc(strlen($1->sval) + strlen($3->sval) + 5);
-        if(s == NULL) yyerror("No memory left");
+        struct exp_t* aux = malloc(EXP_SIZE);
+        if(s == NULL || aux == NULL) yyerror("No memory left");
         sprintf(s,"%s && %s",$1->sval,$3->sval);
 
         aux->sval = s;
@@ -553,9 +556,10 @@ exp: exp '+' exp {
         //type verification
         if($1->type != BOOL_TYPE || $3->type != BOOL_TYPE) yyerror("invalid types in or clause");
         
-        struct exp_t* aux = malloc(EXP_SIZE);
+      
         char * s = malloc(strlen($1->sval) + strlen($3->sval) + 5);
-        if(s == NULL) yyerror("No memory left");
+        struct exp_t* aux = malloc(EXP_SIZE);
+        if(s == NULL || aux == NULL) yyerror("No memory left");
         sprintf(s,"%s || %s",$1->sval,$3->sval);
         
         aux->sval = s;
@@ -575,9 +579,10 @@ exp: exp '+' exp {
         //type verification
         if($2->type != BOOL_TYPE) yyerror("Type conflict: expression must be bool!");
         
-        struct exp_t* aux = malloc(EXP_SIZE);
+      
         char * s = malloc(strlen($2->sval) +2);
-        if(s == NULL) yyerror("No memory left");
+        struct exp_t* aux = malloc(EXP_SIZE);
+        if(s == NULL || aux == NULL) yyerror("No memory left");
         
         sprintf(s,"!%s",$2->sval);
         aux->sval = s;
@@ -595,9 +600,11 @@ exp: exp '+' exp {
         //type verification
         if(!($1->type == NUM_TYPE && $3->type == NUM_TYPE) && !($1->type == STR_TYPE && $3->type == STR_TYPE)  ) yyerror("Type conflict: both expressions must be numbers!");
 
-        struct exp_t* aux = malloc(EXP_SIZE);
+     
         char *s = malloc(strlen($1->sval) + strlen($3->sval) + strlen($2) + 3);
-        if(s == NULL) yyerror("No memory left");
+        struct exp_t* aux = malloc(EXP_SIZE);
+        if(s == NULL || aux == NULL) yyerror("No memory left");
+
         sprintf(s,"%s %s %s",$1->sval, $2, $3->sval);
         
         aux->sval = s;
@@ -619,10 +626,12 @@ exp: exp '+' exp {
         if($3->type != NUM_TYPE) yyerror("Type conflict: array index must be a number!");
         
         struct symtab * sym = symLook($1);
+
         if(sym == NULL) yyerror("Variable not declared");
-        struct exp_t* aux = malloc(EXP_SIZE);
+      
         char *s = malloc(strlen(sym->name) + strlen($3->sval) +3);
-        if(s == NULL) yyerror("no memory left");
+        struct exp_t* aux = malloc(EXP_SIZE);
+        if(s == NULL || aux == NULL) yyerror("no memory left");
         sprintf(s,"%s[%s]",sym->name,$3->sval); 
 
         aux->sval = s;
@@ -639,34 +648,36 @@ exp: exp '+' exp {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "NAME: %s\n",$1);
         
         struct symtab * sym = symLook($1);
-        if(sym == NULL) yyerror("Variable not declared");
-        
         struct exp_t* aux = malloc(EXP_SIZE);
+        if(sym == NULL || aux == NULL) yyerror("Variable not declared");
+        
+       
         aux->sval = strdup(sym->name);
         aux->type = sym->type;
         $$ = aux;
     }
-    // | NAME PLUSPLUS{
-    //     if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "NAME++: %s\n",$1);
+    | NUM_FUNCT '(' exp ')' {
+         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "NUM_FUNCT(exp): %s\n",$1);
         
-    //     struct symtab * sym = symLook($1);
-    //     if(sym == NULL) yyerror("Variable not declared");
-    //     if(sym->type != NUM_TYPE) yyerror("Type conflict: variable must be type num in ++ increment!");
+        //type verification
+        if($3->type != NUM_TYPE) yyerror("Type conflict: array index must be a number!");
+        
+        char *s = malloc(strlen($1) + strlen($3->sval) +8);
+        struct exp_t* aux = malloc(EXP_SIZE);
+        if(s == NULL || aux == NULL) yyerror("no memory left");
+       
+        sprintf(s,"Math.%s(%s)",$1,$3->sval); 
 
-    //     struct exp_t* aux = malloc(EXP_SIZE);
-
-    //     char *s = malloc(strlen(sym->name) +3);
-    //     if(s == NULL) yyerror("no memory left");
-    //     sprintf(s,"%s++",sym->name); 
-
-    //     aux->sval = s;
-    //     aux->type = sym->type;
-                                                                   
-    //     //free previous allocations
-    //     free($1);
-
-    //     $$ = aux;
-    // }
+        aux->sval = s;
+        aux->type = $3->type;
+        
+        //free previous allocations
+        free($1);
+        free($3->sval);
+        free($3);
+     
+        $$ = aux;
+    }
     | INTEGER {
         if(DEBUGGING) yydebug(ANSI_COLOR_GREEN"exp: "ANSI_COLOR_RESET "INTEGER: %s\n",$1);
         struct exp_t* aux = malloc(EXP_SIZE);
@@ -937,6 +948,7 @@ print: PRINT '(' exp ')' {
             $$ = s; 
         }
     ;
+   
 %%
 
 
@@ -956,26 +968,17 @@ struct symtab * symSave(char* s,enum var_type type){
     struct symtab * sp;
 
     for(sp= symtab; sp <&symtab[MAX_SYMBOLS];sp++){
-        /* is it alredy here? */
 
-        // if (sp->name && !strcmp((sp->name)+2, s) ){
-            
-        //     //printf("comparing: %s\n", (sp->name)+2);
-        //     //printTable();
-
-        // }
-        /* is it free */
         if(!sp->name) {
             char * snew = malloc(strlen(s)+3);
             sprintf(snew, "u_%s", s);
             sp->name = snew;
             sp->type = type;
-            //printTable();
+         
             return sp;
-            // sp->name = strdup(s);
-        }
-        /* otherwise continue to next */
+   
     }
+}
 
     yyerror("Variable creation error: Too many symbols");
 
@@ -994,13 +997,7 @@ char * expOp(char * exp1,char * op,char * exp2){
     return NULL;
 }
 
-// void addFunc(char *name,double(*func)()){
-//     struct symtab *sp = symLook(name);
-//     if(sp == NULL){
-//         yyerror("Variable not declared");
-//     }
-//     sp->funcptr = func;
-// }
+
 
 int main(int argc, char* argv[]){
 

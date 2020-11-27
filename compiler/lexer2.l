@@ -39,6 +39,11 @@ enableBodyTrail     {return TRAIL_CONF;}
 getHeigth           {return GET_HEIGHT;}
 getWidth            {return GET_WIDTH;}
 main    {return MAIN;}
+floor |
+ceil  |
+sqrt  { yylval.string = strdup(yytext);
+        return NUM_FUNCT;
+}
 
 [A-Za-z][A-Za-z0-9_]* {
     yylval.string = strdup(yytext);
