@@ -14,7 +14,7 @@ main(){
     width = getWidth()
     height = getHeigth()
 
-    planetQuantity = readNum("Insert planet quantity (Recomended 30-50):")
+    planetQuantity = readNum("Insert body quantity (Recomended 30-50):")
 
     verticalDistance = floor(height / planetQuantity)
     horizontalDistance = floor(width / planetQuantity)
