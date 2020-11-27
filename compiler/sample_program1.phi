@@ -5,7 +5,7 @@ num minCant
 num maxCant
 num i
 num dist
-num distInc
+num dist_inc
 str message
 str errMessage
 
@@ -16,7 +16,7 @@ main(){
     centerx = getWidth()/2
 
     dist = 200
-    distInc = 50
+    dist_inc = 50
     minCant = 1
     maxCant = 6
 
@@ -33,7 +33,7 @@ main(){
 
     i = 0
     while(i < cantPlanets){
-        System.addBody(centerx + dist + (distInc*i), centery, 100, 5 , 0, -10, "#87CEFA")
+        System.addBody(centerx + dist + (dist_inc*i), centery, 100, 5 , 0, -10, "#87CEFA")
         i = i + 1
     }
 }
