@@ -74,7 +74,7 @@ pow { yylval.string = strdup(yytext);
 
 
  /*  ----------------- CARACTERES IGNORADOS -----------------  */
-{nl} {numLine++;}
+{nl} ;
 {ws} ;  /* ignore whitespace */
 
 

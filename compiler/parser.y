@@ -26,6 +26,7 @@
 
 #define MAX_SYMBOLS 50 // Maximum number of symbols
 
+
 enum var_type
 {
     NUM_TYPE,
@@ -70,6 +71,7 @@ extern FILE *yyin, *yyout;
 
 
 %}
+
 
 %union{
     char* string;
@@ -1268,7 +1270,7 @@ struct symtab * symSave(char* s,enum var_type type){
             return sp;
         }
         else if(sp->name && !strcmp((sp->name)+2,s)){
-            yyerror(ERROR_STR("Variable definition error: variable already defined\n"));
+            yyerror(ERROR_STR("Variable definition error: variable %s already defined\n"), s);
         }
     }
     yyerror(ERROR_STR("Variable definition error: Too many symbols\n"));
@@ -1404,7 +1406,7 @@ enum var_type arrTypeToNormal(enum var_type type){
             return STR_TYPE;
         break;
         default:
-            yyerror(ERROR_STR("Variable is not an array type!\n"));
+            yyerror(ERROR_STR("Variable is not an array type\n"));
         break;
     }
     return 0;
@@ -1438,23 +1440,7 @@ char* typeToPrintableType(enum var_type type){
     return 0;
 }
 
-void error(int num,...){
-    va_list argptr;
-    va_start(argptr, num);
-    char * msg = va_arg(argptr,char*);
-    switch(num){
-        case 1:
-            fprintf (stderr,ANSI_COLOR_RED "%s\n" ANSI_COLOR_RESET,msg);
-            break;
-        case 2:
-            fprintf (stderr,ANSI_COLOR_RED "%s " ANSI_COLOR_CYAN "%s\n" ANSI_COLOR_RESET,msg,va_arg(argptr,char*));
-            break;
-        default:
-            break;
-    }
-    va_end(argptr);
-    exit(1);
-}
+
 
 // Error handler, prints error and exits program
 void yyerror(const char *format,...)
@@ -1464,7 +1450,6 @@ void yyerror(const char *format,...)
 
     vfprintf(stderr,format, argptr);
     va_end(argptr);
-    /* fprintf (stderr,ANSI_COLOR_RED "%s\n" ANSI_COLOR_RESET, s); */
     exit(1);
 }
 
