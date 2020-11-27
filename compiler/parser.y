@@ -1,5 +1,4 @@
 %{
-#include "parser.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -52,10 +51,8 @@ struct exp_t
 };
 
 struct symtab *symLook(char *s);
-
 struct symtab *symSave(char *s, enum var_type type);
 char *expOp(char *exp1, char *op, char *exp2);
-
 void appendFiles(char source[], FILE * fd2);
 int yylex();
 void yyerror(const char *format,...);
@@ -1321,7 +1318,6 @@ int main(int argc, char* argv[]){
         
     }
 
-    numLine = 0;
     appendFiles(HEADER_FILE, yyout);
     yyparse();
     appendFiles(FOOTER_FILE, yyout);
