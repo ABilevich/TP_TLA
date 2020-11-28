@@ -103,7 +103,7 @@ extern FILE *yyin, *yyout;
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
 
-/* ---------------------------------- NON TERMINALS ---------------------------------- */
+/* ---------------------------------- TYPE DEFINITION ---------------------------------- */
 %type <exp_type> exp
 %type <exp_type> arr_init
 %type <exp_type> arr_item
