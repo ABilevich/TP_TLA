@@ -1,6 +1,0 @@
-num x
-
-main(){
-    x = readNum("ingrese un numero")
-    print(x+1)
-}
