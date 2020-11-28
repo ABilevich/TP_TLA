@@ -18,7 +18,7 @@ Una vez generado el ejecutable del compilador, ya es posible compilar programas 
 Una vez compilado el programa, se generará un archivo `index.html` que se puede ejecutar en cualquier browser.
 
 ### Programas de ejemplo
-Para acostumbrarse a la sintaxis del lenguaje, ofrecemos algunos programas de ejemplo, desde `sample_program1.phy` hasta `sample_program5.phy`. Estos se compilan de la misma forma que la vista en la sección de compilar programas.
+Para acostumbrarse a la sintaxis del lenguaje, ofrecemos algunos programas de ejemplo que se encuentran en el directorio `Sample_Programs`, desde `sample_program1.phy` hasta `sample_program5.phy`. Estos se compilan de la misma forma que la vista en la sección de compilar programas.
 A continuación una breve descripción de cada programa:
 - sample_program1.phy
     Este programa pide al usuario que ingrese un numero entre el 0 y el 6 y genera un sistema solar semi-estable con esa cantidad de planetas
